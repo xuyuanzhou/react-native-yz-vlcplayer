@@ -1,11 +1,18 @@
 {
   "name": "react-native-yz-vlcplayer",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [
+    "vlc",
+    "player",
+    "android",
+    "react-native",
+    "mp4"
+  ],
   "author": "yuanzhou.xu",
   "repository": {
     "type": "git",

@@ -16,6 +16,12 @@ android vlc-sdk 库来源:[https://github.com/mengzhidaren/Vlc-sdk-lib](https://
 
 Run `react-native link react-native-yz-vlcplayer`
 
+
+## ios (暂不支持，待整合)
+https://github.com/xuyuanzhou/react-native-vlcplayer
+Build Settings ---> 查询  Bitcode
+Enable Bitcode 设置为no
+
 ## FullScreen ##
 需要用到 `npm install react-native-orientation --save` ，工程配置参看[https://github.com/yamill/react-native-orientation](https://github.com/yamill/react-native-orientation)  
 
