@@ -34,23 +34,61 @@ this.vlcplayer.seek(100); //单位是 ms
    import { VLCPlayer, VlCPlayerView } from 'react-native-yz-vlcplayer';
    import Orientation from 'react-native-orientation';
    
-   <VlCPlayerView
-       url={this.state.url}           //视屏url
-       Orientation={Orientation}      
-       //BackHandle={BackHandle}
-       ggUrl=""                      // 广告url
-       showGG={true}                 // 是否显示广告
-       startFullScreen={() => {      
-          this.setState({
-          isFull: true,
-         });
-       }}
-       closeFullScreen={() => {
-          this.setState({
-          isFull: false,
-         });
-       }}
-   />
+   //插件参数说明
+   (1) 静态方法
+       this.vlcplayer.seek(100); //调整播放进度，单位是ms
+  （2）
+       <VLCPlayer
+           ref={ref => (this.vlcPlayer = ref)}
+           style={[styles.video]}
+           /**
+            *  是否暂停播放
+            */
+           paused={this.state.paused}
+           /**
+            *  资源路径
+            *  暂不支持本地资源
+            */
+           source={{ uri: this.props.uri}}
+           /**
+            *  进度   
+            *  返回 {currentTime:1000,duration:1000} 
+            *  单位是 ms
+            *  currentTime: 当前时间  
+            *  duration:    总时间  
+            */
+           onProgress={this.onProgress.bind(this)}
+           /**
+            *  视屏播放结束
+            */
+           onEnd={this.onEnded.bind(this)}
+           /**
+            * 正在缓存中
+            */
+           onBuffering={this.onBuffering.bind(this)}
+           onError={this._onError}
+           //onStopped={this.onEnded.bind(this)}      暂未实现
+           //onPlaying={this.onPlaying.bind(this)}    暂未实现
+           //onPaused={this.onPaused.bind(this)}      暂未实现
+       />
+   （3）简单例子
+       <VlCPlayerView
+           url={this.state.url}           //视屏url
+           Orientation={Orientation}      
+           //BackHandle={BackHandle}
+           ggUrl=""                      // 广告url
+           showGG={true}                 // 是否显示广告
+           startFullScreen={() => {      
+              this.setState({
+              isFull: true,
+             });
+           }}
+           closeFullScreen={() => {
+              this.setState({
+              isFull: false,
+             });
+           }}
+       />
 ````
 
 
