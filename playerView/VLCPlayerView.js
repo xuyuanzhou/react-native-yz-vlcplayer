@@ -90,78 +90,78 @@ export default class VLCPlayerView extends Component {
 
     return (
       <TouchableOpacity
-        activeOpacity={1}
-        style={[styles.videoBtn, style]}
-        onPressOut={() => {
-          let currentTime = new Date().getTime();
-          if (this.touchTime === 0) {
-            this.touchTime = currentTime;
-            this.setState({ showControls: !this.state.showControls });
-          } else {
-            if (currentTime - this.touchTime >= 500) {
-              this.touchTime = currentTime;
-              this.setState({ showControls: !this.state.showControls });
-            }
-          }
-        }}>
-        <VLCPlayer
-          ref={ref => (this.vlcPlayer = ref)}
-          paused={this.state.paused}
-          //seek={this.state.seek}
-          style={[styles.video]}
-          source={{ uri: this.props.uri, initOptions: ['--codec=avcodec'], autoplay: true }}
-          onProgress={this.onProgress.bind(this)}
-          onEnd={this.onEnded.bind(this)}
-          onEnded={this.onEnded.bind(this)}
-          onStopped={this.onEnded.bind(this)}
-          onPlaying={this.onPlaying.bind(this)}
-          onBuffering={this.onBuffering.bind(this)}
-          onPaused={this.onPaused.bind(this)}
-          progressUpdateInterval={250}
-          onError={this._onError}
-        />
-        {showGG && (
-          <View style={styles.GG}>
-            <TimeLimt
-              onEnd={() => {
-                onEnd && onEnd();
-              }}
-              // maxTime={Math.ceil(this.state.totalTime)}
-            />
-          </View>
-        )}
-        {realShowLoding && (
-          <View style={styles.loading}>
-            <ActivityIndicator size={'large'} animating={true} color="#fff" />
-          </View>
-        )}
-        {showControls && (
-          <ControlBtn
-            showSlider={!isGG}
-            paused={this.state.paused}
-            isFull={isFull}
-            currentTime={this.state.currentTime}
-            totalTime={this.state.totalTime}
-            onPausedPress={this._play}
-            onFullPress={this._toFullScreen}
-            onValueChange={value => {
-              this.changingSlider = true;
-              this.setState({
-                currentTime: value,
-              });
-            }}
-            onSlidingComplete={value => {
-              this.changingSlider = false;
-              if (Platform.OS === 'ios') {
-                this.vlcPlayer.seek(Number((value / this.state.totalTime).toFixed(17)));
-              } else {
-                this.vlcPlayer.seek(value);
-              }
-            }}
-          />
-        )}
-      </TouchableOpacity>
-    );
+    activeOpacity={1}
+    style={[styles.videoBtn, style]}
+    onPressOut={() => {
+      let currentTime = new Date().getTime();
+      if (this.touchTime === 0) {
+        this.touchTime = currentTime;
+        this.setState({ showControls: !this.state.showControls });
+      } else {
+        if (currentTime - this.touchTime >= 500) {
+          this.touchTime = currentTime;
+          this.setState({ showControls: !this.state.showControls });
+        }
+      }
+    }}>
+  <VLCPlayer
+    ref={ref => (this.vlcPlayer = ref)}
+    paused={this.state.paused}
+    //seek={this.state.seek}
+    style={[styles.video]}
+    source={{ uri: this.props.uri, initOptions: ['--codec=avcodec'], autoplay: true }}
+    onProgress={this.onProgress.bind(this)}
+    onEnd={this.onEnded.bind(this)}
+    onEnded={this.onEnded.bind(this)}
+    onStopped={this.onEnded.bind(this)}
+    onPlaying={this.onPlaying.bind(this)}
+    onBuffering={this.onBuffering.bind(this)}
+    onPaused={this.onPaused.bind(this)}
+    progressUpdateInterval={250}
+    onError={this._onError}
+  />
+    {showGG && (
+    <View style={styles.GG}>
+    <TimeLimt
+      onEnd={() => {
+      onEnd && onEnd();
+    }}
+      // maxTime={Math.ceil(this.state.totalTime)}
+    />
+    </View>
+    )}
+    {realShowLoding && (
+    <View style={styles.loading}>
+    <ActivityIndicator size={'large'} animating={true} color="#fff" />
+      </View>
+    )}
+    {showControls && (
+    <ControlBtn
+      showSlider={!isGG}
+      paused={this.state.paused}
+      isFull={isFull}
+      currentTime={this.state.currentTime}
+      totalTime={this.state.totalTime}
+      onPausedPress={this._play}
+      onFullPress={this._toFullScreen}
+      onValueChange={value => {
+      this.changingSlider = true;
+      this.setState({
+        currentTime: value,
+      });
+    }}
+      onSlidingComplete={value => {
+      this.changingSlider = false;
+      if (Platform.OS === 'ios') {
+        this.vlcPlayer.seek(Number((value / this.state.totalTime).toFixed(17)));
+      } else {
+        this.vlcPlayer.seek(value);
+      }
+    }}
+    />
+    )}
+  </TouchableOpacity>
+  );
   }
 
   pause() {
@@ -181,6 +181,9 @@ export default class VLCPlayerView extends Component {
       this.setState({ paused: false });
       this.changeUrl = false;
     }
+    this.setState({
+      isLoading: true
+    });
     console.log('onBuffering');
     console.log(event);
   }
@@ -192,13 +195,13 @@ export default class VLCPlayerView extends Component {
 
   onProgress(event) {
     /* console.log(
-      'position=' +
-        event.position +
-        ',currentTime=' +
-        event.currentTime +
-        ',remainingTime=' +
-        event.remainingTime,
-    );*/
+     'position=' +
+     event.position +
+     ',currentTime=' +
+     event.currentTime +
+     ',remainingTime=' +
+     event.remainingTime,
+     );*/
     let currentTime = event.currentTime;
     let loadingSuccess = false;
     if (currentTime > 0 || this.state.currentTime > 0) {
@@ -206,10 +209,6 @@ export default class VLCPlayerView extends Component {
     }
     if (!this.changingSlider) {
       if (currentTime === 0 || currentTime === this.state.currentTime * 1000) {
-        this.setState({
-          isLoading: true,
-          loadingSuccess: loadingSuccess,
-        });
       } else {
         this.setState({
           loadingSuccess: loadingSuccess,
