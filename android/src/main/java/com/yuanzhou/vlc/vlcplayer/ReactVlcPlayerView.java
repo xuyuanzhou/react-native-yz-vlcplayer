@@ -36,8 +36,8 @@ class ReactVlcPlayerView extends SurfaceView implements
 
     private LibVLC libvlc;
     private MediaPlayer mMediaPlayer = null;
-    private int mVideoHeight;
-    private int mVideoWidth;
+    private int mVideoHeight = 0;
+    private int mVideoWidth = 0;
     private int mVideoVisibleHeight;
     private int mVideoVisibleWidth;
     private int mSarNum;
@@ -144,8 +144,8 @@ class ReactVlcPlayerView extends SurfaceView implements
         surfaceView.removeOnLayoutChangeListener(onLayoutChangeListener);
         libvlc.release();
         libvlc = null;
-        mVideoWidth = 0;
-        mVideoHeight = 0;
+        //mVideoWidth = 0;
+        //mVideoHeight = 0;
     }
 
     private boolean requestAudioFocus() {
@@ -208,43 +208,11 @@ class ReactVlcPlayerView extends SurfaceView implements
 
 
 
-    private void createPlayer() {
+    private void createPlayer(boolean autoplay) {
         releasePlayer();
         try {
             // Create LibVLC
             ArrayList<String> options = new ArrayList<String>(50);
-            /*int deblocking = getDeblocking(-1);
-            int networkCaching = 5000;
-            if (networkCaching > 60000)
-                networkCaching = 60000;
-            else if (networkCaching < 0)
-                networkCaching = 0;
-            //options.add("--subsdec-encoding <encoding>");
-            /*//* CPU intensive plugin, setting for slow devices *//**//**//**//*
-            options.add("--audio-time-stretch");
-            options.add("--avcodec-skiploopfilter");
-            options.add("" + deblocking);
-            options.add("--avcodec-skip-frame");
-            options.add("0");
-            options.add("--avcodec-skip-idct");
-            options.add("0");
-            options.add("--subsdec-encoding");
-            // options.add(subtitlesEncoding);
-            options.add("--stats");
-            /*//* XXX: why can't the default be fine ? #7792 *//**//**//**//*
-            //if (networkCaching > 0)
-              //  options.add("--network-caching=" + networkCaching);
-            options.add("--androidwindow-chroma");
-            options.add("RV32");
-
-            options.add("-vv");
-            options.add("--file-caching=300");//文件缓存
-            options.add("--network-caching=300");//网络缓存
-
-            options.add("--live-caching=300");//直播缓存
-            options.add("--sout-mux-caching=300");//输出缓存
-
-            options.add("--codec=mediacodec,iomx,all");*/
             libvlc = new LibVLC(getContext(), options);
             // Create media player
             mMediaPlayer = new MediaPlayer(libvlc);
@@ -253,22 +221,20 @@ class ReactVlcPlayerView extends SurfaceView implements
             surfaceView.addOnLayoutChangeListener(onLayoutChangeListener);
             this.getHolder().setKeepScreenOn(true);
             IVLCVout vlcOut =  mMediaPlayer.getVLCVout();
+            if(mVideoWidth > 0 && mVideoHeight > 0){
+                vlcOut.setWindowSize(mVideoWidth,mVideoHeight);
+            }
             vlcOut.addCallback(callback);
             vlcOut.setVideoSurface(this.getHolder().getSurface(), this.getHolder());
             vlcOut.attachViews(onNewVideoLayoutListener);
             DisplayMetrics dm = getResources().getDisplayMetrics();
-            int heigth = dm.heightPixels;
-            int width = dm.widthPixels;
             Uri uri = Uri.parse(this.src);
             Media m = new Media(libvlc, uri);
-            /*m.addOption(":file-caching=300");
-            m.addOption(":network-caching=300");
-            m.addOption(":live-caching=300");
-            m.addOption(":sout-mux-caching=300");
-            m.addOption(":codec=mediacodec,iomx,all");*/
             mMediaPlayer.setMedia(m);
             mMediaPlayer.setScale(0);
-            mMediaPlayer.play();
+            if(autoplay){
+                mMediaPlayer.play();
+            }
         } catch (Exception e) {
             //Toast.makeText(getContext(), "Error creating player!", Toast.LENGTH_LONG).show();
         }
@@ -362,12 +328,12 @@ class ReactVlcPlayerView extends SurfaceView implements
                 return;
 
             // store video size
-            mVideoWidth = width;
+            /*mVideoWidth = width;
             mVideoHeight = height;
             mVideoVisibleWidth  = visibleWidth;
             mVideoVisibleHeight = visibleHeight;
             mSarNum = sarNum;
-            mSarDen = sarDen;
+            mSarDen = sarDen;*/
         }
     };
 
@@ -392,12 +358,13 @@ class ReactVlcPlayerView extends SurfaceView implements
 
     public void setSrc(String uri, String extension) {
         this.src = uri;
-        createPlayer();
+        createPlayer(true);
     }
 
     public void setRateModifier(float rateModifier) {
         mMediaPlayer.setRate(rateModifier);
     }
+
 
     public void setVolumeModifier(int volumeModifier) {
         mMediaPlayer.setVolume(volumeModifier);
@@ -409,6 +376,10 @@ class ReactVlcPlayerView extends SurfaceView implements
         }else{
             mMediaPlayer.play();
         }
+    }
+
+    public void doResume(boolean autoplay){
+        createPlayer(autoplay);
     }
 
     public void setRepeatModifier(boolean repeat){

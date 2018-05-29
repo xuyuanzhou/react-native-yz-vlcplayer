@@ -225,6 +225,7 @@ class VideoEventEmitter {
         receiveEvent(EVENT_AUDIO_FOCUS_CHANGE, map);
     }
 
+
     void audioBecomingNoisy() {
         receiveEvent(EVENT_AUDIO_BECOMING_NOISY, null);
     }

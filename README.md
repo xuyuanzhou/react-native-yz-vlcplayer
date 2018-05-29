@@ -31,6 +31,7 @@ Enable Bitcode 设置为no
 
 ```
 this.vlcplayer.seek(100); //单位是 ms
+this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 表示播放 false表示暂停
 ```
 
 
@@ -81,6 +82,7 @@ this.vlcplayer.seek(100); //单位是 ms
        />
    （3）简单例子
        <VlCPlayerView
+           autoplay={false}                //视屏播放结束时调用this.vlcPlayer.resume(false)方法
            url={this.state.url}           //视屏url
            Orientation={Orientation}      
            //BackHandle={BackHandle}

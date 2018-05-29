@@ -129,6 +129,7 @@ export default class CommonVideo extends Component {
         style={[isFull ? styles.container : { height: 250, backgroundColor: '#000' }, style]}>
         {realShowGG && (
           <VLCPlayerView
+            {...this.props}
             uri={ggUrl}
             source={{ uri: ggUrl, type: ggType }}
             type={ggType}
@@ -146,6 +147,7 @@ export default class CommonVideo extends Component {
         {showVideo &&
           isEndGG && (
             <VLCPlayerView
+              {...this.props}
               uri={currentUrl}
               type={type}
               isFull={isFull}

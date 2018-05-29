@@ -12,6 +12,7 @@ export default class VLCPlayer extends Component {
   constructor(props, context) {
     super(props, context);
     this.seek = this.seek.bind(this);
+    this.resume = this.resume.bind(this);
     this.snapshot = this.snapshot.bind(this);
     this._assignRoot = this._assignRoot.bind(this);
     this._onError = this._onError.bind(this);
@@ -29,6 +30,10 @@ export default class VLCPlayer extends Component {
 
   seek(pos) {
     this.setNativeProps({ seek: pos });
+  }
+
+  resume(isResume) {
+    this.setNativeProps({ resume: isResume });
   }
 
   snapshot(path) {
@@ -134,6 +139,7 @@ VLCPlayer.propTypes = {
   /* Native only */
   rate: PropTypes.number,
   seek: PropTypes.number,
+  resume: PropTypes.bool,
   snapshotPath: PropTypes.string,
   paused: PropTypes.bool,
 

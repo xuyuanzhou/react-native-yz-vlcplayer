@@ -28,6 +28,7 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
     private static final String PROP_VOLUME = "volume";
     private static final String PROP_PROGRESS_UPDATE_INTERVAL = "progressUpdateInterval";
     private static final String PROP_SEEK = "seek";
+    private static final String PROP_RESUME = "resume";
     private static final String PROP_RATE = "rate";
     private static final String PROP_PLAY_IN_BACKGROUND = "playInBackground";
     private static final String PROP_DISABLE_FOCUS = "disableFocus";
@@ -128,6 +129,11 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
     public void setSeek(final ReactVlcPlayerView videoView, final float seek) {
         videoView.seekTo(Math.round(seek * 1000f));
         //videoView.seekTo(seek);
+    }
+
+    @ReactProp(name = PROP_RESUME, defaultBoolean = false)
+    public void setResume(final ReactVlcPlayerView videoView, final boolean autoPlay) {
+        videoView.doResume(autoPlay);
     }
 
     @ReactProp(name = PROP_RATE)

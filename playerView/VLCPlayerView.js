@@ -46,6 +46,7 @@ export default class VLCPlayerView extends Component {
     seek: 0,
     playInBackground: false,
     isGG: false,
+    autoplay: true,
   };
 
   componentDidMount() {
@@ -222,9 +223,13 @@ export default class VLCPlayerView extends Component {
   }
 
   onEnded(event) {
-    let { onEnd } = this.props;
-    console.log(this.props.uri + ':   onEnded');
+    let { onEnd, autoplay } = this.props;
+    this.setState({
+      paused: false
+    });
     onEnd && onEnd();
+    this.vlcPlayer.resume && this.vlcPlayer.resume(autoplay || false);
+    console.log(this.props.uri + ':   onEnded');
   }
 
   _toFullScreen = () => {
