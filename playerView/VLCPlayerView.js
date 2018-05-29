@@ -81,10 +81,10 @@ export default class VLCPlayerView extends Component {
     let { isLoading, loadingSuccess, showControls } = this.state;
     let showGG = false;
     let realShowLoding = false;
-    if ((isGG && type === 'swf') || (loadingSuccess && isGG)) {
+    if (loadingSuccess && isGG) {
       showGG = true;
     }
-    if (isLoading && type !== 'swf') {
+    if (isLoading) {
       realShowLoding = true;
     }
 
