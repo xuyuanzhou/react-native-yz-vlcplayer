@@ -47,7 +47,7 @@ Run `react-native link react-native-yz-vlcplayer`
    
 (5)添加下图所对应的lib和frameworks
 
-   ![](./images/5.png
+   ![](./images/5.png)
    
 (6)检查libRCTVLCPlayer.a有没有被添加,没有的话手动添加
 
