@@ -1,3 +1,4 @@
+[Toc]
 # react-native-yz-vlcplayer
 
 A `<VLCPlayer>` component for react-native  
@@ -10,6 +11,7 @@ VLCPlayer 支持各种格式(mp4,m3u8,flv,mov,rtsp,rtmp,etc.)，具体参看[vlc
 
 Run `npm install react-native-yz-vlcplayer --save`
 
+
 ## android
 
 android vlc-sdk 库来源:[https://github.com/mengzhidaren/Vlc-sdk-lib](https://github.com/mengzhidaren/Vlc-sdk-lib)
@@ -19,8 +21,25 @@ Run `react-native link react-native-yz-vlcplayer`
 
 ## ios (暂不支持，待整合)
 https://github.com/xuyuanzhou/react-native-vlcplayer
-Build Settings ---> 查询  Bitcode
-Enable Bitcode 设置为no
+整合 react-native-vlcplayer 而来。
+
+Run `react-native link react-native-yz-vlcplayer`
+
+1.安装MobileVLCKit.framework
+(1)在[nightlies.videolan.org/build/iOS/](http://nightlies.videolan.org/build/iOS/) 下载最新版，
+
+(2)在你的项目目录下新建一个 vlcKit 文件夹，并将MobileVLCKit.framework解压到该目录下
+
+(3)在你的工程里面引入MobileVLCKit.framework
+   [](./images/2.png)
+   [](./images/3.png)
+   
+(4)添加 framework search path     `$(PROJECT_DIR)/../vlcKit`
+   [](./images/1.png)
+   
+(5)Enable Bitcode 设置为no
+   Build Settings ---> 查询  Bitcode
+
 
 ## FullScreen ##
 需要用到 `npm install react-native-orientation --save` ，工程配置参看[https://github.com/yamill/react-native-orientation](https://github.com/yamill/react-native-orientation)  
