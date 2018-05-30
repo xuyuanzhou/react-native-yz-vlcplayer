@@ -46,7 +46,7 @@ Run `react-native link react-native-yz-vlcplayer`
    
 (5)添加下图所对应的lib和frameworks
 
-    ![](./images/5.png)
+   ![](./images/5.png)
 
 (6)Enable Bitcode 设置为no
 
