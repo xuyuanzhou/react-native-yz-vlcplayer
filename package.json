@@ -1,6 +1,6 @@
 {
   "name": "react-native-yz-vlcplayer",
-  "version": "0.1.6",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,7 @@
     "vlc",
     "player",
     "android",
+    "ios",
     "react-native",
     "mp4"
   ],
