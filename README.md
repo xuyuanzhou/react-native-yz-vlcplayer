@@ -1,4 +1,4 @@
-[Toc]
+[TOC]
 # react-native-yz-vlcplayer
 
 A `<VLCPlayer>` component for react-native  
@@ -45,6 +45,9 @@ Run `react-native link react-native-yz-vlcplayer`
 (5)Enable Bitcode 设置为no
 
    Build Settings ---> 查询  Bitcode
+   
+(6)设置工程deployment target 为 9.3
+
 
 
 ## FullScreen ##
