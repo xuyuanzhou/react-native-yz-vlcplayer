@@ -31,13 +31,14 @@ Run `react-native link react-native-yz-vlcplayer`
 (2)在你的项目目录下新建一个 vlcKit 文件夹，并将MobileVLCKit.framework解压到该目录下
 
 (3)在你的工程里面引入MobileVLCKit.framework
-   ![]('./images/2.png')
-   ![]('./images/3.png')
+   ![](./images/2.png)
+   ![](./images/3.png)
    
 (4)添加 framework search path     `$(PROJECT_DIR)/../vlcKit`
    ![](./images/1.png)
    
 (5)Enable Bitcode 设置为no
+
    Build Settings ---> 查询  Bitcode
 
 
