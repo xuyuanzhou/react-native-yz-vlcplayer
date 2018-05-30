@@ -2,7 +2,9 @@
 # react-native-yz-vlcplayer
 
 A `<VLCPlayer>` component for react-native  
-此项目 参考react-native-video，react-native-vlcplayer, react-native-vlc-player
+此项目 参考[react-native-video](https://github.com/react-native-community/react-native-video)，
+[react-native-vlcplayer](https://github.com/xiongchuan86/react-native-vlcplayer), 
+[react-native-vlc-player](https://github.com/ghondar/react-native-vlc-player)
 
 VLCPlayer 支持各种格式(mp4,m3u8,flv,mov,rtsp,rtmp,etc.)，具体参看[vlc wiki](https://wiki.videolan.org/Documentation:Documentation/)
 
@@ -19,9 +21,9 @@ android vlc-sdk 库来源:[https://github.com/mengzhidaren/Vlc-sdk-lib](https://
 Run `react-native link react-native-yz-vlcplayer`
 
 
-## ios (暂不支持，待整合)
-https://github.com/xuyuanzhou/react-native-vlcplayer
-整合 react-native-vlcplayer 而来。
+## ios
+
+整合 [react-native-vlcplayer](https://github.com/xiongchuan86/react-native-vlcplayer) 而来。
 
 Run `react-native link react-native-yz-vlcplayer`
 
