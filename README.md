@@ -27,6 +27,7 @@ Run `react-native link react-native-yz-vlcplayer`
 
 Run `react-native link react-native-yz-vlcplayer`
 
+
 1.安装MobileVLCKit.framework
 
 (1)在[nightlies.videolan.org/build/iOS/](http://nightlies.videolan.org/build/iOS/) 下载最新版，
@@ -46,14 +47,18 @@ Run `react-native link react-native-yz-vlcplayer`
    
 (5)添加下图所对应的lib和frameworks
 
-   ![](./images/5.png)
+   ![](./images/5.png
+   
+(6)检查libRCTVLCPlayer.a有没有被添加,没有的话手动添加
 
-(6)Enable Bitcode 设置为no
+   ![](./images/6.png)
+
+(7)Enable Bitcode 设置为no
 
    Build Settings ---> 查询  Bitcode
    ![](./images/4.png)
    
-(7)设置工程deployment target 为 9.3
+(8)设置工程deployment target 为 9.3
 
 
 
