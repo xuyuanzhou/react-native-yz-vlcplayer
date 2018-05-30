@@ -26,6 +26,7 @@ https://github.com/xuyuanzhou/react-native-vlcplayer
 Run `react-native link react-native-yz-vlcplayer`
 
 1.安装MobileVLCKit.framework
+
 (1)在[nightlies.videolan.org/build/iOS/](http://nightlies.videolan.org/build/iOS/) 下载最新版，
 
 (2)在你的项目目录下新建一个 vlcKit 文件夹，并将MobileVLCKit.framework解压到该目录下
