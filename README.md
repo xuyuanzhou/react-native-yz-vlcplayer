@@ -40,9 +40,12 @@ Run `react-native link react-native-yz-vlcplayer`
    ![](./images/3.png)
    
 (4)添加 framework search path     `$(PROJECT_DIR)/../vlcKit`
+
    ![](./images/1.png)
    
+   
 (5)添加下图所对应的lib和frameworks
+
     ![](./images/5.png)
 
 (6)Enable Bitcode 设置为no
