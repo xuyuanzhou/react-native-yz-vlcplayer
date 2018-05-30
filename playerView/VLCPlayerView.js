@@ -82,11 +82,20 @@ export default class VLCPlayerView extends Component {
     let { isLoading, loadingSuccess, showControls } = this.state;
     let showGG = false;
     let realShowLoding = false;
-    if (loadingSuccess && isGG) {
-      showGG = true;
-    }
-    if (isLoading) {
-      realShowLoding = true;
+    if(Platform.OS === 'ios'){
+      if ((loadingSuccess && isGG) || (isGG && type === 'swf')) {
+        showGG = true;
+      }
+      if (isLoading && type !== 'swf') {
+        realShowLoding = true;
+      }
+    }else{
+      if (loadingSuccess && isGG) {
+        showGG = true;
+      }
+      if (isLoading) {
+        realShowLoding = true;
+      }
     }
 
     return (
@@ -113,7 +122,7 @@ export default class VLCPlayerView extends Component {
     source={{ uri: this.props.uri, initOptions: ['--codec=avcodec'], autoplay: true }}
     onProgress={this.onProgress.bind(this)}
     onEnd={this.onEnded.bind(this)}
-    onEnded={this.onEnded.bind(this)}
+    //onEnded={this.onEnded.bind(this)}
     onStopped={this.onEnded.bind(this)}
     onPlaying={this.onPlaying.bind(this)}
     onBuffering={this.onBuffering.bind(this)}
@@ -127,7 +136,7 @@ export default class VLCPlayerView extends Component {
       onEnd={() => {
       onEnd && onEnd();
     }}
-      // maxTime={Math.ceil(this.state.totalTime)}
+      //maxTime={Math.ceil(this.state.totalTime)}
     />
     </View>
     )}
@@ -223,13 +232,18 @@ export default class VLCPlayerView extends Component {
   }
 
   onEnded(event) {
-    let { onEnd, autoplay } = this.props;
+    let { onEnd, autoplay, isGG } = this.props;
     this.setState({
       paused: false
     });
     onEnd && onEnd();
-    this.vlcPlayer.resume && this.vlcPlayer.resume(autoplay || false);
-    console.log(this.props.uri + ':   onEnded');
+    if(!isGG){
+      this.vlcPlayer.resume && this.vlcPlayer.resume(autoplay || false);
+      console.log(this.props.uri + ':   onEnded');
+    }else{
+      console.log('片头：'+this.props.uri + ':   onEnded');
+    }
+
   }
 
   _toFullScreen = () => {

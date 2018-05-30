@@ -42,12 +42,15 @@ Run `react-native link react-native-yz-vlcplayer`
 (4)添加 framework search path     `$(PROJECT_DIR)/../vlcKit`
    ![](./images/1.png)
    
-(5)Enable Bitcode 设置为no
+(5)添加下图所对应的lib和frameworks
+    ![](./images/5.png)
+
+(6)Enable Bitcode 设置为no
 
    Build Settings ---> 查询  Bitcode
    ![](./images/4.png)
    
-(6)设置工程deployment target 为 9.3
+(7)设置工程deployment target 为 9.3
 
 
 

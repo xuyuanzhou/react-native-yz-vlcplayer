@@ -63,10 +63,6 @@ export default class VLCPlayer extends Component {
   }
 
   _onEnded(event) {
-    console.log('--------------->');
-    if (this.props.onEnded) {
-      this.props.onEnd(event.nativeEvent);
-    }
     if (this.props.onEnd) {
       this.props.onEnd(event);
     }
@@ -93,8 +89,8 @@ export default class VLCPlayer extends Component {
 
   render() {
     /* const {
-      source
-    } = this.props;*/
+     source
+     } = this.props;*/
     const source = resolveAssetSource(this.props.source) || {};
 
     let uri = source.uri || '';
