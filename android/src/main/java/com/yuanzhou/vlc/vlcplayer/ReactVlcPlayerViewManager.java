@@ -32,6 +32,8 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
     private static final String PROP_RATE = "rate";
     private static final String PROP_PLAY_IN_BACKGROUND = "playInBackground";
     private static final String PROP_DISABLE_FOCUS = "disableFocus";
+    public static final String PROP_SRC_IS_NETWORK = "isNetwork";
+    public static final String PROP_SRC_IS_ASSET = "isAsset";
 
     @Override
     public String getName() {
@@ -62,37 +64,13 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
         Context context = videoView.getContext().getApplicationContext();
         String uriString = src.hasKey(PROP_SRC_URI) ? src.getString(PROP_SRC_URI) : null;
         String extension = src.hasKey(PROP_SRC_TYPE) ? src.getString(PROP_SRC_TYPE) : null;
+        boolean isNetStr = src.getBoolean(PROP_SRC_IS_NETWORK) ? src.getBoolean(PROP_SRC_IS_NETWORK) : null;
 
         if (TextUtils.isEmpty(uriString)) {
             return;
         }
-        videoView.setSrc(uriString, extension);
-        /*if (startsWithValidScheme(uriString)) {
-            Uri srcUri = Uri.parse(uriString);
+        videoView.setSrc(uriString, isNetStr);
 
-            if (srcUri != null) {
-                videoView.setSrc(srcUri, extension);
-            }
-        } else {
-            int identifier = context.getResources().getIdentifier(
-                uriString,
-                "drawable",
-                context.getPackageName()
-            );
-            if (identifier == 0) {
-                identifier = context.getResources().getIdentifier(
-                    uriString,
-                    "raw",
-                    context.getPackageName()
-                );
-            }
-            if (identifier > 0) {
-                Uri srcUri = RawResourceDataSource.buildRawResourceUri(identifier);
-                if (srcUri != null) {
-                    videoView.setRawSrc(srcUri, extension);
-                }
-            }
-        }*/
     }
 
     @ReactProp(name = PROP_RESIZE_MODE)

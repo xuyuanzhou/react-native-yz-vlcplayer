@@ -96,6 +96,7 @@ export default class CommonVideo extends Component {
   _toFullScreen = () => {
     let { startFullScreen, BackHandle, Orientation } = this.props;
     this.setState({ isFull: true });
+    StatusBar.setHidden(true);
     BackHandle && BackHandle.addBackFunction(_fullKey, this._closeFullScreen);
     startFullScreen && startFullScreen();
     Orientation && Orientation.lockToLandscape && Orientation.lockToLandscape();
@@ -112,13 +113,15 @@ export default class CommonVideo extends Component {
     let showVideo = false;
     if (currentUrl) {
       showVideo = true;
-      let types = currentUrl.split('.');
-      if (types && types.length > 0) {
-        type = types[types.length - 1];
+      if(currentUrl.split){
+         let types = currentUrl.split('.');
+         if (types && types.length > 0) {
+             type = types[types.length - 1];
+         }
       }
     }
     let ggType = '';
-    if (ggUrl) {
+    if (ggUrl && ggUrl.split) {
       let types = ggUrl.split('.');
       if (types && types.length > 0) {
         ggType = types[types.length - 1];

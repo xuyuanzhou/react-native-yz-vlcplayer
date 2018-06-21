@@ -78,10 +78,18 @@ export default class VLCPlayerView extends Component {
   }
 
   render() {
-    let { onEnd, style, isGG, type, isFull } = this.props;
+    let { onEnd, style, isGG, type, isFull, uri } = this.props;
     let { isLoading, loadingSuccess, showControls } = this.state;
     let showGG = false;
     let realShowLoding = false;
+    let source = {};
+    if(uri){
+        if(uri.split){
+            source = { uri: this.props.uri, initOptions: ['--codec=avcodec'], autoplay: true };
+        }else{
+            source = uri;
+        }
+    }
     if(Platform.OS === 'ios'){
       if ((loadingSuccess && isGG) || (isGG && type === 'swf')) {
         showGG = true;
@@ -119,7 +127,7 @@ export default class VLCPlayerView extends Component {
     paused={this.state.paused}
     //seek={this.state.seek}
     style={[styles.video]}
-    source={{ uri: this.props.uri, initOptions: ['--codec=avcodec'], autoplay: true }}
+    source={source}
     onProgress={this.onProgress.bind(this)}
     onEnd={this.onEnded.bind(this)}
     //onEnded={this.onEnded.bind(this)}

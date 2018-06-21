@@ -158,7 +158,8 @@ static NSString *const playbackRate = @"rate";
                 _paused = YES;
                 NSLog(@"VLCMediaPlayerStatePaused %i",1);
                 self.onVideoPaused(@{
-                                     @"target": self.reactTag
+                                     @"target": self.reactTag,
+                                     @"paused": [NSNumber numberWithBool:1]
                                      });
                 break;
             case VLCMediaPlayerStateStopped:
@@ -169,6 +170,7 @@ static NSString *const playbackRate = @"rate";
                 break;
             case VLCMediaPlayerStateBuffering:
                 NSLog(@"VLCMediaPlayerStateBuffering %i",1);
+                
                 self.onVideoBuffering(@{
                                         @"target": self.reactTag
                                         });

@@ -6,6 +6,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -20,6 +21,8 @@ import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 import org.videolan.libvlc.util.VLCUtil;
+import org.videolan.vlc.util.VLCInstance;
+import org.videolan.vlc.VlcVideoView;
 import java.util.ArrayList;
 
 @SuppressLint("ViewConstructor")
@@ -45,6 +48,7 @@ class ReactVlcPlayerView extends SurfaceView implements
 
 
     SurfaceView surfaceView;
+    private boolean isSurfaceViewDestory;
 
     private int counter = 0;
 
@@ -63,7 +67,10 @@ class ReactVlcPlayerView extends SurfaceView implements
     private boolean isBuffering;
     private float rate = 1f;
 
+    //资源路径
     private String src;
+    //是否网络资源
+    private  boolean netStrTag;
 
     // Props from React
     private Uri srcUri;
@@ -111,19 +118,32 @@ class ReactVlcPlayerView extends SurfaceView implements
 
     @Override
     public void onHostResume() {
-        if (playInBackground) {
-            return;
+        Log.i("onHostResume","---------onHostResume------------>");
+        if(mMediaPlayer != null && isSurfaceViewDestory){
+            IVLCVout vlcOut =  mMediaPlayer.getVLCVout();
+            if(!vlcOut.areViewsAttached()){
+                vlcOut.setVideoSurface(this.getHolder().getSurface(), this.getHolder());
+                vlcOut.attachViews(onNewVideoLayoutListener);
+                isSurfaceViewDestory = false;
+                this.getHolder().setKeepScreenOn(true);
+                mMediaPlayer.play();
+            }
         }
-        setPlayWhenReady(!isPaused);
     }
+
 
     @Override
     public void onHostPause() {
-        if (playInBackground) {
-            return;
+        if(!isPaused && mMediaPlayer != null){
+            isPaused = true;
+            mMediaPlayer.pause();
+            this.getHolder().setKeepScreenOn(false);
+            eventEmitter.paused(true);
         }
-        setPlayWhenReady(false);
+        Log.i("onHostPause","---------onHostPause------------>");
     }
+
+
 
     @Override
     public void onHostDestroy() {
@@ -213,7 +233,8 @@ class ReactVlcPlayerView extends SurfaceView implements
         try {
             // Create LibVLC
             ArrayList<String> options = new ArrayList<String>(50);
-            libvlc = new LibVLC(getContext(), options);
+            libvlc =  VLCInstance.get(getContext());
+            //libvlc = new LibVLC(getContext(), options);
             // Create media player
             mMediaPlayer = new MediaPlayer(libvlc);
             mMediaPlayer.setEventListener(mPlayerListener);
@@ -224,15 +245,25 @@ class ReactVlcPlayerView extends SurfaceView implements
             if(mVideoWidth > 0 && mVideoHeight > 0){
                 vlcOut.setWindowSize(mVideoWidth,mVideoHeight);
             }
-            vlcOut.addCallback(callback);
-            vlcOut.setVideoSurface(this.getHolder().getSurface(), this.getHolder());
-            vlcOut.attachViews(onNewVideoLayoutListener);
+            if (!vlcOut.areViewsAttached()) {
+                vlcOut.addCallback(callback);
+                vlcOut.setVideoView(surfaceView);
+                //vlcOut.setVideoSurface(this.getHolder().getSurface(), this.getHolder());
+                vlcOut.attachViews(onNewVideoLayoutListener);
+            }
             DisplayMetrics dm = getResources().getDisplayMetrics();
-            Uri uri = Uri.parse(this.src);
-            Media m = new Media(libvlc, uri);
+            Media m = null;
+            if(netStrTag){
+                Uri uri = Uri.parse(this.src);
+                m = new Media(libvlc, uri);
+            }else{
+                m = new Media(libvlc, this.src);
+            }
+
             mMediaPlayer.setMedia(m);
             mMediaPlayer.setScale(0);
             if(autoplay){
+                isPaused = false;
                 mMediaPlayer.play();
             }
         } catch (Exception e) {
@@ -295,20 +326,28 @@ class ReactVlcPlayerView extends SurfaceView implements
                     eventEmitter.end();
                     break;
                 case MediaPlayer.Event.Playing:
+                    eventEmitter.playing();
+                    break;
+                case MediaPlayer.Event.Opening:
+                    Log.i("Event.Opening","Event.Opening");
                     break;
                 case MediaPlayer.Event.Paused:
+                    eventEmitter.paused(true);
                     break;
                 case MediaPlayer.Event.Buffering:
-                    System.out.println("--------Buffering---------->>>");
-                    eventEmitter.buffering(true);
+                    if(event.getBuffering()  >= 100){
+                        eventEmitter.buffering(false, event.getBuffering());
+                    }else{
+                        eventEmitter.buffering(true,event.getBuffering());
+                    }
                     break;
                 case MediaPlayer.Event.Stopped:
+                    eventEmitter.stopped();
                     break;
                 case MediaPlayer.Event.EncounteredError:
                     break;
                 case MediaPlayer.Event.TimeChanged:
                     //event.
-                    System.out.println("---------progressChanged------------>");
                     currentTime = mMediaPlayer.getTime();
                     totalLength = mMediaPlayer.getLength();
                     eventEmitter.progressChanged(currentTime, totalLength);
@@ -323,17 +362,20 @@ class ReactVlcPlayerView extends SurfaceView implements
     private IVLCVout.OnNewVideoLayoutListener onNewVideoLayoutListener = new IVLCVout.OnNewVideoLayoutListener(){
         @Override
         public void onNewVideoLayout(IVLCVout vout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
-            System.out.println("---------onNewVideoLayout------------>");
             if (width * height == 0)
                 return;
 
             // store video size
-            /*mVideoWidth = width;
+            mVideoWidth = width;
             mVideoHeight = height;
             mVideoVisibleWidth  = visibleWidth;
             mVideoVisibleHeight = visibleHeight;
             mSarNum = sarNum;
-            mSarDen = sarDen;*/
+            mSarDen = sarDen;
+            Log.i("onNewVideoLayout","{" +
+                    "mVideoWidth:"+mVideoWidth+",mVideoHeight:"+mVideoHeight +
+                    "mVideoVisibleWidth:"+mVideoVisibleWidth+",mVideoVisibleHeight:"+mVideoVisibleHeight);
+            eventEmitter.load(mMediaPlayer.getLength(),mMediaPlayer.getTime(),mVideoVisibleWidth,mVideoVisibleHeight);
         }
     };
 
@@ -341,11 +383,14 @@ class ReactVlcPlayerView extends SurfaceView implements
     IVLCVout.Callback callback = new IVLCVout.Callback() {
         @Override
         public void onSurfacesCreated(IVLCVout ivlcVout) {
-
+            isSurfaceViewDestory = false;
         }
 
         @Override
         public void onSurfacesDestroyed(IVLCVout ivlcVout) {
+            //IVLCVout vlcOut =  mMediaPlayer.getVLCVout();
+            //vlcOut.detachViews();
+            isSurfaceViewDestory = true;
         }
 
     };
@@ -356,8 +401,9 @@ class ReactVlcPlayerView extends SurfaceView implements
         mMediaPlayer.isSeekable();
     }
 
-    public void setSrc(String uri, String extension) {
+    public void setSrc(String uri, boolean isNetStr) {
         this.src = uri;
+        this.netStrTag = isNetStr;
         createPlayer(true);
     }
 
@@ -372,8 +418,10 @@ class ReactVlcPlayerView extends SurfaceView implements
 
     public void setPausedModifier(boolean paused){
         if(paused){
+            isPaused = true;
             mMediaPlayer.pause();
         }else{
+            isPaused = false;
             mMediaPlayer.play();
         }
     }

@@ -30,11 +30,14 @@ class VideoEventEmitter {
     private static final String EVENT_PROGRESS = "onVideoProgress";
     private static final String EVENT_SEEK = "onVideoSeek";
     private static final String EVENT_END = "onVideoEnd";
+    private static final String EVENT_PLAYING = "onVideoPlaying";
+    private static final String EVENT_STOPPED = "onVideoStopped";
     private static final String EVENT_STALLED = "onPlaybackStalled";
     private static final String EVENT_RESUME = "onPlaybackResume";
     private static final String EVENT_READY = "onReadyForDisplay";
     private static final String EVENT_BUFFER = "onVideoBuffer";
     private static final String EVENT_IDLE = "onVideoIdle";
+    private static final String EVENT_PAUSED = "onVideoPaused";
     private static final String EVENT_TIMED_METADATA = "onTimedMetadata";
     private static final String EVENT_AUDIO_BECOMING_NOISY = "onAudioBecomingNoisy";
     private static final String EVENT_AUDIO_FOCUS_CHANGE = "onAudioFocusChanged";
@@ -56,6 +59,10 @@ class VideoEventEmitter {
             EVENT_AUDIO_BECOMING_NOISY,
             EVENT_AUDIO_FOCUS_CHANGE,
             EVENT_PLAYBACK_RATE_CHANGE,
+            EVENT_PAUSED,
+            EVENT_PLAYING,
+            EVENT_STOPPED,
+
     };
 
     @Retention(RetentionPolicy.SOURCE)
@@ -75,7 +82,11 @@ class VideoEventEmitter {
             EVENT_AUDIO_BECOMING_NOISY,
             EVENT_AUDIO_FOCUS_CHANGE,
             EVENT_PLAYBACK_RATE_CHANGE,
+            EVENT_PAUSED,
+            EVENT_PLAYING,
+            EVENT_STOPPED,
     })
+
     @interface VideoEvents {
     }
 
@@ -96,6 +107,7 @@ class VideoEventEmitter {
     private static final String EVENT_PROP_ORIENTATION = "orientation";
     private static final String EVENT_PROP_HAS_AUDIO_FOCUS = "hasAudioFocus";
     private static final String EVENT_PROP_IS_BUFFERING = "isBuffering";
+    private static final String EVENT_PROP_BUFFERING_RATE = "bufferRate";
     private static final String EVENT_PROP_PLAYBACK_RATE = "playbackRate";
 
     private static final String EVENT_PROP_ERROR = "error";
@@ -160,9 +172,10 @@ class VideoEventEmitter {
         receiveEvent(EVENT_READY, null);
     }
 
-    void buffering(boolean isBuffering) {
+    void buffering(boolean isBuffering, float bufferRate) {
         WritableMap map = Arguments.createMap();
         map.putBoolean(EVENT_PROP_IS_BUFFERING, isBuffering);
+        map.putDouble(EVENT_PROP_BUFFERING_RATE, bufferRate);
         receiveEvent(EVENT_BUFFER, map);
     }
 
@@ -230,7 +243,24 @@ class VideoEventEmitter {
         receiveEvent(EVENT_AUDIO_BECOMING_NOISY, null);
     }
 
+    void paused(boolean paused){
+        WritableMap map = Arguments.createMap();
+        map.putBoolean("paused", paused);
+        receiveEvent(EVENT_PAUSED, map);
+    }
+
+    void playing(){
+        WritableMap map = Arguments.createMap();
+        receiveEvent(EVENT_PLAYING, map);
+    }
+
+    void stopped(){
+        WritableMap map = Arguments.createMap();
+        receiveEvent(EVENT_STOPPED, map);
+    }
+
     private void receiveEvent(@VideoEvents String type, WritableMap event) {
         eventEmitter.receiveEvent(viewId, type, event);
     }
+
 }
