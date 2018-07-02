@@ -18,6 +18,9 @@ import VLCPlayer from '../VLCPlayer';
 import PropTypes from 'prop-types';
 import TimeLimt from './TimeLimit';
 import ControlBtn from './ControlBtn';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {getStatusBarHeight}  from './SizeController';
+const statusBarHeight = getStatusBarHeight();
 
 export default class VLCPlayerView extends Component {
   static propTypes = {
@@ -38,6 +41,7 @@ export default class VLCPlayerView extends Component {
     };
     this.touchTime = 0;
     this.changeUrl = false;
+    this.isEnding = false;
   }
 
   static defaultProps = {
@@ -78,7 +82,7 @@ export default class VLCPlayerView extends Component {
   }
 
   render() {
-    let { onEnd, style, isGG, type, isFull, uri } = this.props;
+    let { onEnd, style, isGG, type, isFull, uri, title, onLeftPress, closeFullScreen, showBack, showTitle } = this.props;
     let { isLoading, loadingSuccess, showControls } = this.state;
     let showGG = false;
     let realShowLoding = false;
@@ -138,24 +142,50 @@ export default class VLCPlayerView extends Component {
     progressUpdateInterval={250}
     onError={this._onError}
   />
-    {showGG && (
-    <View style={styles.GG}>
-    <TimeLimt
-      onEnd={() => {
-      onEnd && onEnd();
-    }}
-      //maxTime={Math.ceil(this.state.totalTime)}
-    />
-    </View>
-    )}
     {realShowLoding && (
     <View style={styles.loading}>
     <ActivityIndicator size={'large'} animating={true} color="#fff" />
       </View>
     )}
+    <View style={styles.topView}>
+        <View style={styles.backBtn}>
+          {showBack && <TouchableOpacity
+            onPress={()=>{
+               if(isFull){
+                 closeFullScreen && closeFullScreen();
+               }else{
+                  onLeftPress && onLeftPress();
+               }
+            }}
+            style={styles.btn}
+            activeOpacity={0.8}>
+            <Icon name={'chevron-left'} size={30} color="#fff"/>
+          </TouchableOpacity>
+          }
+          <View style={{justifyContent:'center',flex:1, marginRight: 10}}>
+            {showTitle && showControls &&
+            <Text style={{color:'#fff', fontSize: 16}} numberOfLines={1}>{title}</Text>
+            }
+          </View>
+          {showGG && (
+            <View style={styles.GG}>
+              <TimeLimt
+                onEnd={() => {
+                onEnd && onEnd();
+                }}
+                //maxTime={Math.ceil(this.state.totalTime)}
+              />
+            </View>
+          )}
+        </View>
+    </View>
     {showControls && (
     <ControlBtn
       showSlider={!isGG}
+      showGG={showGG}
+      onEnd={onEnd}
+      title={title}
+      onLeftPress={onLeftPress}
       paused={this.state.paused}
       isFull={isFull}
       currentTime={this.state.currentTime}
@@ -182,18 +212,40 @@ export default class VLCPlayerView extends Component {
   );
   }
 
-  pause() {
-    this.setState({ paused: !this.state.paused });
-  }
 
+  /**
+   * 视屏播放
+   * @param event
+   */
   onPlaying(event) {
+    this.isEnding = false;
+    if(this.pausedChangeSuccess && this.state.paused){
+      this.pausedChangeSuccess = false;
+      this.setState({ paused: false },()=>{
+        this.pausedChangeSuccess = true;
+      });
+    }
     console.log('onPlaying');
   }
 
+  /**
+   * 视屏停止
+   * @param event
+   */
   onPaused(event) {
+    if(this.pausedChangeSuccess && !this.state.paused){
+      this.pausedChangeSuccess = false;
+      this.setState({ paused: true }, ()=>{
+        this.pausedChangeSuccess = true;
+      });
+    }
     console.log('onPaused');
   }
 
+  /**
+   * 视屏缓冲
+   * @param event
+   */
   onBuffering(event) {
     if (this.changeUrl) {
       this.setState({ paused: false });
@@ -211,6 +263,10 @@ export default class VLCPlayerView extends Component {
     console.log(e);
   };
 
+  /**
+   * 视屏进度变化
+   * @param event
+   */
   onProgress(event) {
     /* console.log(
      'position=' +
@@ -239,21 +295,35 @@ export default class VLCPlayerView extends Component {
     }
   }
 
+  /**
+   * 视屏播放结束
+   * @param event
+   */
   onEnded(event) {
     let { onEnd, autoplay, isGG } = this.props;
     this.setState({
-      paused: false
+      paused: true
+    },()=>{
+      if(!this.isEnding){
+        onEnd && onEnd();
+        if(!isGG){
+          this.vlcPlayer.resume && this.vlcPlayer.resume(autoplay || false);
+          setTimeout(()=>this.setState({
+            paused: !autoplay
+          }),250);
+          console.log(this.props.uri + ':   onEnded');
+        }else{
+          console.log('片头：'+this.props.uri + ':   onEnded');
+        }
+        this.isEnding = true;
+      }
     });
-    onEnd && onEnd();
-    if(!isGG){
-      this.vlcPlayer.resume && this.vlcPlayer.resume(autoplay || false);
-      console.log(this.props.uri + ':   onEnded');
-    }else{
-      console.log('片头：'+this.props.uri + ':   onEnded');
-    }
-
   }
 
+  /**
+   * 全屏
+   * @private
+   */
   _toFullScreen = () => {
     let { startFullScreen, closeFullScreen, isFull } = this.props;
     if (isFull) {
@@ -263,8 +333,15 @@ export default class VLCPlayerView extends Component {
     }
   };
 
+  /**
+   * 播放/停止
+   * @private
+   */
   _play = () => {
-    this.setState({ paused: !this.state.paused });
+    this.pausedChangeSuccess = false;
+    this.setState({ paused: !this.state.paused }, ()=>{
+      this.pausedChangeSuccess = true;
+    });
   };
 }
 
@@ -292,16 +369,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   GG: {
-    position: 'absolute',
     backgroundColor: 'rgba(255,255,255,1)',
-    right: 10,
-    top: 10,
-    zIndex: 10,
     height: 30,
+    marginRight: 10,
     paddingLeft: 10,
     paddingRight: 10,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  topView:{
+    top:Platform.OS === 'ios' ? statusBarHeight: 0,
+    left:0,
+    height:45,
+    position:'absolute',
+    width:'100%'
+  },
+  backBtn:{
+    height:45,
+    width:'100%',
+    flexDirection:'row',
+    alignItems:'center'
+  },
+  btn:{
+    marginLeft:10,marginRight:10,justifyContent:'center', alignItems:'center', backgroundColor:'rgba(0,0,0,0.3)',height:40,borderRadius:20,width:40, paddingTop:3
+  }
 });

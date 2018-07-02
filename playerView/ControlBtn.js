@@ -14,6 +14,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Slider from 'react-native-slider';
 import PropTypes from 'prop-types';
+import TimeLimt from './TimeLimit';
 
 export default class ControlBtn extends Component {
   _getTime = (data = 0) => {
@@ -46,6 +47,7 @@ export default class ControlBtn extends Component {
     let {
       paused,
       isFull,
+      showGG,
       showSlider,
       onPausedPress,
       onFullPress,

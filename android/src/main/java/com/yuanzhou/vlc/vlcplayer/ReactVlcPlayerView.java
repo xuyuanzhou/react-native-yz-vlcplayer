@@ -64,6 +64,7 @@ class ReactVlcPlayerView extends SurfaceView implements
     private int screenHeight;
 
     private boolean isPaused = true;
+    private boolean isHostPaused = false;
     private boolean isBuffering;
     private float rate = 1f;
 
@@ -119,12 +120,13 @@ class ReactVlcPlayerView extends SurfaceView implements
     @Override
     public void onHostResume() {
         Log.i("onHostResume","---------onHostResume------------>");
-        if(mMediaPlayer != null && isSurfaceViewDestory){
+        if(mMediaPlayer != null && isSurfaceViewDestory && isHostPaused){
             IVLCVout vlcOut =  mMediaPlayer.getVLCVout();
             if(!vlcOut.areViewsAttached()){
                 vlcOut.setVideoSurface(this.getHolder().getSurface(), this.getHolder());
                 vlcOut.attachViews(onNewVideoLayoutListener);
                 isSurfaceViewDestory = false;
+                isPaused = false;
                 this.getHolder().setKeepScreenOn(true);
                 mMediaPlayer.play();
             }
@@ -136,6 +138,7 @@ class ReactVlcPlayerView extends SurfaceView implements
     public void onHostPause() {
         if(!isPaused && mMediaPlayer != null){
             isPaused = true;
+            isHostPaused = true;
             mMediaPlayer.pause();
             this.getHolder().setKeepScreenOn(false);
             eventEmitter.paused(true);
@@ -327,12 +330,14 @@ class ReactVlcPlayerView extends SurfaceView implements
                     break;
                 case MediaPlayer.Event.Playing:
                     eventEmitter.playing();
+                    Log.i("Event.playing","Event.playing");
                     break;
                 case MediaPlayer.Event.Opening:
                     Log.i("Event.Opening","Event.Opening");
                     break;
                 case MediaPlayer.Event.Paused:
                     eventEmitter.paused(true);
+                    Log.i("Event.Paused","Event.Paused");
                     break;
                 case MediaPlayer.Event.Buffering:
                     if(event.getBuffering()  >= 100){

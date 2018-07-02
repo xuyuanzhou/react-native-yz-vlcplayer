@@ -16,7 +16,9 @@ import {
 
 import VLCPlayerView from './VLCPlayerView';
 import PropTypes from 'prop-types';
-
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {getStatusBarHeight}  from './SizeController';
+const statusBarHeight = getStatusBarHeight();
 const _fullKey = 'commonVideo_android_fullKey';
 
 export default class CommonVideo extends Component {
@@ -41,6 +43,8 @@ export default class CommonVideo extends Component {
     showGG: true,
     ggUrl: '',
     url: '',
+    showBack: true,
+    showTitle: true,
   };
 
   static propTypes = {
@@ -53,7 +57,6 @@ export default class CommonVideo extends Component {
      * 广告头播放结束
      */
     onGGEnd: PropTypes.func,
-
     /**
      * 开启全屏
      */
@@ -62,6 +65,22 @@ export default class CommonVideo extends Component {
      * 关闭全屏
      */
     closeFullScreen: PropTypes.func,
+    /**
+     * 返回按钮点击事件
+     */
+    onLeftPress: PropTypes.func,
+    /**
+     * 标题
+     */
+    title: PropTypes.string,
+    /**
+     * 是否显示返回按钮
+     */
+    showBack: PropTypes.bool,
+    /**
+     * 是否显示标题
+     */
+    showTitle: PropTypes.bool,
   };
 
   static getDerivedStateFromProps(nextProps, preState) {
@@ -75,6 +94,10 @@ export default class CommonVideo extends Component {
       };
     }
     return null;
+  }
+
+  componentDidMount(){
+    StatusBar.setBarStyle("light-content");
   }
 
   componentWillUnmount() {
@@ -103,16 +126,20 @@ export default class CommonVideo extends Component {
   };
 
   render() {
-    let { url, ggUrl, showGG, onGGEnd, onEnd, style, height } = this.props;
+    let { url, ggUrl, showGG, onGGEnd, onEnd, style, height, title, onLeftPress, showBack, showTitle } = this.props;
     let { isEndGG, isFull, currentUrl } = this.state;
     let realShowGG = false;
+    let type = '';
+    let ggType = '';
+    let showVideo = false;
+    let showTop = false;
     if (showGG && ggUrl && !isEndGG) {
       realShowGG = true;
     }
-    let type = '';
-    let showVideo = false;
     if (currentUrl) {
-      showVideo = true;
+      if(!realShowGG){
+        showVideo = true;
+      }
       if(currentUrl.split){
          let types = currentUrl.split('.');
          if (types && types.length > 0) {
@@ -120,16 +147,51 @@ export default class CommonVideo extends Component {
          }
       }
     }
-    let ggType = '';
     if (ggUrl && ggUrl.split) {
       let types = ggUrl.split('.');
       if (types && types.length > 0) {
         ggType = types[types.length - 1];
       }
     }
+    if(!showVideo && !realShowGG){
+      showTop = true;
+    }
     return (
       <View
-        style={[isFull ? styles.container : { height: 250, backgroundColor: '#000' }, style]}>
+        style={[isFull ? styles.container : { height: 200, backgroundColor: '#000' }, style]}>
+        {showTop && <View style={styles.topView}>
+          <View style={styles.backBtn}>
+            {showBack && <TouchableOpacity
+              onPress={()=>{
+               if(isFull){
+                 closeFullScreen && closeFullScreen();
+               }else{
+                  onLeftPress && onLeftPress();
+               }
+            }}
+              style={styles.btn}
+              activeOpacity={0.8}>
+              <Icon name={'chevron-left'} size={30} color="#fff"/>
+            </TouchableOpacity>
+            }
+            <View style={{justifyContent:'center',flex:1, marginRight: 10}}>
+              {showTitle &&
+              <Text style={{color:'#fff', fontSize: 16}} numberOfLines={1}>{title}</Text>
+              }
+            </View>
+            {showGG && (
+              <View style={styles.GG}>
+                <TimeLimt
+                  onEnd={() => {
+                onEnd && onEnd();
+                }}
+                  //maxTime={Math.ceil(this.state.totalTime)}
+                />
+              </View>
+            )}
+          </View>
+        </View>
+        }
         {realShowGG && (
           <VLCPlayerView
             {...this.props}
@@ -137,6 +199,8 @@ export default class CommonVideo extends Component {
             source={{ uri: ggUrl, type: ggType }}
             type={ggType}
             isGG={true}
+            showBack={showBack}
+            showTitle={showTitle}
             isFull={isFull}
             onEnd={() => {
               onGGEnd && onGGEnd();
@@ -147,13 +211,16 @@ export default class CommonVideo extends Component {
           />
         )}
 
-        {showVideo &&
-          isEndGG && (
+        {showVideo && (
             <VLCPlayerView
               {...this.props}
               uri={currentUrl}
+              onLeftPress={onLeftPress}
+              title={title}
               type={type}
               isFull={isFull}
+              showBack={showBack}
+              showTitle={showTitle}
               hadGG={true}
               isEndGG={isEndGG}
               initPaused={this.state.paused}
@@ -177,4 +244,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
+  topView:{
+    top:Platform.OS === 'ios' ? statusBarHeight: 0,
+    left:0,
+    height:45,
+    position:'absolute',
+    width:'100%'
+  },
+  backBtn:{
+    height:45,
+    width:'100%',
+    flexDirection:'row',
+    alignItems:'center'
+  },
+  btn:{
+    marginLeft:10,
+    marginRight:10,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'rgba(0,0,0,0.1)',
+    height:40,
+    borderRadius:20,
+    width:40,
+  }
 });

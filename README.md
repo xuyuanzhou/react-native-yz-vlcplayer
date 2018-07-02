@@ -120,12 +120,16 @@ this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 
        />
    （3）简单例子
        <VlCPlayerView
-           autoplay={false}                //视屏播放结束时调用this.vlcPlayer.resume(false)方法
+           autoplay={false}               //视屏播放结束时调用this.vlcPlayer.resume(false)方法
            url={this.state.url}           //视屏url
            Orientation={Orientation}      
            //BackHandle={BackHandle}
            ggUrl=""                      // 广告url
            showGG={true}                 // 是否显示广告
+           showTitle={true}              // 是否显示标题
+           title=""                      // 标题
+           showBack={true}               // 是否显示返回按钮
+           onLeftPress={()=>{}}          // 返回按钮点击事件
            startFullScreen={() => {      
               this.setState({
               isFull: true,
