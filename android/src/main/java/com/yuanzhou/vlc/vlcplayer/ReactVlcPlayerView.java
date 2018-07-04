@@ -438,6 +438,13 @@ class ReactVlcPlayerView extends SurfaceView implements
     public void setRepeatModifier(boolean repeat){
     }
 
+    public void setAspectRatio(String aspectRatio){
+        if(mMediaPlayer != null){
+            mMediaPlayer.setAspectRatio(aspectRatio);
+        }
+    }
+
+
     private void changeSurfaceSize(boolean message) {
 
         if (mMediaPlayer != null) {

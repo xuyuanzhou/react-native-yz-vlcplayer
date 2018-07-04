@@ -55,9 +55,13 @@ export default class ControlBtn extends Component {
       onSlidingComplete,
       currentTime,
       totalTime,
+      onLeftPress,
+      title,
+      onEnd,
+      style
     } = this.props;
     return (
-      <View style={styles.controls}>
+      <View style={[styles.controls,style]}>
         <View style={styles.controlContainer}>
           <TouchableOpacity style={styles.controlContent} activeOpacity={1}>
             <View style={styles.controlContent2}>
@@ -77,15 +81,11 @@ export default class ControlBtn extends Component {
                     flexDirection: 'row',
                     //justifyContent: 'space-between',
                   }}>
-                  <Text
-                    style={{
-                      minWidth: 50,
-                      fontSize: 11,
-                      color: '#fff',
-                      textAlign: 'center',
-                    }}>
-                    {this._getTime(currentTime) || 0}
-                  </Text>
+                  <View style={{justifyContent:'center',alignItems:'center',height:50, minWidth: 50,}}>
+                    <Text style={{fontSize: 11,color: '#fff',}}>
+                      {this._getTime(currentTime) || 0}
+                    </Text>
+                  </View>
                   <View style={styles.progress}>
                     <Slider
                       minimumTrackTintColor="#30a935"
@@ -102,15 +102,12 @@ export default class ControlBtn extends Component {
                       }}
                     />
                   </View>
+                  <View style={{justifyContent:'center',alignItems:'center',height:50, minWidth: 50}}>
                   <Text
-                    style={{
-                      minWidth: 50,
-                      fontSize: 11,
-                      color: '#fff',
-                      textAlign: 'center',
-                    }}>
+                    style={{fontSize: 11,color: '#fff'}}>
                     {this._getTime(totalTime) || 0}
                   </Text>
+                  </View>
                 </View>
               )}
               <TouchableOpacity
@@ -135,12 +132,8 @@ const styles = StyleSheet.create({
     //backgroundColor: '#000',
   },
   controls: {
-    position: 'absolute',
-    backgroundColor: 'transparent',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
+    width:'100%',
+    height:50,
   },
   rateControl: {
     flex: 0,
@@ -162,12 +155,7 @@ const styles = StyleSheet.create({
     //lineHeight: 12,
   },
   controlContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    flex: 0,
-    height: 50,
-    width: '100%',
+    flex:1,
     //padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -206,6 +194,16 @@ const styles = StyleSheet.create({
     zIndex: 0,
     width: '100%',
     height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  GG: {
+    backgroundColor: 'rgba(255,255,255,1)',
+    height: 30,
+    paddingLeft: 10,
+    paddingRight: 10,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },

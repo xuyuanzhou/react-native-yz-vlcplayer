@@ -64,7 +64,7 @@ export default class VLCPlayer extends Component {
 
   _onEnded(event) {
     if (this.props.onEnd) {
-      this.props.onEnd(event.nativeEvent);
+      this.props.onEnd(event);
     }
   }
 
@@ -139,6 +139,7 @@ VLCPlayer.propTypes = {
   snapshotPath: PropTypes.string,
   paused: PropTypes.bool,
 
+  videoAspectRatio: PropTypes.string,
   volume: PropTypes.number,
   disableFocus: PropTypes.bool,
   src: PropTypes.string,

@@ -21,7 +21,8 @@ import ControlBtn from './ControlBtn';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {getStatusBarHeight}  from './SizeController';
 const statusBarHeight = getStatusBarHeight();
-
+let deviceHeight = Dimensions.get('window').height;
+let deviceWidth = Dimensions.get('window').width;
 export default class VLCPlayerView extends Component {
   static propTypes = {
     uri: PropTypes.string,
@@ -54,6 +55,11 @@ export default class VLCPlayerView extends Component {
   };
 
   componentDidMount() {
+    if(this.props.isFull){
+      this.setState({
+        showControls: true
+      });
+    }
     if (this.props.initPaused) {
       this.setState({
         paused: true,
@@ -81,8 +87,9 @@ export default class VLCPlayerView extends Component {
     }
   }
 
+
   render() {
-    let { onEnd, style, isGG, type, isFull, uri, title, onLeftPress, closeFullScreen, showBack, showTitle } = this.props;
+    let { onEnd, style, isGG, type, isFull, uri, title, onLeftPress, closeFullScreen, showBack, showTitle, videoAspectRatio } = this.props;
     let { isLoading, loadingSuccess, showControls } = this.state;
     let showGG = false;
     let realShowLoding = false;
@@ -132,6 +139,7 @@ export default class VLCPlayerView extends Component {
     //seek={this.state.seek}
     style={[styles.video]}
     source={source}
+    videoAspectRatio={videoAspectRatio}
     onProgress={this.onProgress.bind(this)}
     onEnd={this.onEnded.bind(this)}
     //onEnded={this.onEnded.bind(this)}
@@ -141,6 +149,7 @@ export default class VLCPlayerView extends Component {
     onPaused={this.onPaused.bind(this)}
     progressUpdateInterval={250}
     onError={this._onError}
+
   />
     {realShowLoding && (
     <View style={styles.loading}>
@@ -179,35 +188,36 @@ export default class VLCPlayerView extends Component {
           )}
         </View>
     </View>
-    {showControls && (
-    <ControlBtn
-      showSlider={!isGG}
-      showGG={showGG}
-      onEnd={onEnd}
-      title={title}
-      onLeftPress={onLeftPress}
-      paused={this.state.paused}
-      isFull={isFull}
-      currentTime={this.state.currentTime}
-      totalTime={this.state.totalTime}
-      onPausedPress={this._play}
-      onFullPress={this._toFullScreen}
-      onValueChange={value => {
-      this.changingSlider = true;
-      this.setState({
-        currentTime: value,
-      });
-    }}
-      onSlidingComplete={value => {
-      this.changingSlider = false;
-      if (Platform.OS === 'ios') {
-        this.vlcPlayer.seek(Number((value / this.state.totalTime).toFixed(17)));
-      } else {
-        this.vlcPlayer.seek(value);
-      }
-    }}
-    />
-    )}
+        <View style={[styles.bottomView]}>
+          {showControls && <ControlBtn
+            //style={isFull?{width:deviceHeight}:{}}
+            showSlider={!isGG}
+            showGG={showGG}
+            onEnd={onEnd}
+            title={title}
+            onLeftPress={onLeftPress}
+            paused={this.state.paused}
+            isFull={isFull}
+            currentTime={this.state.currentTime}
+            totalTime={this.state.totalTime}
+            onPausedPress={this._play}
+            onFullPress={this._toFullScreen}
+            onValueChange={value => {
+            this.changingSlider = true;
+            this.setState({
+              currentTime: value,
+            });
+          }}
+            onSlidingComplete={value => {
+            this.changingSlider = false;
+            if (Platform.OS === 'ios') {
+              this.vlcPlayer.seek(Number((value / this.state.totalTime).toFixed(17)));
+            } else {
+              this.vlcPlayer.seek(value);
+            }
+          }}
+          />}
+        </View>
   </TouchableOpacity>
   );
   }
@@ -383,7 +393,16 @@ const styles = StyleSheet.create({
     left:0,
     height:45,
     position:'absolute',
-    width:'100%'
+    width:'100%',
+    //backgroundColor: 'red'
+  },
+  bottomView:{
+    bottom:0,
+    left:0,
+    height:50,
+    position:'absolute',
+    width:'100%',
+    backgroundColor: 'rgba(0,0,0,0)'
   },
   backBtn:{
     height:45,
@@ -392,6 +411,14 @@ const styles = StyleSheet.create({
     alignItems:'center'
   },
   btn:{
-    marginLeft:10,marginRight:10,justifyContent:'center', alignItems:'center', backgroundColor:'rgba(0,0,0,0.3)',height:40,borderRadius:20,width:40, paddingTop:3
+    marginLeft:10,
+    marginRight:10,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'rgba(0,0,0,0.3)',
+    height:40,
+    borderRadius:20,
+    width:40,
+    paddingTop:3
   }
 });

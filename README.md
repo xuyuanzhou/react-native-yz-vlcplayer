@@ -80,6 +80,10 @@ this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 
            ref={ref => (this.vlcPlayer = ref)}
            style={[styles.video]}
            /**
+            *  增加视屏宽高比，视屏将按照这个比率拉伸
+            */
+           videoAspectRatio="16:9"
+           /**
             *  是否暂停播放
             */
            paused={this.state.paused}

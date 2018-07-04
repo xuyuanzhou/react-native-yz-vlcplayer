@@ -20,11 +20,13 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {getStatusBarHeight}  from './SizeController';
 const statusBarHeight = getStatusBarHeight();
 const _fullKey = 'commonVideo_android_fullKey';
-
+let deviceHeight = Dimensions.get('window').height;
+let deviceWidth = Dimensions.get('window').width;
 export default class CommonVideo extends Component {
   constructor(props) {
     super(props);
     this.url = '';
+    this.initialHeight = 200;
   }
 
   static navigationOptions = {
@@ -98,6 +100,14 @@ export default class CommonVideo extends Component {
 
   componentDidMount(){
     StatusBar.setBarStyle("light-content");
+    let { style } = this.props;
+
+    if(style && style.height && !isNaN(style.height)){
+      this.initialHeight = style.height;
+    }
+    this.setState({
+      currentVideoAspectRatio: deviceWidth + ":" + this.initialHeight,
+    });
   }
 
   componentWillUnmount() {
@@ -109,24 +119,46 @@ export default class CommonVideo extends Component {
 
   _closeFullScreen = () => {
     let { closeFullScreen, BackHandle, Orientation } = this.props;
-    this.setState({ isFull: false });
+    this.setState({ isFull: false, currentVideoAspectRatio: deviceWidth + ":" + this.initialHeight, });
     BackHandle && BackHandle.removeBackFunction(_fullKey);
     Orientation && Orientation.lockToPortrait();
     StatusBar.setHidden(false);
+    //StatusBar.setTranslucent(false);
     closeFullScreen && closeFullScreen();
   };
 
   _toFullScreen = () => {
     let { startFullScreen, BackHandle, Orientation } = this.props;
-    this.setState({ isFull: true });
+    //StatusBar.setTranslucent(true);
+    this.setState({ isFull: true, currentVideoAspectRatio: deviceHeight + ":" + deviceWidth,});
     StatusBar.setHidden(true);
     BackHandle && BackHandle.addBackFunction(_fullKey, this._closeFullScreen);
     startFullScreen && startFullScreen();
     Orientation && Orientation.lockToLandscape && Orientation.lockToLandscape();
   };
 
+  _onLayout = (e)=>{
+    let {width, height} = e.nativeEvent.layout;
+    console.log(e.nativeEvent.layout);
+    if(width * height > 0){
+      this.width = width;
+      this.height = height;
+      if(!this.initialHeight){
+        this.initialHeight = height;
+      }
+    }
+  }
+
+
+
   render() {
     let { url, ggUrl, showGG, onGGEnd, onEnd, style, height, title, onLeftPress, showBack, showTitle } = this.props;
+    let currentVideoAspectRatio = this.props.videoAspectRatio;
+    if(!currentVideoAspectRatio){
+      let { width, height} = this.state;
+      currentVideoAspectRatio = this.state.currentVideoAspectRatio;
+      console.log(currentVideoAspectRatio + "----------" + "width:"+width+ ",height:"+height);
+    }
     let { isEndGG, isFull, currentUrl } = this.state;
     let realShowGG = false;
     let type = '';
@@ -158,6 +190,7 @@ export default class CommonVideo extends Component {
     }
     return (
       <View
+        //onLayout={this._onLayout}
         style={[isFull ? styles.container : { height: 200, backgroundColor: '#000' }, style]}>
         {showTop && <View style={styles.topView}>
           <View style={styles.backBtn}>
@@ -195,6 +228,7 @@ export default class CommonVideo extends Component {
         {realShowGG && (
           <VLCPlayerView
             {...this.props}
+            videoAspectRatio={currentVideoAspectRatio}
             uri={ggUrl}
             source={{ uri: ggUrl, type: ggType }}
             type={ggType}
@@ -215,6 +249,7 @@ export default class CommonVideo extends Component {
             <VLCPlayerView
               {...this.props}
               uri={currentUrl}
+              videoAspectRatio={currentVideoAspectRatio}
               onLeftPress={onLeftPress}
               title={title}
               type={type}

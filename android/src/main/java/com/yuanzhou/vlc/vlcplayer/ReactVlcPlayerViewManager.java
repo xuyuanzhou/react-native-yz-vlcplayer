@@ -32,6 +32,7 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
     private static final String PROP_RATE = "rate";
     private static final String PROP_PLAY_IN_BACKGROUND = "playInBackground";
     private static final String PROP_DISABLE_FOCUS = "disableFocus";
+    private static final String PROP_VIDEO_ASPECT_RATIO = "videoAspectRatio";
     public static final String PROP_SRC_IS_NETWORK = "isNetwork";
     public static final String PROP_SRC_IS_ASSET = "isAsset";
 
@@ -128,6 +129,12 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
     public void setDisableFocus(final ReactVlcPlayerView videoView, final boolean disableFocus) {
         videoView.setDisableFocus(disableFocus);
     }
+
+    @ReactProp(name = PROP_VIDEO_ASPECT_RATIO)
+    public void setVideoAspectRatio(final ReactVlcPlayerView videoView, final String aspectRatio) {
+        videoView.setAspectRatio(aspectRatio);
+    }
+
 
     private boolean startsWithValidScheme(String uriString) {
         return uriString.startsWith("http://")
