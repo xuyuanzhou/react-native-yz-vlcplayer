@@ -45,8 +45,8 @@ export default class CommonVideo extends Component {
     showGG: true,
     ggUrl: '',
     url: '',
-    showBack: true,
-    showTitle: true,
+    showBack: false,
+    showTitle: false,
   };
 
   static propTypes = {
@@ -152,7 +152,7 @@ export default class CommonVideo extends Component {
 
 
   render() {
-    let { url, ggUrl, showGG, onGGEnd, onEnd, style, height, title, onLeftPress, showBack, showTitle } = this.props;
+    let { url, ggUrl, showGG, onGGEnd, onEnd, style, height, title, onLeftPress, showBack, showTitle,closeFullScreen } = this.props;
     let currentVideoAspectRatio = this.props.videoAspectRatio;
     if(!currentVideoAspectRatio){
       let { width, height} = this.state;

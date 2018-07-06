@@ -98,9 +98,11 @@ export default class VLCPlayer extends Component {
       uri = `file://${uri}`;
     }
 
-    const isNetwork = !!(uri && uri.match(/^https?:/));
+    let isNetwork = !!(uri && uri.match(/^https?:/));
     const isAsset = !!(uri && uri.match(/^(assets-library|file|content|ms-appx|ms-appdata):/));
-
+    if(!isAsset){
+      isNetwork = true;
+    }
     source.initOptions = source.initOptions || [];
     //repeat the input media
     source.initOptions.push('--input-repeat=1000');
