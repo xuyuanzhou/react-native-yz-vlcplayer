@@ -38,6 +38,7 @@ class VideoEventEmitter {
     private static final String EVENT_BUFFER = "onVideoBuffer";
     private static final String EVENT_IDLE = "onVideoIdle";
     private static final String EVENT_PAUSED = "onVideoPaused";
+    private static final String EVENT_OPEN = "onVideoOpen";
     private static final String EVENT_TIMED_METADATA = "onTimedMetadata";
     private static final String EVENT_AUDIO_BECOMING_NOISY = "onAudioBecomingNoisy";
     private static final String EVENT_AUDIO_FOCUS_CHANGE = "onAudioFocusChanged";
@@ -62,6 +63,7 @@ class VideoEventEmitter {
             EVENT_PAUSED,
             EVENT_PLAYING,
             EVENT_STOPPED,
+            EVENT_OPEN,
 
     };
 
@@ -85,6 +87,7 @@ class VideoEventEmitter {
             EVENT_PAUSED,
             EVENT_PLAYING,
             EVENT_STOPPED,
+            EVENT_OPEN,
     })
 
     @interface VideoEvents {
@@ -122,7 +125,8 @@ class VideoEventEmitter {
     }
 
     void loadStart() {
-        receiveEvent(EVENT_LOAD_START, null);
+        WritableMap event = Arguments.createMap();
+        receiveEvent(EVENT_LOAD_START, event);
     }
 
     void load(double duration, double currentPosition, int videoWidth, int videoHeight) {
@@ -257,6 +261,11 @@ class VideoEventEmitter {
     void stopped(){
         WritableMap map = Arguments.createMap();
         receiveEvent(EVENT_STOPPED, map);
+    }
+
+    void onOpen(){
+        WritableMap map = Arguments.createMap();
+        receiveEvent(EVENT_OPEN, map);
     }
 
     private void receiveEvent(@VideoEvents String type, WritableMap event) {

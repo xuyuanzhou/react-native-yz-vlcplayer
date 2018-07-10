@@ -93,14 +93,12 @@ static NSString *const playbackRate = @"rate";
     NSString* uri    = [_source objectForKey:@"uri"];
     NSURL* _uri    = [NSURL URLWithString:uri];
     
-    //init player && play
-    //_player = [[VLCMediaPlayer alloc] initWithOptions:options];
     _player = [[VLCMediaPlayer alloc] init];
     [_player setDrawable:self];
     _player.delegate = self;
     _player.scaleFactor = 0;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaPlayerStateChanged:) name:VLCMediaPlayerStateChanged object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaPlayerTimeChanged:) name:VLCMediaPlayerTimeChanged object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaPlayerStateChanged:) name:VLCMediaPlayerStateChanged object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaPlayerTimeChanged:) name:VLCMediaPlayerTimeChanged object:nil];
     NSMutableDictionary *mediaDictonary = [NSMutableDictionary new];
     //设置缓存多少毫秒
     [mediaDictonary setObject:@"300" forKey:@"network-caching"];
@@ -109,8 +107,9 @@ static NSString *const playbackRate = @"rate";
     _player.media = media;
     [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
     NSLog(@"autoplay: %i",autoplay);
-    if(autoplay)
-        [self play];
+    self.onVideoLoadStart(@{
+                            @"target": self.reactTag
+                            });
 }
 
 -(void)setSource:(NSDictionary *)source
@@ -130,8 +129,8 @@ static NSString *const playbackRate = @"rate";
     [_player setDrawable:self];
     _player.delegate = self;
     _player.scaleFactor = 0;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaPlayerStateChanged:) name:VLCMediaPlayerStateChanged object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaPlayerTimeChanged:) name:VLCMediaPlayerTimeChanged object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaPlayerStateChanged:) name:VLCMediaPlayerStateChanged object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaPlayerTimeChanged:) name:VLCMediaPlayerTimeChanged object:nil];
     NSMutableDictionary *mediaDictonary = [NSMutableDictionary new];
     //设置缓存多少毫秒
     [mediaDictonary setObject:@"300" forKey:@"network-caching"];
@@ -140,6 +139,9 @@ static NSString *const playbackRate = @"rate";
     _player.media = media;
     [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
     NSLog(@"autoplay: %i",autoplay);
+    self.onVideoLoadStart(@{
+                           @"target": self.reactTag
+                           });
     if(autoplay)
         [self play];
 }
@@ -151,9 +153,19 @@ static NSString *const playbackRate = @"rate";
 
 - (void)mediaPlayerStateChanged:(NSNotification *)aNotification
 {
+   
+     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+     NSLog(@"userInfo %@",[aNotification userInfo]);
+     NSLog(@"standardUserDefaults %@",defaults);
     if(_player){
         VLCMediaPlayerState state = _player.state;
         switch (state) {
+            case VLCMediaPlayerStateOpening:
+                 NSLog(@"VLCMediaPlayerStateOpening %i",1);
+                self.onVideoOpen(@{
+                                     @"target": self.reactTag
+                                     });
+                break;
             case VLCMediaPlayerStatePaused:
                 _paused = YES;
                 NSLog(@"VLCMediaPlayerStatePaused %i",1);
@@ -184,8 +196,16 @@ static NSString *const playbackRate = @"rate";
                 break;
             case VLCMediaPlayerStateEnded:
                 NSLog(@"VLCMediaPlayerStateEnded %i",1);
+                int currentTime   = [[_player time] intValue];
+                int remainingTime = [[_player remainingTime] intValue];
+                int duration      = [_player.media.length intValue];
+                
                 self.onVideoEnded(@{
-                                    @"target": self.reactTag
+                                    @"target": self.reactTag,
+                                    @"currentTime": [NSNumber numberWithInt:currentTime],
+                                    @"remainingTime": [NSNumber numberWithInt:remainingTime],
+                                    @"duration":[NSNumber numberWithInt:duration],
+                                    @"position":[NSNumber numberWithFloat:_player.position]
                                     });
                 break;
             case VLCMediaPlayerStateError:
@@ -196,7 +216,6 @@ static NSString *const playbackRate = @"rate";
                 [self _release];
                 break;
             default:
-                NSLog(@"state %d",state);
                 break;
         }
     }

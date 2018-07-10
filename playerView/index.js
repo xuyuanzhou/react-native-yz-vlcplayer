@@ -36,13 +36,13 @@ export default class CommonVideo extends Component {
   state = {
     isEndGG: false,
     isFull: false,
-    paused: true,
     currentUrl: '',
+    storeUrl: '',
   };
 
   static defaultProps = {
     height: 250,
-    showGG: true,
+    showGG: false,
     ggUrl: '',
     url: '',
     showBack: false,
@@ -87,20 +87,38 @@ export default class CommonVideo extends Component {
 
   static getDerivedStateFromProps(nextProps, preState) {
     let { url } = nextProps;
-    let { currentUrl } = preState;
-    if (url && url !== currentUrl) {
-      return {
-        currentUrl: url,
-        paused: true,
-        isEndGG: false,
-      };
+    let { currentUrl, storeUrl } = preState;
+    if (url && url !== storeUrl) {
+      if(storeUrl === ""){
+        return {
+          currentUrl: url,
+          storeUrl: url,
+          isEndGG: false,
+        };
+      }else{
+        return {
+          currentUrl: "",
+          storeUrl: url,
+          isEndGG: false,
+        };
+      }
     }
     return null;
   }
 
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.url !== prevState.storeUrl) {
+        this.setState({
+          storeUrl: this.props.url,
+          currentUrl: this.props.url
+      })
+    }
+  }
+
   componentDidMount(){
     StatusBar.setBarStyle("light-content");
-    let { style } = this.props;
+    let { style, isGG } = this.props;
 
     if(style && style.height && !isNaN(style.height)){
       this.initialHeight = style.height;
@@ -152,14 +170,18 @@ export default class CommonVideo extends Component {
 
 
   render() {
-    let { url, ggUrl, showGG, onGGEnd, onEnd, style, height, title, onLeftPress, showBack, showTitle,closeFullScreen } = this.props;
-    let currentVideoAspectRatio = this.props.videoAspectRatio;
+    let { url, ggUrl, showGG, onGGEnd, onEnd, style, height, title, onLeftPress, showBack, showTitle,closeFullScreen, videoAspectRatio, fullVideoAspectRatio } = this.props;
+    let { isEndGG, isFull, currentUrl } = this.state;
+    let currentVideoAspectRatio = '';
+    if(isFull){
+      currentVideoAspectRatio = fullVideoAspectRatio;
+    }else{
+      currentVideoAspectRatio = videoAspectRatio;
+    }
     if(!currentVideoAspectRatio){
       let { width, height} = this.state;
       currentVideoAspectRatio = this.state.currentVideoAspectRatio;
-      console.log(currentVideoAspectRatio + "----------" + "width:"+width+ ",height:"+height);
     }
-    let { isEndGG, isFull, currentUrl } = this.state;
     let realShowGG = false;
     let type = '';
     let ggType = '';
@@ -169,7 +191,7 @@ export default class CommonVideo extends Component {
       realShowGG = true;
     }
     if (currentUrl) {
-      if(!realShowGG){
+      if(!showGG || (showGG && isEndGG)){
         showVideo = true;
       }
       if(currentUrl.split){
@@ -212,16 +234,6 @@ export default class CommonVideo extends Component {
               <Text style={{color:'#fff', fontSize: 16}} numberOfLines={1}>{title}</Text>
               }
             </View>
-            {showGG && (
-              <View style={styles.GG}>
-                <TimeLimt
-                  onEnd={() => {
-                onEnd && onEnd();
-                }}
-                  //maxTime={Math.ceil(this.state.totalTime)}
-                />
-              </View>
-            )}
           </View>
         </View>
         }
@@ -238,7 +250,7 @@ export default class CommonVideo extends Component {
             isFull={isFull}
             onEnd={() => {
               onGGEnd && onGGEnd();
-              this.setState({ isEndGG: true, paused: false });
+              this.setState({ isEndGG: true });
             }}
             startFullScreen={this._toFullScreen}
             closeFullScreen={this._closeFullScreen}
@@ -258,13 +270,12 @@ export default class CommonVideo extends Component {
               showTitle={showTitle}
               hadGG={true}
               isEndGG={isEndGG}
-              initPaused={this.state.paused}
+              //initPaused={this.state.paused}
               style={showGG && !isEndGG ? { position: 'absolute', zIndex: -1 } : {}}
               source={{ uri: currentUrl, type: type }}
               startFullScreen={this._toFullScreen}
               closeFullScreen={this._closeFullScreen}
               onEnd={() => {
-                this.setState({ paused: true });
                 onEnd && onEnd();
               }}
             />

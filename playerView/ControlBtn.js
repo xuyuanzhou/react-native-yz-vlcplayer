@@ -73,7 +73,7 @@ export default class ControlBtn extends Component {
                 style={{ width: 50, alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name={paused ? 'play' : 'pause'} size={30} color="#fff" />
               </TouchableOpacity>
-              {showSlider && (
+              {showSlider && totalTime > 0 &&(
                 <View
                   style={{
                     flex: 1,

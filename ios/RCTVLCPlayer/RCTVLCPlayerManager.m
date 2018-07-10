@@ -21,6 +21,8 @@ RCT_EXPORT_VIEW_PROPERTY(onVideoBuffering, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVideoPlaying, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVideoEnded, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVideoError, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onVideoOpen, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onVideoLoadStart, RCTBubblingEventBlock);
 
 - (dispatch_queue_t)methodQueue
 {

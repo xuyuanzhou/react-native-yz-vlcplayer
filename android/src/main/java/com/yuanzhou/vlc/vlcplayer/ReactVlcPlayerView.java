@@ -171,20 +171,6 @@ class ReactVlcPlayerView extends SurfaceView implements
         //mVideoHeight = 0;
     }
 
-    private boolean requestAudioFocus() {
-        if (disableFocus) {
-            return true;
-        }
-        int result = audioManager.requestAudioFocus(this,
-                AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN);
-        return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
-    }
-
-    private void setPlayWhenReady(boolean playWhenReady) {
-    }
-
-
     private void stopPlayback() {
         onStopPlayback();
         releasePlayer();
@@ -199,26 +185,6 @@ class ReactVlcPlayerView extends SurfaceView implements
 
     @Override
     public void onAudioFocusChange(int focusChange) {
-       /* switch (focusChange) {
-            case AudioManager.AUDIOFOCUS_LOSS:
-                eventEmitter.audioFocusChanged(false);
-                break;
-            case AudioManager.AUDIOFOCUS_GAIN:
-                eventEmitter.audioFocusChanged(true);
-                break;
-            default:
-                break;
-        }
-
-        if (player != null) {
-            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
-                // Lower the volume
-                player.setVolume(0.8f);
-            } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-                // Raise it back to normal
-                player.setVolume(1);
-            }
-        }*/
     }
 
     public void setPlayInBackground(boolean playInBackground) {
@@ -228,8 +194,6 @@ class ReactVlcPlayerView extends SurfaceView implements
     public void setDisableFocus(boolean disableFocus) {
         this.disableFocus = disableFocus;
     }
-
-
 
     private void createPlayer(boolean autoplay) {
         releasePlayer();
@@ -269,37 +233,12 @@ class ReactVlcPlayerView extends SurfaceView implements
                 isPaused = false;
                 mMediaPlayer.play();
             }
+            eventEmitter.loadStart();
         } catch (Exception e) {
             //Toast.makeText(getContext(), "Error creating player!", Toast.LENGTH_LONG).show();
         }
     }
 
-    private static int getDeblocking(int deblocking) {
-        int ret = deblocking;
-        if (deblocking < 0) {
-            /**
-             * Set some reasonable sDeblocking defaults:
-             *
-             * Skip all (4) for armv6 and MIPS by default
-             * Skip non-ref (1) for all armv7 more than 1.2 Ghz and more than 2 cores
-             * Skip non-key (3) for all devices that don't meet anything above
-             */
-            VLCUtil.MachineSpecs m = VLCUtil.getMachineSpecs();
-            if (m == null)
-                return ret;
-            if ((m.hasArmV6 && !(m.hasArmV7)) || m.hasMips)
-                ret = 4;
-            else if (m.frequency >= 1200 && m.processors > 2)
-                ret = 1;
-            else if (m.bogoMIPS >= 1200 && m.processors > 2) {
-                ret = 1;
-            } else
-                ret = 3;
-        } else if (deblocking > 4) { // sanity check
-            ret = 3;
-        }
-        return ret;
-    }
 
     /*************
      * Events
@@ -334,6 +273,7 @@ class ReactVlcPlayerView extends SurfaceView implements
                     break;
                 case MediaPlayer.Event.Opening:
                     Log.i("Event.Opening","Event.Opening");
+                    eventEmitter.onOpen();
                     break;
                 case MediaPlayer.Event.Paused:
                     eventEmitter.paused(true);
@@ -402,32 +342,40 @@ class ReactVlcPlayerView extends SurfaceView implements
 
 
     public void seekTo(long time) {
-        mMediaPlayer.setTime(time);
-        mMediaPlayer.isSeekable();
+        if(mMediaPlayer != null){
+            mMediaPlayer.setTime(time);
+            mMediaPlayer.isSeekable();
+        }
     }
 
     public void setSrc(String uri, boolean isNetStr) {
         this.src = uri;
         this.netStrTag = isNetStr;
-        createPlayer(true);
+        createPlayer(false);
     }
 
     public void setRateModifier(float rateModifier) {
-        mMediaPlayer.setRate(rateModifier);
+        if(mMediaPlayer != null){
+            mMediaPlayer.setRate(rateModifier);
+        }
     }
 
 
     public void setVolumeModifier(int volumeModifier) {
-        mMediaPlayer.setVolume(volumeModifier);
+        if(mMediaPlayer != null){
+            mMediaPlayer.setVolume(volumeModifier);
+        }
     }
 
     public void setPausedModifier(boolean paused){
-        if(paused){
-            isPaused = true;
-            mMediaPlayer.pause();
-        }else{
-            isPaused = false;
-            mMediaPlayer.play();
+        if(mMediaPlayer != null){
+            if(paused){
+                isPaused = true;
+                mMediaPlayer.pause();
+            }else{
+                isPaused = false;
+                mMediaPlayer.play();
+            }
         }
     }
 

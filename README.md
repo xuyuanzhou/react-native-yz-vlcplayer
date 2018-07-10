@@ -59,14 +59,22 @@ Run `react-native link react-native-yz-vlcplayer`
 `seek(seconds)`
 
 ```
-this.vlcplayer.seek(100); //单位是 ms
+android:
+    this.vlcplayer.seek(100); // 单位是 ms 
+ios:
+    this.vlcplayer.seek(0.1); // 0 --- 1 视屏位置进度
+
+
 this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 表示播放 false表示暂停
+
 ```
 
 
 
 
-## Examples
+## Examples    
+ 
+### 版本 0~1.0.6
 
 ````
    import { VLCPlayer, VlCPlayerView } from 'react-native-yz-vlcplayer';
@@ -74,7 +82,10 @@ this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 
    
    //插件参数说明
    (1) 静态方法
-       this.vlcplayer.seek(100); //调整播放进度，单位是ms
+       android:
+           this.vlcplayer.seek(100); // 单位是 ms 
+       ios:
+           this.vlcplayer.seek(0.1); // 0 --- 1 视屏位置进度
   （2）
        <VLCPlayer
            ref={ref => (this.vlcPlayer = ref)}
@@ -147,6 +158,114 @@ this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 
        />
 ````
 
+## 版本   1.0.7 ~
 
+````
+   import { VLCPlayer, VlCPlayerView } from 'react-native-yz-vlcplayer';
+   import Orientation from 'react-native-orientation';
+   
+   //插件参数说明
+   (1) 静态方法
+       android:
+           this.vlcplayer.seek(100); // 单位是 ms 
+       ios:
+           this.vlcplayer.seek(0.1); // 0 --- 1 视屏位置进度
+  （2）
+       <VLCPlayer
+           ref={ref => (this.vlcPlayer = ref)}
+           style={[styles.video]}
+           /**
+            *  增加视屏宽高比，视屏将按照这个比率拉伸
+            *  不设置按照默认比例
+            */
+           videoAspectRatio="16:9"  
+           /**
+            *  是否暂停播放
+            */
+           paused={this.state.paused}
+           /**
+            *  资源路径
+            *  暂不支持本地资源
+            */
+           source={{ uri: this.props.uri}}
+           /**
+            *  进度   
+            *  返回 {currentTime:1000,duration:1000} 
+            *  单位是 ms
+            *  currentTime: 当前时间  
+            *  duration:    总时间  
+            */
+           onProgress={this.onProgress.bind(this)}
+           /**
+            *  视屏播放结束
+            */
+           onEnd={this.onEnded.bind(this)}
+           /**
+            * 正在缓存中
+            */
+           onBuffering={this.onBuffering.bind(this)}
+           /**
+            * 播放视屏出错
+            */
+           onError={this._onError}
+           /**
+            * 视屏停止
+            */
+           onStopped={this.onStopped.bind(this)}   
+           /**
+            * 视屏播放
+            */
+           onPlaying={this.onPlaying.bind(this)}   
+           /**
+            * 视屏暂停
+            */
+           onPaused={this.onPaused.bind(this)}  
+           /**
+            * 视屏被打开
+            /
+           onOpen={this._onOpen}
+           /**
+            * vlc视屏容器初始化完毕
+            * 在这里进行设置播放的进度，是否开始播放
+            */
+           onLoadStart={()=>{
+                   if(Platform.OS === 'ios'){
+                       this.vlcPlayer.seek(0); //设置播放进度
+                   }else{
+                       this.vlcPlayer.seek(0); //设置播放的时间
+                   }
+                   this.setState({
+                     paused: true,
+                   },()=>{
+                     this.setState({
+                       paused: false,
+                     });
+                   })
+           }}
+       />
+   （3）简单例子
+       <VlCPlayerView
+           autoplay={false}               //视屏播放结束时调用this.vlcPlayer.resume(false)方法
+           url={this.state.url}           //视屏url
+           Orientation={Orientation}      
+           //BackHandle={BackHandle}
+           ggUrl=""                      // 广告url
+           showGG={false}                 // 是否显示广告
+           showTitle={true}              // 是否显示标题
+           title=""                      // 标题
+           showBack={true}               // 是否显示返回按钮
+           onLeftPress={()=>{}}          // 返回按钮点击事件
+           startFullScreen={() => {      
+              this.setState({
+              isFull: true,
+             });
+           }}
+           closeFullScreen={() => {
+              this.setState({
+              isFull: false,
+             });
+           }}
+       />
+````
 
 **MIT Licensed**

@@ -22,6 +22,9 @@ export default class VLCPlayer extends Component {
     this._onStopped = this._onStopped.bind(this);
     this._onPaused = this._onPaused.bind(this);
     this._onBuffering = this._onBuffering.bind(this);
+    this._onOpen = this._onOpen.bind(this);
+    this._onLoadStart = this._onLoadStart.bind(this);
+
   }
 
   setNativeProps(nativeProps) {
@@ -56,6 +59,18 @@ export default class VLCPlayer extends Component {
     }
   }
 
+  _onOpen(event){
+    if (this.props.onOpen) {
+      this.props.onOpen(event.nativeEvent);
+    }
+  }
+
+  _onLoadStart(event){
+    if (this.props.onLoadStart) {
+      this.props.onLoadStart(event.nativeEvent);
+    }
+  }
+
   _onProgress(event) {
     if (this.props.onProgress) {
       this.props.onProgress(event.nativeEvent);
@@ -64,7 +79,7 @@ export default class VLCPlayer extends Component {
 
   _onEnded(event) {
     if (this.props.onEnd) {
-      this.props.onEnd(event);
+      this.props.onEnd(event.nativeEvent);
     }
   }
 
@@ -118,6 +133,8 @@ export default class VLCPlayer extends Component {
         mainVer: source.mainVer || 0,
         patchVer: source.patchVer || 0,
       },
+      onVideoLoadStart: this._onLoadStart,
+      onVideoOpen: this._onOpen,
       onVideoError: this._onError,
       onVideoProgress: this._onProgress,
       onVideoEnded: this._onEnded,
@@ -152,6 +169,8 @@ VLCPlayer.propTypes = {
   repeat: PropTypes.bool,
   muted: PropTypes.bool,
 
+
+  onVideoLoadStart: PropTypes.func,
   onVideoError: PropTypes.func,
   onVideoProgress: PropTypes.func,
   onVideoEnded: PropTypes.func,
@@ -159,6 +178,7 @@ VLCPlayer.propTypes = {
   onVideoPaused: PropTypes.func,
   onVideoStopped: PropTypes.func,
   onVideoBuffering: PropTypes.func,
+  onVideoOpen: PropTypes.func,
 
   /* Wrapper component */
   source: PropTypes.object,
