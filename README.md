@@ -69,7 +69,8 @@ this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 
 ```
 
 ## 回调函数简单说明（目前碰到的）
- ```                                                         支持平台                
+ ```       
+                                                             支持平台                
            onEnd            视屏播放结束                  ios       android
            onBuffering      正在缓存中                    ios       android
            onError          播放视屏出错                  
