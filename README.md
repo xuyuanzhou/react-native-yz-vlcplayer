@@ -1,4 +1,3 @@
-[TOC]
 # react-native-yz-vlcplayer
 
 A `<VLCPlayer>` component for react-native  
@@ -68,6 +67,21 @@ ios:
 this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 表示播放 false表示暂停
 
 ```
+
+## 回调函数简单说明（目前碰到的）
+ ```                                                         支持平台                
+           onEnd            视屏播放结束                  ios       android
+           onBuffering      正在缓存中                    ios       android
+           onError          播放视屏出错                  
+           onPlaying        视屏播放                      ios       android
+           onPaused         视屏暂停                      ios       android
+           onOpen           视屏被打开                              android
+           onLoadStart      vlc视屏容器初始化完毕          ios       android
+           onProgress       视频进度发送改变               ios       android          swf格式不支持
+           
+           回调函数出现顺序:  onLoadStart  ---> onOpen 
+          
+ ```
 
 
 
