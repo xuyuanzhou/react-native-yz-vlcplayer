@@ -61,23 +61,23 @@ Run `react-native link react-native-yz-vlcplayer`
 android:
     this.vlcplayer.seek(100); // 单位是 ms 
 ios:
-    this.vlcplayer.seek(0.1); // 0 --- 1 视屏位置进度
+    this.vlcplayer.seek(0.1); // 0 --- 1 视频位置进度
 
 
-this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 表示播放 false表示暂停
+this.vlcPlayer.resume(autoplay) //重新加载视频进行播放,autopaly: true 表示播放 false表示暂停
 
 ```
 
 ## 回调函数简单说明（目前碰到的）
  ```       
                                                              支持平台                
-           onEnd            视屏播放结束                  ios       android
+           onEnd            视频播放结束                  ios       android
            onBuffering      正在缓存中                    ios       android
-           onError          播放视屏出错                  
-           onPlaying        视屏播放                      ios       android
-           onPaused         视屏暂停                      ios       android
-           onOpen           视屏被打开                              android
-           onLoadStart      vlc视屏容器初始化完毕          ios       android
+           onError          播放视频出错                  
+           onPlaying        视频播放                      ios       android
+           onPaused         视频暂停                      ios       android
+           onOpen           视频被打开                              android
+           onLoadStart      vlc视频容器初始化完毕          ios       android
            onProgress       视频进度发送改变               ios       android          swf格式不支持
            
            回调函数出现顺序:  onLoadStart  ---> onOpen 
@@ -100,13 +100,13 @@ this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 
        android:
            this.vlcplayer.seek(100); // 单位是 ms 
        ios:
-           this.vlcplayer.seek(0.1); // 0 --- 1 视屏位置进度
+           this.vlcplayer.seek(0.1); // 0 --- 1 视频位置进度
   （2）
        <VLCPlayer
            ref={ref => (this.vlcPlayer = ref)}
            style={[styles.video]}
            /**
-            *  增加视屏宽高比，视屏将按照这个比率拉伸
+            *  增加视频宽高比，视频将按照这个比率拉伸
             */
            videoAspectRatio="16:9"
            /**
@@ -127,7 +127,7 @@ this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 
             */
            onProgress={this.onProgress.bind(this)}
            /**
-            *  视屏播放结束
+            *  视频播放结束
             */
            onEnd={this.onEnded.bind(this)}
            /**
@@ -136,22 +136,22 @@ this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 
            onBuffering={this.onBuffering.bind(this)}
            onError={this._onError}
            /**
-            * 视屏停止
+            * 视频停止
             */
            onStopped={this.onStopped.bind(this)}   
            /**
-            * 视屏播放
+            * 视频播放
             */
            onPlaying={this.onPlaying.bind(this)}   
            /**
-            * 视屏暂停
+            * 视频暂停
             */
            onPaused={this.onPaused.bind(this)}      
        />
    （3）简单例子
        <VlCPlayerView
-           autoplay={false}               //视屏播放结束时调用this.vlcPlayer.resume(false)方法
-           url={this.state.url}           //视屏url
+           autoplay={false}               //视频播放结束时调用this.vlcPlayer.resume(false)方法
+           url={this.state.url}           //视频url
            Orientation={Orientation}      
            //BackHandle={BackHandle}
            ggUrl=""                      // 广告url
@@ -184,13 +184,13 @@ this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 
        android:
            this.vlcplayer.seek(100); // 单位是 ms 
        ios:
-           this.vlcplayer.seek(0.1); // 0 --- 1 视屏位置进度
+           this.vlcplayer.seek(0.1); // 0 --- 1 视频位置进度
   （2）
        <VLCPlayer
            ref={ref => (this.vlcPlayer = ref)}
            style={[styles.video]}
            /**
-            *  增加视屏宽高比，视屏将按照这个比率拉伸
+            *  增加视频宽高比，视频将按照这个比率拉伸
             *  不设置按照默认比例
             */
            videoAspectRatio="16:9"  
@@ -212,7 +212,7 @@ this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 
             */
            onProgress={this.onProgress.bind(this)}
            /**
-            *  视屏播放结束
+            *  视频播放结束
             */
            onEnd={this.onEnded.bind(this)}
            /**
@@ -220,27 +220,27 @@ this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 
             */
            onBuffering={this.onBuffering.bind(this)}
            /**
-            * 播放视屏出错
+            * 播放视频出错
             */
            onError={this._onError}
            /**
-            * 视屏停止
+            * 视频停止
             */
            onStopped={this.onStopped.bind(this)}   
            /**
-            * 视屏播放
+            * 视频播放
             */
            onPlaying={this.onPlaying.bind(this)}   
            /**
-            * 视屏暂停
+            * 视频暂停
             */
            onPaused={this.onPaused.bind(this)}  
            /**
-            * 视屏被打开
+            * 视频被打开
             /
            onOpen={this._onOpen}
            /**
-            * vlc视屏容器初始化完毕
+            * vlc视频容器初始化完毕
             * 在这里进行设置播放的进度，是否开始播放
             */
            onLoadStart={()=>{
@@ -260,8 +260,8 @@ this.vlcPlayer.resume(autoplay) //重新加载视屏进行播放,autopaly: true 
        />
    （3）简单例子
        <VlCPlayerView
-           autoplay={false}               //视屏播放结束时调用this.vlcPlayer.resume(false)方法
-           url={this.state.url}           //视屏url
+           autoplay={false}               //视频播放结束时调用this.vlcPlayer.resume(false)方法
+           url={this.state.url}           //视频url
            Orientation={Orientation}      
            //BackHandle={BackHandle}
            ggUrl=""                      // 广告url

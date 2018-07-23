@@ -103,10 +103,10 @@ export default class ControlBtn extends Component {
                     />
                   </View>
                   <View style={{justifyContent:'center',alignItems:'center',height:50, minWidth: 50}}>
-                  <Text
-                    style={{fontSize: 11,color: '#fff'}}>
-                    {this._getTime(totalTime) || 0}
-                  </Text>
+                    <Text
+                      style={{fontSize: 11,color: '#fff'}}>
+                      {this._getTime(totalTime) || 0}
+                    </Text>
                   </View>
                 </View>
               )}
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  GG: {
+  ad: {
     backgroundColor: 'rgba(255,255,255,1)',
     height: 30,
     paddingLeft: 10,
