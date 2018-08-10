@@ -73,6 +73,10 @@ ios:
 
 this.vlcPlayer.resume(autoplay) //重新加载视频进行播放,autopaly: true 表示播放 false表示暂停
 
+1.0.8~
+this.vlcPlayer.play(bool)       //与puased参数相同作用, 使用该方法请停止使用paused参数
+
+
 ```
 
 ## 回调函数简单说明（目前碰到的）
