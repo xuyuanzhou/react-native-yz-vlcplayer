@@ -260,7 +260,7 @@ this.vlcPlayer.play(bool)       // true: play the video   false: paused the vide
        
        use  `this.vlcPlayer.play(bool)`   instead of  parameter  `paused`
        
-            <VlCPlayerView
+            <VlCPlayerViewByMethod
                ref={ ref => this.vlCPlayerView = ref}
                onVipPress={this._onVipPress.bind(this)}
                autoPlay={true}
