@@ -188,6 +188,7 @@ VLCPlayer.propTypes = {
   /* Wrapper component */
   source: PropTypes.object,
 
+  play: PropTypes.func,
   onError: PropTypes.func,
   onProgress: PropTypes.func,
   onEnded: PropTypes.func,
