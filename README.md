@@ -37,7 +37,7 @@ step 2:
 
 step 3:
 
-   create a folder named vlcKit, and copy MobileVLCKit.framework in the this folder.
+   create a folder named vlcKit, and copy MobileVLCKit.framework in this folder.
     
 step 4:
    
@@ -119,6 +119,10 @@ this.vlcPlayer.play(bool)       // true: play the video   false: paused the vide
 
 ```
 
+## example project
+     
+   [https://github.com/xuyuanzhou/vlcplayerExample](https://github.com/xuyuanzhou/vlcplayerExample)
+
 ## 回调函数简单说明（目前碰到的）
  ```       
                                                              支持平台                
@@ -136,7 +140,7 @@ this.vlcPlayer.play(bool)       // true: play the video   false: paused the vide
  ```
 
 
-##  plugin js
+##  use plugin
 ````
    import { VLCPlayer, VlCPlayerView } from 'react-native-yz-vlcplayer';
    import Orientation from 'react-native-orientation';
