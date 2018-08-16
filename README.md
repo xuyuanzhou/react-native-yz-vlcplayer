@@ -230,10 +230,10 @@ this.vlcPlayer.play(bool)       // true: play the video   false: paused the vide
 ## Simple Example
 
 ````
-   import { VLCPlayer, VlCPlayerView } from 'react-native-yz-vlcplayer';
+   import { VLCPlayer, VlCPlayerView, VlCPlayerViewByMethod } from 'react-native-yz-vlcplayer';
    import Orientation from 'react-native-orientation';
 
-        <VlCPlayerView
+   (1)  <VlCPlayerView
            url={this.state.url}           //视频url 
            Orientation={Orientation}      
            //BackHandle={BackHandle}
@@ -254,6 +254,47 @@ this.vlcPlayer.play(bool)       // true: play the video   false: paused the vide
              });
            }}
        />
+    
+    
+   (2)
+       
+       use  `this.vlcPlayer.play(bool)`   instead of  parameter  `paused`
+       
+            <VlCPlayerView
+               ref={ ref => this.vlCPlayerView = ref}
+               onVipPress={this._onVipPress.bind(this)}
+               autoPlay={true}
+               url={"rtmp://live.hkstv.hk.lxdns.com/live/hks"}
+               onLeftPress={() => {
+               }}
+               onProgressChange={this._onProgressChange}
+               //title={title}              
+               //showTitle={true}
+               //showBack={true}
+               //lookTime={timeStudied}
+               //totalTime={timeTotal}
+               //useVip={!hadOwn}
+               onEnd={this._onEnd}
+               Orientation={Orientation}
+               BackHandle={BackHandle}
+               //autoPlayNext={false}
+               //autoRePlay={false}
+               //hadNext={false}
+               showAd={true}
+               adUrl="http://bxyzweb.doctorz.cn/ofafilm/03.swf"             
+               //chapterElements={this._renderList()}
+               onStartFullScreen={() => {
+                 this.setState({
+                   isFull: true,
+                 });
+               }}
+               onCloseFullScreen={() => {
+                 this.setState({
+                   isFull: false,
+                 });
+               }}
+            />
+        
 ````
 
 **MIT Licensed**
