@@ -184,7 +184,7 @@ export default class CommonVideo extends Component {
     }
     let realShowAd = false;
     let type = '';
-    let ggType = '';
+    let adType = '';
     let showVideo = false;
     let showTop = false;
     if (showAd && adUrl && !isEndAd) {
@@ -204,7 +204,7 @@ export default class CommonVideo extends Component {
     if (adUrl && adUrl.split) {
       let types = adUrl.split('.');
       if (types && types.length > 0) {
-        ggType = types[types.length - 1];
+        adType = types[types.length - 1];
       }
     }
     if(!showVideo && !realShowAd){
@@ -242,8 +242,8 @@ export default class CommonVideo extends Component {
             {...this.props}
             videoAspectRatio={currentVideoAspectRatio}
             uri={adUrl}
-            source={{ uri: adUrl, type: ggType }}
-            type={ggType}
+            source={{ uri: adUrl, type: adType }}
+            type={adType}
             isAd={true}
             showBack={showBack}
             showTitle={showTitle}
@@ -268,7 +268,7 @@ export default class CommonVideo extends Component {
             isFull={isFull}
             showBack={showBack}
             showTitle={showTitle}
-            hadGG={true}
+            hadAd={true}
             isEndAd={isEndAd}
             //initPaused={this.state.paused}
             style={showAd && !isEndAd ? { position: 'absolute', zIndex: -1 } : {}}

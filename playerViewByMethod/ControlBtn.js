@@ -54,10 +54,10 @@ export default class ControlBtn extends Component {
       onSlidingComplete,
       currentTime,
       totalTime,
-      style
+      style,
     } = this.props;
     return (
-      <View style={[styles.controls,style]}>
+      <View style={[styles.controls, style]}>
         <View style={styles.controlContainer}>
           <TouchableOpacity style={styles.controlContent} activeOpacity={1}>
             <View style={styles.controlContent2}>
@@ -67,52 +67,64 @@ export default class ControlBtn extends Component {
                   onPausedPress && onPausedPress(!paused);
                 }}
                 style={{ width: 50, alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name={paused ? 'play' : 'pause'} size={30} color="#fff" />
+                <Icon name={paused ? 'play' : 'pause'} size={28} color="#fff" />
               </TouchableOpacity>
-              {showSlider && totalTime > 0 &&(
-                <View
-                  style={{
-                    flex: 1,
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                    //justifyContent: 'space-between',
-                  }}>
-                  <View style={{justifyContent:'center',alignItems:'center',height:50, minWidth: 50,}}>
-                    <Text style={{fontSize: 11,color: '#fff',}}>
-                      {this._getTime(currentTime) || 0}
-                    </Text>
+              {showSlider &&
+                totalTime > 0 && (
+                  <View
+                    style={{
+                      flex: 1,
+                      alignItems: 'center',
+                      flexDirection: 'row',
+                      //justifyContent: 'space-between',
+                    }}>
+                    <View
+                      style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: 50,
+                        minWidth: 50,
+                      }}>
+                      <Text style={{ fontSize: 11, color: '#fff' }}>
+                        {this._getTime(currentTime) || 0}
+                      </Text>
+                    </View>
+                    <View style={styles.progress}>
+                      <Slider
+                        minimumTrackTintColor="#30a935"
+                        thumbStyle={styles.thumb}
+                        style={{ width: '100%' }}
+                        value={currentTime}
+                        maximumValue={totalTime}
+                        step={1}
+                        onValueChange={value => {
+                          onValueChange && onValueChange(value);
+                        }}
+                        onSlidingComplete={value => {
+                          onSlidingComplete && onSlidingComplete(value);
+                        }}
+                      />
+                    </View>
+                    <View
+                      style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: 50,
+                        minWidth: 50,
+                      }}>
+                      <Text style={{ fontSize: 11, color: '#fff' }}>
+                        {this._getTime(totalTime) || 0}
+                      </Text>
+                    </View>
                   </View>
-                  <View style={styles.progress}>
-                    <Slider
-                      minimumTrackTintColor="#30a935"
-                      thumbStyle={styles.thumb}
-                      style={{ width: '100%' }}
-                      value={currentTime}
-                      maximumValue={totalTime}
-                      step={1}
-                      onValueChange={value => {
-                        onValueChange && onValueChange(value);
-                      }}
-                      onSlidingComplete={value => {
-                        onSlidingComplete && onSlidingComplete(value);
-                      }}
-                    />
-                  </View>
-                  <View style={{justifyContent:'center',alignItems:'center',height:50, minWidth: 50}}>
-                    <Text
-                      style={{fontSize: 11,color: '#fff'}}>
-                      {this._getTime(totalTime) || 0}
-                    </Text>
-                  </View>
-                </View>
-              )}
+                )}
               <TouchableOpacity
                 activeOpacity={1}
                 onPress={() => {
                   onFullPress && onFullPress(!isFull);
                 }}
                 style={{ width: 50, alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name={isFull ? 'fullscreen-exit' : 'fullscreen'} size={30} color="#fff" />
+                <Icon name={isFull ? 'fullscreen-exit' : 'fullscreen'} size={28} color="#fff" />
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
@@ -128,8 +140,8 @@ const styles = StyleSheet.create({
     //backgroundColor: '#000',
   },
   controls: {
-    width:'100%',
-    height:50,
+    width: '100%',
+    height: 37,
   },
   rateControl: {
     flex: 0,
@@ -151,7 +163,7 @@ const styles = StyleSheet.create({
     //lineHeight: 12,
   },
   controlContainer: {
-    flex:1,
+    flex: 1,
     //padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -159,7 +171,7 @@ const styles = StyleSheet.create({
 
   controlContent: {
     width: '100%',
-    height: 50,
+    height: 37,
     //borderRadius: 10,
     backgroundColor: 'rgba(255,255,255,0.6)',
   },
