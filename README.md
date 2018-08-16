@@ -8,73 +8,113 @@ A `<VLCPlayer>` component for react-native
 VLCPlayer 支持各种格式(mp4,m3u8,flv,mov,rtsp,rtmp,etc.)，具体参看[vlc wiki](https://wiki.videolan.org/Documentation:Documentation/)
 
 
-### Add it to your project
+###  install
 
-Run `npm install react-native-yz-vlcplayer --save`
+     `npm install react-native-yz-vlcplayer --save`
 
 
-## android
+## android setup
 
 android vlc-sdk 库来源:[https://github.com/mengzhidaren/Vlc-sdk-lib](https://github.com/mengzhidaren/Vlc-sdk-lib)
 
-Run `react-native link react-native-yz-vlcplayer`
-
-
-## ios
-
-整合 [react-native-vlcplayer](https://github.com/xiongchuan86/react-native-vlcplayer) 而来。
+step 1:
 
 Run `react-native link react-native-yz-vlcplayer`
 
-1.安装MobileVLCKit.framework
 
-(1)在[nightlies.videolan.org/build/iOS/](http://nightlies.videolan.org/build/iOS/) 下载最新版，
+## ios setup
 
-(2)在你的项目目录下新建一个 vlcKit 文件夹，并将MobileVLCKit.framework解压到该目录下
+combined from  [react-native-vlcplayer](https://github.com/xiongchuan86/react-native-vlcplayer) 。
 
-(3)在你的工程里面引入MobileVLCKit.framework
 
-   ![](./images/2.png)
+step 1: 
+
+   Run `react-native link react-native-yz-vlcplayer`
+
+step 2:
+    
+   download  MobileVLCKit.framework from  [nightlies.videolan.org/build/iOS/](http://nightlies.videolan.org/build/iOS/)
+
+step 3:
+
+   create a folder named vlcKit, and copy MobileVLCKit.framework in the this folder.
+    
+step 4:
    
+   In XCode, in the project navigator, right click Frameworks -> Add Files to [your project's name], go to `/vlckit` and add MobileVLCKit.framework
+
+   
+   ![](./images/2.png)
+      
    ![](./images/3.png)
    
-(4)添加 framework search path     `$(PROJECT_DIR)/../vlcKit`
+step 5:
+
+   add framework search path:      `$(PROJECT_DIR)/../vlcKit`
+   
    ![](./images/1.png)
+   
+    
+step 6:
 
-   
-(5)添加下图所对应的lib和frameworks
-    ![](./images/5.png)   
-   
-(6)检查libRCTVLCPlayer.a有没有被添加,没有的话手动添加
-    ![](./images/6.png)   
-   
-(7)Enable Bitcode 设置为no
+   Select your project. Add the following libraries to your project's Build Phases -> Link Binary With Libraries:
 
-   Build Settings ---> 查询  Bitcode
+   * AudioToolbox.framework
+   * VideoToolbox.framework
+   * CoreMedia.framework
+   * CoreVideo.framework
+   * CoreAudio.framework
+   * AVFoundation.framework
+   * MediaPlayer.framework
+   * libstdc++.6.0.9.tbd
+   * libiconv.2.tbd
+   * libc++.1.tbd
+   * libz.1.tbd
+   * libbz2.1.0.tbd
+
+step 7:
+
+   set `Enable Bitcode`  to  `no`
+   
+   Build Settings ---> search  Bitcode
+    
    ![](./images/4.png)   
    
-(8)设置工程deployment target 为 9.3
+
+step 8:
+
+  set project deployment target  `9.3`
 
 
 
-## FullScreen ##
-需要用到 `npm install react-native-orientation --save` ，工程配置参看[https://github.com/yamill/react-native-orientation](https://github.com/yamill/react-native-orientation)  
+## other react-native plugins
 
+   1. npm install react-native-orientation --save
+   
+      react-native link react-native-orientation
+      
+   2. npm install react-native-slider --save
+   
+   3. npm install react-native-vector-icons --save
+   
+      react-native link react-native-vector-icons
+      
+      
 ## Static Methods
 
 `seek(seconds)`
 
 ```
 android:
-    this.vlcplayer.seek(100); // 单位是 ms 
+    this.vlcplayer.seek(100); //  unit(单位)  ms 
 ios:
-    this.vlcplayer.seek(0.1); // 0 --- 1 视频位置进度
+    this.vlcplayer.seek(0.1); //  0 --- 1 视频位置进度
 
 
 this.vlcPlayer.resume(autoplay) //重新加载视频进行播放,autopaly: true 表示播放 false表示暂停
 
 1.0.8~
-this.vlcPlayer.play(bool)       //与puased参数相同作用, 使用该方法请停止使用paused参数
+this.vlcPlayer.play(bool)       // true: play the video   false: paused the video
 
 
 ```
@@ -96,102 +136,12 @@ this.vlcPlayer.play(bool)       //与puased参数相同作用, 使用该方法�
  ```
 
 
-
-
-## Examples    
- 
-### 版本 0~1.0.6
-
+##  plugin js
 ````
    import { VLCPlayer, VlCPlayerView } from 'react-native-yz-vlcplayer';
    import Orientation from 'react-native-orientation';
    
-   //插件参数说明
-   (1) 静态方法
-       android:
-           this.vlcplayer.seek(100); // 单位是 ms 
-       ios:
-           this.vlcplayer.seek(0.1); // 0 --- 1 视频位置进度
-  （2）
-       <VLCPlayer
-           ref={ref => (this.vlcPlayer = ref)}
-           style={[styles.video]}
-           /**
-            *  增加视频宽高比，视频将按照这个比率拉伸
-            */
-           videoAspectRatio="16:9"
-           /**
-            *  是否暂停播放
-            */
-           paused={this.state.paused}
-           /**
-            *  资源路径
-            *  暂不支持本地资源
-            */
-           source={{ uri: this.props.uri}}
-           /**
-            *  进度   
-            *  返回 {currentTime:1000,duration:1000} 
-            *  单位是 ms
-            *  currentTime: 当前时间  
-            *  duration:    总时间  
-            */
-           onProgress={this.onProgress.bind(this)}
-           /**
-            *  视频播放结束
-            */
-           onEnd={this.onEnded.bind(this)}
-           /**
-            * 正在缓存中
-            */
-           onBuffering={this.onBuffering.bind(this)}
-           onError={this._onError}
-           /**
-            * 视频停止
-            */
-           onStopped={this.onStopped.bind(this)}   
-           /**
-            * 视频播放
-            */
-           onPlaying={this.onPlaying.bind(this)}   
-           /**
-            * 视频暂停
-            */
-           onPaused={this.onPaused.bind(this)}      
-       />
-   （3）简单例子
-       <VlCPlayerView
-           autoplay={false}               //视频播放结束时调用this.vlcPlayer.resume(false)方法
-           url={this.state.url}           //视频url
-           Orientation={Orientation}      
-           //BackHandle={BackHandle}
-           ggUrl=""                      // 广告url
-           showGG={true}                 // 是否显示广告
-           showTitle={true}              // 是否显示标题
-           title=""                      // 标题
-           showBack={true}               // 是否显示返回按钮
-           onLeftPress={()=>{}}          // 返回按钮点击事件
-           startFullScreen={() => {      
-              this.setState({
-              isFull: true,
-             });
-           }}
-           closeFullScreen={() => {
-              this.setState({
-              isFull: false,
-             });
-           }}
-       />
-````
-
-## 版本   1.0.7 ~
-
-````
-   import { VLCPlayer, VlCPlayerView } from 'react-native-yz-vlcplayer';
-   import Orientation from 'react-native-orientation';
-   
-   //插件参数说明
-   (1) 静态方法
+   (1) 
        android:
            this.vlcplayer.seek(100); // 单位是 ms 
        ios:
@@ -269,14 +219,22 @@ this.vlcPlayer.play(bool)       //与puased参数相同作用, 使用该方法�
                    })
            }}
        />
-   （3）简单例子
-       <VlCPlayerView
-           autoplay={false}               //视频播放结束时调用this.vlcPlayer.resume(false)方法
-           url={this.state.url}           //视频url
+  
+````
+
+
+## Simple Example
+
+````
+   import { VLCPlayer, VlCPlayerView } from 'react-native-yz-vlcplayer';
+   import Orientation from 'react-native-orientation';
+
+        <VlCPlayerView
+           url={this.state.url}           //视频url 
            Orientation={Orientation}      
            //BackHandle={BackHandle}
-           ggUrl=""                      // 广告url
-           showGG={false}                 // 是否显示广告
+           AdUrl=""                      // 广告url
+           showAd={false}                // 是否显示广告
            showTitle={true}              // 是否显示标题
            title=""                      // 标题
            showBack={true}               // 是否显示返回按钮
