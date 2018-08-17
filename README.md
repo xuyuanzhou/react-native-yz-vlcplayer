@@ -126,7 +126,7 @@ this.vlcPlayer.play(bool)       // true: play the video   false: paused the vide
     import { VLCPlayer } from 'react-native-yz-vlcplayer';  
     
    | props       | type     |  value  |   describe |
-   | --------    | -----:   | :----:  |            |
+   | --------    | -----:   |  ----:  |   :----:   |
    | paused      | bool     |         |            |
    | muted       | bool     |         |            |
    | volume      | bool     | 0---200 |            |
