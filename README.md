@@ -1,17 +1,3 @@
-| props       | type     |  value  |
-   | --------    | -----:   | :----: |
-   | paused      | bool     |       |
-   | muted       | bool     |       |
-   | volume      | bool     | 0---200     |
-   | source      | object   | { uri: ''}   |
-   | onLoadStart | func     |       |
-   | onOpen      | func     |       |
-   | onBuffering | func     |       |
-   | onProgress  | func     |       |
-   | onEnd       | func     |       |
-   | onPlaying   | func     |       |
-   | onPaused    | func     |       |
-   | onError     | func     |       |
 # react-native-yz-vlcplayer
 
 A `<VLCPlayer>` component for react-native  
