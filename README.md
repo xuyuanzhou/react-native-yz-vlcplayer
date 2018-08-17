@@ -123,47 +123,37 @@ this.vlcPlayer.play(bool)       // true: play the video   false: paused the vide
 
 ##  VLCPlayer props
     
-    import { VLCPlayer } from 'react-native-yz-vlcplayer';
+    import { VLCPlayer } from 'react-native-yz-vlcplayer';  
+    
+   | props       | type     |  value  |   describe |
+   | --------    | -----:   | :----:  |            |
+   | paused      | bool     |         |            |
+   | muted       | bool     |         |            |
+   | volume      | bool     | 0---200 |            |
+   | source      | object   | { uri: 'http:...' }| |
+   | onLoadStart | func     |       |  vlc视频容器初始化完毕  |
+   | onOpen      | func     |       |  视频被打开            |
+   | onBuffering | func     |       |  正在缓冲中           |
+   | onProgress  | func     | { currentTime:1000,duration:1000 }  unit：ms    |  视频进度发生改变     |
+   | onEnd       | func     |       |  视频播放结束        |
+   | onPlaying   | func     |       |  视频正在播放        |
+   | onPaused    | func     |       |  视频暂停           |
+   | onError     | func     |       |  播放视频出错       |
 
-   * paused         bool
-   
-   * muted          bool
-   
-   * volume         int        0 --- 200
-   
-   * source         object    
-       `source={{ uri: ''}}`
-       
-   * onLoadStart    func
-   
-   * onOpen         func
-   
-   * onBuffering    func
-   
-   * onProgress     func        
-      
-      `{ currentTime:1000, duration:1000}    unit: ms`
-   
-   * onEnd          func
-   
-   * onPlaying      func
-   
-   * onPaused       func
-        
-   * onError        func
+
    
 
 ## 回调函数简单说明（目前碰到的）
  ```       
                                                              支持平台                
            onEnd            视频播放结束                  ios       android
-           onBuffering      正在缓存中                    ios       android
+           onBuffering      正在缓冲中                    ios       android
            onError          播放视频出错                  
            onPlaying        视频播放                      ios       android
            onPaused         视频暂停                      ios       android
            onOpen           视频被打开                              android
            onLoadStart      vlc视频容器初始化完毕          ios       android
-           onProgress       视频进度发送改变               ios       android          swf格式不支持
+           onProgress       视频进度发生改变               ios       android          swf格式不支持
            
            回调函数出现顺序:  onLoadStart  ---> onOpen 
           
