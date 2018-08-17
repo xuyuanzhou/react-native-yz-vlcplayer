@@ -7,6 +7,8 @@ A `<VLCPlayer>` component for react-native
 
 VLCPlayer 支持各种格式(mp4,m3u8,flv,mov,rtsp,rtmp,etc.)，具体参看[vlc wiki](https://wiki.videolan.org/Documentation:Documentation/)
 
+[https://code.videolan.org/videolan/VLCKit](https://code.videolan.org/videolan/VLCKit)
+
 
 ###  install
 
@@ -119,9 +121,37 @@ this.vlcPlayer.play(bool)       // true: play the video   false: paused the vide
 
 ```
 
-## example project
-     
-   [https://github.com/xuyuanzhou/vlcplayerExample](https://github.com/xuyuanzhou/vlcplayerExample)
+##  VLCPlayer props
+    
+    import { VLCPlayer } from 'react-native-yz-vlcplayer';
+
+   * paused         bool
+   
+   * muted          bool
+   
+   * volume         int        0 --- 200
+   
+   * source         object    
+       `source={{ uri: ''}}`
+       
+   * onLoadStart    func
+   
+   * onOpen         func
+   
+   * onBuffering    func
+   
+   * onProgress     func        
+      
+      `{ currentTime:1000, duration:1000}    unit: ms`
+   
+   * onEnd          func
+   
+   * onPlaying      func
+   
+   * onPaused       func
+        
+   * onError        func
+   
 
 ## 回调函数简单说明（目前碰到的）
  ```       
@@ -225,6 +255,11 @@ this.vlcPlayer.play(bool)       // true: play the video   false: paused the vide
        />
   
 ````
+
+   
+## example project 
+     
+   [https://github.com/xuyuanzhou/vlcplayerExample](https://github.com/xuyuanzhou/vlcplayerExample)
 
 
 ## Simple Example

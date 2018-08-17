@@ -72,6 +72,8 @@ export default class VLCPlayerView extends Component {
       totalTime: 0,
       showControls: false,
       seek: 0,
+      volume: 200,
+      muted: false,
       isError: false,
       chapterPosition: new Animated.Value(-250),
     };
@@ -280,6 +282,8 @@ export default class VLCPlayerView extends Component {
           ref={ref => (this.vlcPlayer = ref)}
           style={[styles.video]}
           source={source}
+          volume={this.state.volume}
+          muted={this.state.muted}
           videoAspectRatio={videoAspectRatio}
           onProgress={this.onProgress.bind(this)}
           onEnd={this.onEnded.bind(this)}
@@ -355,6 +359,12 @@ export default class VLCPlayerView extends Component {
               showAd={showAd}
               onEnd={onEnd}
               title={title}
+              muted={this.state.muted}
+              onMutePress={()=>{
+                this.setState({
+                   muted: !this.state.muted
+                });
+              }}
               onLeftPress={onLeftPress}
               paused={this.state.paused}
               isFull={isFull}

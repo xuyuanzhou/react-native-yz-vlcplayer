@@ -164,6 +164,9 @@ VLCPlayer.propTypes = {
   paused: PropTypes.bool,
 
   videoAspectRatio: PropTypes.string,
+  /**
+   * 0 --- 200
+   */
   volume: PropTypes.number,
   disableFocus: PropTypes.bool,
   src: PropTypes.string,

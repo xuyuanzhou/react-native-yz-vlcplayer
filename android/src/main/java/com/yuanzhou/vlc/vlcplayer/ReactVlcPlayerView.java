@@ -67,6 +67,7 @@ class ReactVlcPlayerView extends SurfaceView implements
     private boolean isHostPaused = false;
     private boolean isBuffering;
     private float rate = 1f;
+    private int preVolume = 200;
 
     //资源路径
     private String src;
@@ -366,6 +367,18 @@ class ReactVlcPlayerView extends SurfaceView implements
             mMediaPlayer.setVolume(volumeModifier);
         }
     }
+
+    public void setMutedModifier(boolean muted) {
+        if(mMediaPlayer != null){
+            if(muted){
+                this.preVolume = mMediaPlayer.getVolume();
+                mMediaPlayer.setVolume(0);
+            }else{
+                mMediaPlayer.setVolume(this.preVolume);
+            }
+        }
+    }
+
 
     public void setPausedModifier(boolean paused){
         if(mMediaPlayer != null){

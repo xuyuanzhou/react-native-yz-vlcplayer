@@ -46,9 +46,11 @@ export default class ControlBtn extends Component {
   render() {
     let {
       paused,
+      muted,
       isFull,
       showSlider,
       onPausedPress,
+      onMutePress,
       onFullPress,
       onValueChange,
       onSlidingComplete,
@@ -61,14 +63,24 @@ export default class ControlBtn extends Component {
         <View style={styles.controlContainer}>
           <TouchableOpacity style={styles.controlContent} activeOpacity={1}>
             <View style={styles.controlContent2}>
+              <View style={{flexDirection:'row'}}>
               <TouchableOpacity
                 activeOpacity={1}
                 onPress={() => {
                   onPausedPress && onPausedPress(!paused);
                 }}
-                style={{ width: 50, alignItems: 'center', justifyContent: 'center' }}>
+                style={{ width: 40, alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name={paused ? 'play' : 'pause'} size={28} color="#fff" />
               </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => {
+                  onMutePress && onMutePress(!paused);
+                }}
+                style={{ width: 40, alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name={muted ? 'volume-off' : 'volume-high'} size={26} color="#fff" />
+              </TouchableOpacity>
+              </View>
               {showSlider &&
                 totalTime > 0 && (
                   <View

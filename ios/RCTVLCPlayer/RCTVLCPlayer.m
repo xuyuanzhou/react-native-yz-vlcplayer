@@ -97,8 +97,6 @@ static NSString *const playbackRate = @"rate";
     [_player setDrawable:self];
     _player.delegate = self;
     _player.scaleFactor = 0;
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaPlayerStateChanged:) name:VLCMediaPlayerStateChanged object:nil];
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaPlayerTimeChanged:) name:VLCMediaPlayerTimeChanged object:nil];
     NSMutableDictionary *mediaDictonary = [NSMutableDictionary new];
     //设置缓存多少毫秒
     [mediaDictonary setObject:@"300" forKey:@"network-caching"];
@@ -129,8 +127,6 @@ static NSString *const playbackRate = @"rate";
     [_player setDrawable:self];
     _player.delegate = self;
     _player.scaleFactor = 0;
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaPlayerStateChanged:) name:VLCMediaPlayerStateChanged object:nil];
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mediaPlayerTimeChanged:) name:VLCMediaPlayerTimeChanged object:nil];
     NSMutableDictionary *mediaDictonary = [NSMutableDictionary new];
     //设置缓存多少毫秒
     [mediaDictonary setObject:@"300" forKey:@"network-caching"];
@@ -139,6 +135,7 @@ static NSString *const playbackRate = @"rate";
     _player.media = media;
     [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
     NSLog(@"autoplay: %i",autoplay);
+    
     self.onVideoLoadStart(@{
                            @"target": self.reactTag
                            });
@@ -157,6 +154,21 @@ static NSString *const playbackRate = @"rate";
      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
      NSLog(@"userInfo %@",[aNotification userInfo]);
      NSLog(@"standardUserDefaults %@",defaults);
+    
+   /** VLCMedia *media = _player.media;
+    NSUInteger numberOfReadBytesOnInput = media.numberOfReadBytesOnInput;
+    float inputBitrate = media.inputBitrate;
+    NSInteger numberOfReadBytesOnDemux = media.numberOfReadBytesOnDemux;
+    float demuxBitrate
+    NSInteger numberOfDecodedVideoBlocks;
+    self.onVideoOpen(@{
+                       @"target": self.reactTag,
+                       @"numberOfReadBytesOnInput": [NSNumber numberWithInt:numberOfReadBytesOnInput],
+                       @"inputBitrate": [NSNumber numberWithFloat:inputBitrate],
+                       @"numberOfReadBytesOnDemux": [NSNumber numberWithInt:numberOfReadBytesOnDemux]
+                    });*/
+    
+    
     if(_player){
         VLCMediaPlayerState state = _player.state;
         switch (state) {
@@ -252,6 +264,49 @@ static NSString *const playbackRate = @"rate";
         [_player jumpForward:interval];
 }
 
+/**
+ * audio  -----> start
+ */
+- (void)setMuted:(BOOL)muted
+{
+    if(_player){
+        VLCAudio *audio = _player.audio;
+        [audio setMuted: muted];
+    }
+}
+
+-(void)setVolume:(int)interval
+{
+    if(_player){
+        VLCAudio *audio = _player.audio;
+        if(interval >= 0){
+            audio.volume = interval;
+        }
+    }
+}
+
+-(void)setVolumeDown:(int)volume
+{
+    if(_player){
+        
+        VLCAudio *audio = _player.audio;
+        [audio volumeDown];
+    }
+}
+
+
+
+-(void)setVolumeUp:(int)volume
+{
+    if(_player){
+        VLCAudio *audio = _player.audio;
+        [audio volumeUp];
+    }
+}
+
+//audio  -----> end
+
+
 -(void)setSeek:(float)pos
 {
     if([_player isSeekable]){
@@ -271,6 +326,7 @@ static NSString *const playbackRate = @"rate";
 {
     [_player setRate:rate];
 }
+
 
 -(void)setVideoAspectRatio:(NSString *)ratio{
     char *char_content = [ratio cStringUsingEncoding:NSASCIIStringEncoding];
