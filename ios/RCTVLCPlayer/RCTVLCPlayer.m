@@ -44,6 +44,7 @@ static NSString *const playbackRate = @"rate";
     return self;
 }
 
+
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
     if (!_paused) {
@@ -91,6 +92,7 @@ static NSString *const playbackRate = @"rate";
     }
     NSArray* options = [_source objectForKey:@"initOptions"];
     NSString* uri    = [_source objectForKey:@"uri"];
+    BOOL isNetWork   = [RCTConvert BOOL:[_source objectForKey:@"isNetwork"]];
     NSURL* _uri    = [NSURL URLWithString:uri];
     
     _player = [[VLCMediaPlayer alloc] init];
@@ -100,7 +102,12 @@ static NSString *const playbackRate = @"rate";
     NSMutableDictionary *mediaDictonary = [NSMutableDictionary new];
     //设置缓存多少毫秒
     [mediaDictonary setObject:@"300" forKey:@"network-caching"];
-    VLCMedia *media = [VLCMedia mediaWithURL:_uri];
+    VLCMedia *media = nil;
+    if(isNetWork){
+        media = [VLCMedia mediaWithURL:_uri];
+    }else{
+        media = [VLCMedia mediaWithPath: uri];
+    }
     [media addOptions:mediaDictonary];
     _player.media = media;
     [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
@@ -119,6 +126,7 @@ static NSString *const playbackRate = @"rate";
     NSArray* options = [source objectForKey:@"initOptions"];
     NSString* uri    = [source objectForKey:@"uri"];
     BOOL    autoplay = [RCTConvert BOOL:[source objectForKey:@"autoplay"]];
+    BOOL isNetWork   = [RCTConvert BOOL:[_source objectForKey:@"isNetwork"]];
     NSURL* _uri    = [NSURL URLWithString:uri];
     
     //init player && play
@@ -130,7 +138,12 @@ static NSString *const playbackRate = @"rate";
     NSMutableDictionary *mediaDictonary = [NSMutableDictionary new];
     //设置缓存多少毫秒
     [mediaDictonary setObject:@"300" forKey:@"network-caching"];
-    VLCMedia *media = [VLCMedia mediaWithURL:_uri];
+    VLCMedia *media = nil;
+    if(isNetWork){
+        media = [VLCMedia mediaWithURL:_uri];
+    }else{
+        media = [VLCMedia mediaWithPath: uri];
+    }
     [media addOptions:mediaDictonary];
     _player.media = media;
     [[AVAudioSession sharedInstance] setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
