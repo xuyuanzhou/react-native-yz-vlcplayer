@@ -28,7 +28,7 @@ Run `react-native link react-native-yz-vlcplayer`
 
 combined from  [react-native-vlcplayer](https://github.com/xiongchuan86/react-native-vlcplayer) 。
 
-ios vlc-sdk from: [https://code.videolan.org/videolan/VLCKit](https://code.videolan.org/videolan/VLCKit)
+reference: [https://code.videolan.org/videolan/VLCKit](https://code.videolan.org/videolan/VLCKit)
 
 step 1: 
 
