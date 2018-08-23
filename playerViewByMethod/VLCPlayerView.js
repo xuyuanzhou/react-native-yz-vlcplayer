@@ -295,6 +295,7 @@ export default class VLCPlayerView extends Component {
           onError={this._onError}
           onOpen={this._onOpen}
           onLoadStart={this._onLoadStart}
+          onSnapshot={this._onSnapshot}
         />
         {realShowLoding &&
           !isError && (
@@ -397,6 +398,14 @@ export default class VLCPlayerView extends Component {
     );
   }
 
+  snapshot = (path)=>{
+    this.vlcPlayer && this.vlcPlayer.snapshot(path);
+  }
+
+  onSnapshot = (event)=>{
+    console.log(event);
+  }
+
   /**
    * 视频播放
    * @param event
@@ -467,6 +476,11 @@ export default class VLCPlayerView extends Component {
       paused: true,
     });
   };
+
+  _onSnapshot = e => {
+    console.log('_onSnapshot')
+    console.log(e);
+  }
 
   _onOpen = e => {
     console.log('onOpen');

@@ -21,6 +21,7 @@ import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 import org.videolan.libvlc.util.VLCUtil;
+import org.videolan.vlc.RecordEvent;
 import org.videolan.vlc.util.VLCInstance;
 import org.videolan.vlc.VlcVideoView;
 import java.util.ArrayList;
@@ -391,6 +392,20 @@ class ReactVlcPlayerView extends SurfaceView implements
             }
         }
     }
+
+
+    public void doSnapshot(String path){
+        if(mMediaPlayer != null){
+            int result = new RecordEvent().takeSnapshot(mMediaPlayer,path,0,0);
+            if(result == 0){
+                eventEmitter.onSnapshot(1);
+            }else{
+                eventEmitter.onSnapshot(0);
+            }
+        }
+
+    }
+
 
     public void doResume(boolean autoplay){
         createPlayer(autoplay);

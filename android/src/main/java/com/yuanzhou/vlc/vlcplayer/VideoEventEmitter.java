@@ -43,6 +43,7 @@ class VideoEventEmitter {
     private static final String EVENT_AUDIO_BECOMING_NOISY = "onAudioBecomingNoisy";
     private static final String EVENT_AUDIO_FOCUS_CHANGE = "onAudioFocusChanged";
     private static final String EVENT_PLAYBACK_RATE_CHANGE = "onPlaybackRateChange";
+    private static final String EVENT_SNAPSHOT = "onSnapshot";
 
     static final String[] Events = {
             EVENT_LOAD_START,
@@ -64,6 +65,7 @@ class VideoEventEmitter {
             EVENT_PLAYING,
             EVENT_STOPPED,
             EVENT_OPEN,
+            EVENT_SNAPSHOT,
 
     };
 
@@ -88,6 +90,7 @@ class VideoEventEmitter {
             EVENT_PLAYING,
             EVENT_STOPPED,
             EVENT_OPEN,
+            EVENT_SNAPSHOT,
     })
 
     @interface VideoEvents {
@@ -266,6 +269,12 @@ class VideoEventEmitter {
     void onOpen(){
         WritableMap map = Arguments.createMap();
         receiveEvent(EVENT_OPEN, map);
+    }
+
+    void onSnapshot(int result){
+        WritableMap map = Arguments.createMap();
+        map.putInt("isSuccess",result);
+        receiveEvent(EVENT_SNAPSHOT, map);
     }
 
     private void receiveEvent(@VideoEvents String type, WritableMap event) {

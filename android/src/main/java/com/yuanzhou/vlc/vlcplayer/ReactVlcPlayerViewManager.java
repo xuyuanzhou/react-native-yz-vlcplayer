@@ -35,6 +35,7 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
     private static final String PROP_VIDEO_ASPECT_RATIO = "videoAspectRatio";
     public static final String PROP_SRC_IS_NETWORK = "isNetwork";
     public static final String PROP_SRC_IS_ASSET = "isAsset";
+    public static final String PROP_SNAPSHOT_PATH = "snapshotPath";
 
     @Override
     public String getName() {
@@ -134,6 +135,12 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
     public void setVideoAspectRatio(final ReactVlcPlayerView videoView, final String aspectRatio) {
         videoView.setAspectRatio(aspectRatio);
     }
+
+    @ReactProp(name = PROP_SNAPSHOT_PATH)
+    public void setSnapshotPath(final ReactVlcPlayerView videoView, final String snapshotPath) {
+        videoView.doSnapshot(snapshotPath);
+    }
+
 
 
     private boolean startsWithValidScheme(String uriString) {

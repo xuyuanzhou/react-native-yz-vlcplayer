@@ -23,7 +23,7 @@ const statusBarHeight = getStatusBarHeight();
 const _fullKey = 'commonVideo_android_fullKey';
 let deviceHeight = Dimensions.get('window').height;
 let deviceWidth = Dimensions.get('window').width;
-export default class CommonVideo extends Component {
+export default class VlCPlayerViewByMethod extends Component {
   constructor(props) {
     super(props);
     this.url = '';
@@ -151,6 +151,11 @@ export default class CommonVideo extends Component {
   stopPlay = ()=>{
     this.vlcPlayerViewRef && this.vlcPlayerViewRef.stop();
     this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.stop();
+  }
+
+  snapshot = (path)=>{
+    this.vlcPlayerViewRef && this.vlcPlayerViewRef.snapshot(path);
+    this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.snapshot(path);
   }
 
   _reload = () => {

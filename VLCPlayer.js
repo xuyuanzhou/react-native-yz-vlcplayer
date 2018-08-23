@@ -25,6 +25,7 @@ export default class VLCPlayer extends Component {
     this._onBuffering = this._onBuffering.bind(this);
     this._onOpen = this._onOpen.bind(this);
     this._onLoadStart = this._onLoadStart.bind(this);
+    this._onSnapshot = this._onSnapshot.bind(this);
 
   }
 
@@ -107,6 +108,12 @@ export default class VLCPlayer extends Component {
     }
   }
 
+  _onSnapshot(event){
+    if (this.props.onSnapshot) {
+      this.props.onSnapshot(event.nativeEvent);
+    }
+  }
+
   render() {
     /* const {
      source
@@ -152,6 +159,7 @@ export default class VLCPlayer extends Component {
       onVideoPaused: this._onPaused,
       onVideoStopped: this._onStopped,
       onVideoBuffering: this._onBuffering,
+      onSnapshot: this._onSnapshot,
       progressUpdateInterval: 250,
     });
 
@@ -191,11 +199,13 @@ VLCPlayer.propTypes = {
   onVideoStopped: PropTypes.func,
   onVideoBuffering: PropTypes.func,
   onVideoOpen: PropTypes.func,
+  onSnapshot: PropTypes.func,
 
   /* Wrapper component */
   source: PropTypes.object,
 
   play: PropTypes.func,
+  snapshot: PropTypes.func,
   onError: PropTypes.func,
   onProgress: PropTypes.func,
   onEnded: PropTypes.func,

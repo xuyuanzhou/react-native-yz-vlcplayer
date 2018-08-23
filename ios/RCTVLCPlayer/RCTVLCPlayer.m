@@ -11,6 +11,9 @@ static NSString *const playbackBufferEmptyKeyPath = @"playbackBufferEmpty";
 static NSString *const readyForDisplayKeyPath = @"readyForDisplay";
 static NSString *const playbackRate = @"rate";
 
+@interface RCTVLCPlayer () <VLCMediaPlayerDelegate>
+@end
+
 @implementation RCTVLCPlayer
 {
     
@@ -23,6 +26,7 @@ static NSString *const playbackRate = @"rate";
     BOOL _started;
     
 }
+
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
 {
@@ -90,7 +94,7 @@ static NSString *const playbackRate = @"rate";
     if(_player){
         [self _release];
     }
-    NSArray* options = [_source objectForKey:@"initOptions"];
+    //NSArray* options = [_source objectForKey:@"initOptions"];
     NSString* uri    = [_source objectForKey:@"uri"];
     BOOL isNetWork   = [RCTConvert BOOL:[_source objectForKey:@"isNetwork"]];
     NSURL* _uri    = [NSURL URLWithString:uri];
@@ -123,7 +127,7 @@ static NSString *const playbackRate = @"rate";
         [self _release];
     }
     _source = source;
-    NSArray* options = [source objectForKey:@"initOptions"];
+    //NSArray* options = [source objectForKey:@"initOptions"];
     NSString* uri    = [source objectForKey:@"uri"];
     BOOL    autoplay = [RCTConvert BOOL:[source objectForKey:@"autoplay"]];
     BOOL isNetWork   = [RCTConvert BOOL:[_source objectForKey:@"isNetwork"]];
@@ -156,6 +160,14 @@ static NSString *const playbackRate = @"rate";
         [self play];
 }
 
+- (void)mediaPlayerSnapshot:(NSNotification *)aNotification{
+     NSLog(@"userInfo %@",[aNotification userInfo]);
+    self.onSnapshot(@{
+                      @"target": self.reactTag,
+                      @"success": [NSNumber numberWithInt:1],
+                    });
+}
+
 - (void)mediaPlayerTimeChanged:(NSNotification *)aNotification
 {
     [self updateVideoProgress];
@@ -180,8 +192,6 @@ static NSString *const playbackRate = @"rate";
                        @"inputBitrate": [NSNumber numberWithFloat:inputBitrate],
                        @"numberOfReadBytesOnDemux": [NSNumber numberWithInt:numberOfReadBytesOnDemux]
                     });*/
-    
-    
     if(_player){
         VLCMediaPlayerState state = _player.state;
         switch (state) {
@@ -243,6 +253,7 @@ static NSString *const playbackRate = @"rate";
             default:
                 break;
         }
+        //_player.isPlaying
     }
 }
 
@@ -349,7 +360,6 @@ static NSString *const playbackRate = @"rate";
 - (void)_release
 {
     if(_player){
-        [_player pause];
         [_player stop];
         _player = nil;
         _eventDispatcher = nil;
