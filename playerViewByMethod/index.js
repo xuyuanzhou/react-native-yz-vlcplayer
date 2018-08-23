@@ -258,6 +258,7 @@ export default class VlCPlayerViewByMethod extends Component {
     onEnd && onEnd();
   };
 
+
   _next = () => {};
 
   /**
@@ -440,6 +441,7 @@ export default class VlCPlayerViewByMethod extends Component {
             useVip={true}
             vipTime={180}
             isFull={isFull}
+            onSnapshot={this.props.onSnapshot}
             onEnd={() => {
               onAdEnd && onAdEnd();
               this.setState({ isEndAd: true });
@@ -465,6 +467,7 @@ export default class VlCPlayerViewByMethod extends Component {
             showBack={showBack}
             showTitle={showTitle}
             hadAd={true}
+            onSnapshot={this.props.onSnapshot}
             chapterElements={chapterElements}
             isEndAd={isEndAd}
             //initPaused={this.state.paused}

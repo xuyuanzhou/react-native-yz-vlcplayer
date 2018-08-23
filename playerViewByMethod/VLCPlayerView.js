@@ -402,9 +402,6 @@ export default class VLCPlayerView extends Component {
     this.vlcPlayer && this.vlcPlayer.snapshot(path);
   }
 
-  onSnapshot = (event)=>{
-    console.log(event);
-  }
 
   /**
    * 视频播放
@@ -480,6 +477,7 @@ export default class VLCPlayerView extends Component {
   _onSnapshot = e => {
     console.log('_onSnapshot')
     console.log(e);
+    this.props.onSnapshot &&  this.props.onSnapshot(e);
   }
 
   _onOpen = e => {
