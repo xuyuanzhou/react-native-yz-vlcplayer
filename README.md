@@ -40,6 +40,8 @@ step 2:
 step 3:
 
    create a folder named vlcKit, and copy MobileVLCKit.framework in this folder.
+   
+   ![](./images/7.png)   
     
 step 4:
    

@@ -15,7 +15,7 @@ import {
   Platform,
   Animated,
 } from 'react-native';
-import { VLCPlayer } from 'react-native-yz-vlcplayer';
+import VLCPlayer from '../VLCPlayer';
 import PropTypes from 'prop-types';
 import TimeLimt from './TimeLimit';
 import ControlBtn from './ControlBtn';
