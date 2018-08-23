@@ -17,7 +17,7 @@ VLCPlayer 支持各种格式(mp4,m3u8,flv,mov,rtsp,rtmp,etc.)，具体参看[vlc
 
 ## android setup
 
-android vlc-sdk 库来源:[https://github.com/mengzhidaren/Vlc-sdk-lib](https://github.com/mengzhidaren/Vlc-sdk-lib)
+android vlc-sdk from:[https://github.com/mengzhidaren/Vlc-sdk-lib](https://github.com/mengzhidaren/Vlc-sdk-lib)
 
 step 1:
 
@@ -28,6 +28,7 @@ Run `react-native link react-native-yz-vlcplayer`
 
 combined from  [react-native-vlcplayer](https://github.com/xiongchuan86/react-native-vlcplayer) 。
 
+ios vlc-sdk from: [https://code.videolan.org/videolan/VLCKit](https://code.videolan.org/videolan/VLCKit)
 
 step 1: 
 
