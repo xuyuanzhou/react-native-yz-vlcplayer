@@ -15,15 +15,17 @@ RCT_EXPORT_MODULE();
 
 /* Should support: onLoadStart, onLoad, and onError to stay consistent with Image */
 RCT_EXPORT_VIEW_PROPERTY(onVideoProgress, RCTBubblingEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onVideoPaused, RCTBubblingEventBlock);
+/*RCT_EXPORT_VIEW_PROPERTY(onVideoPaused, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVideoStopped, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVideoBuffering, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVideoPlaying, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVideoEnded, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onVideoError, RCTBubblingEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(onVideoOpen, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onVideoOpen, RCTBubblingEventBlock);*/
 RCT_EXPORT_VIEW_PROPERTY(onVideoLoadStart, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onSnapshot, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onIsPlaying, RCTBubblingEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onVideoStateChange, RCTBubblingEventBlock);
 
 
 - (dispatch_queue_t)methodQueue

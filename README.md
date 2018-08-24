@@ -118,8 +118,10 @@ ios:
 
 this.vlcPlayer.resume(autoplay) //重新加载视频进行播放,autopaly: true 表示播放 false表示暂停
 
-1.0.8~
 this.vlcPlayer.play(bool)       // true: play the video   false: paused the video
+
+
+this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
 
 
 ```
@@ -134,6 +136,7 @@ this.vlcPlayer.play(bool)       // true: play the video   false: paused the vide
    | muted       | bool     |         |            |
    | volume      | bool     | 0---200 |            |
    | source      | object   | { uri: 'http:...' }| |
+   | autoplay    | bool     |       |  是否自动播放（默认true）        |
    | onLoadStart | func     |       |  vlc视频容器初始化完毕  |
    | onOpen      | func     |       |  视频被打开            |
    | onBuffering | func     |       |  正在缓冲中           |
@@ -142,8 +145,38 @@ this.vlcPlayer.play(bool)       // true: play the video   false: paused the vide
    | onPlaying   | func     |       |  视频正在播放        |
    | onPaused    | func     |       |  视频暂停           |
    | onError     | func     |       |  播放视频出错       |
+   | onIsPlaying | func     | {isPlaying:true}   |  视频是否正在播放       |
 
-
+   
+   
+   ```
+      onBuffer:   
+      
+        android: {
+                    isPlaying: true,
+                    bufferRate: 70,
+                    duration: 0,
+                 }
+                 
+            ios: {
+                   duration: 0,
+                   isPlaying: true,
+                 }
+                 
+      onProgress:
+            
+                {
+                    currentTime: 1000        ms
+                    duration: 5000           ms
+                }
+                
+      onIsPlaying:
+                
+                {
+                    isPlaying: true
+                }
+   
+   ```
    
 
 ## 回调函数简单说明（目前碰到的）
