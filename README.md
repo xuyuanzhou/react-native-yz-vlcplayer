@@ -10,6 +10,13 @@ VLCPlayer 支持各种格式(mp4,m3u8,flv,mov,rtsp,rtmp,etc.)，具体参看[vlc
 [https://code.videolan.org/videolan/VLCKit](https://code.videolan.org/videolan/VLCKit)
 
 
+ ![](./images/example1.gif)
+ 
+ ![](./images/example2.gif)
+
+
+
+
 ###  install
 
      `npm install react-native-yz-vlcplayer --save`
