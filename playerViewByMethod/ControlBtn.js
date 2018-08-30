@@ -57,9 +57,9 @@ export default class ControlBtn extends Component {
       currentTime,
       totalTime,
       style,
+      onReload
     } = this.props;
     return (
-      <View style={[styles.controls, style]}>
         <View style={styles.controlContainer}>
           <TouchableOpacity style={styles.controlContent} activeOpacity={1}>
             <View style={styles.controlContent2}>
@@ -80,6 +80,16 @@ export default class ControlBtn extends Component {
                 style={{ width: 40, alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name={muted ? 'volume-off' : 'volume-high'} size={26} color="#fff" />
               </TouchableOpacity>
+                {totalTime <= 0 &&
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => {
+                  onReload && onReload();
+                }}
+                  style={{ width: 40, alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon name={'reload'} size={26} color="#fff"/>
+                </TouchableOpacity>
+                }
               </View>
               {showSlider &&
                 totalTime > 0 && (
@@ -109,6 +119,9 @@ export default class ControlBtn extends Component {
                         value={currentTime}
                         maximumValue={totalTime}
                         step={1}
+                        onSlidingStart={(value)=>{
+                          console.log('onSlidingStart',value)
+                        }}
                         onValueChange={value => {
                           onValueChange && onValueChange(value);
                         }}
@@ -141,7 +154,6 @@ export default class ControlBtn extends Component {
             </View>
           </TouchableOpacity>
         </View>
-      </View>
     );
   }
 }

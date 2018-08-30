@@ -66,7 +66,7 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
         if (TextUtils.isEmpty(uriString)) {
             return;
         }
-        videoView.setSrc(uriString, isNetStr, autoplay);
+        videoView.setSrc(src);
 
     }
 

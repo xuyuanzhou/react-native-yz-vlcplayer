@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 
@@ -26,7 +28,13 @@ import org.videolan.libvlc.util.VLCUtil;
 import org.videolan.vlc.RecordEvent;
 import org.videolan.vlc.util.VLCInstance;
 import org.videolan.vlc.VlcVideoView;
+import org.videolan.vlc.util.VLCOptions;
+
+import java.sql.Array;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
 
 @SuppressLint("ViewConstructor")
 class ReactVlcPlayerView extends SurfaceView implements
@@ -44,6 +52,7 @@ class ReactVlcPlayerView extends SurfaceView implements
     private String src;
     //是否网络资源
     private  boolean netStrTag;
+    private ReadableMap srcMap;
 
 
     //private Handler mainHandler;
@@ -183,9 +192,11 @@ class ReactVlcPlayerView extends SurfaceView implements
         public void onEvent(MediaPlayer.Event event) {
             boolean isPlaying = mMediaPlayer.isPlaying();
             currentTime = mMediaPlayer.getTime();
+            float position = mMediaPlayer.getPosition();
             totalLength = mMediaPlayer.getLength();
             WritableMap map = Arguments.createMap();
             map.putBoolean("isPlaying",isPlaying);
+            map.putDouble("position",position);
             map.putDouble("currentTime",currentTime);
             map.putDouble("duration",totalLength);
             switch (event.type) {
@@ -221,9 +232,9 @@ class ReactVlcPlayerView extends SurfaceView implements
                 case MediaPlayer.Event.TimeChanged:
                     map.putString("type","TimeChanged");
                     eventEmitter.onVideoStateChange(map);
-                    currentTime = mMediaPlayer.getTime();
+                    /*currentTime = mMediaPlayer.getTime();
                     totalLength = mMediaPlayer.getLength();
-                    eventEmitter.progressChanged(currentTime, totalLength);
+                    eventEmitter.progressChanged(currentTime, totalLength);*/
                     break;
                 default:
                     map.putString("type",event.type+"");
@@ -246,6 +257,15 @@ class ReactVlcPlayerView extends SurfaceView implements
             mVideoVisibleHeight = visibleHeight;
             mSarNum = sarNum;
             mSarDen = sarDen;
+            WritableMap map = Arguments.createMap();
+            map.putInt("mVideoWidth",mVideoWidth);
+            map.putInt("mVideoHeight",mVideoHeight);
+            map.putInt("mVideoVisibleWidth",mVideoVisibleWidth);
+            map.putInt("mVideoVisibleHeight",mVideoVisibleHeight);
+            map.putInt("mSarNum",mSarNum);
+            map.putInt("mSarDen",mSarDen);
+            map.putString("type","onNewVideoLayout");
+            eventEmitter.onVideoStateChange(map);
         }
     };
 
@@ -279,12 +299,30 @@ class ReactVlcPlayerView extends SurfaceView implements
         audioManager.abandonAudioFocus(this);
     }
 
-    private void createPlayer(boolean autoplay) {
+    private void createPlayer(boolean autoplayResume, boolean isResume) {
         releasePlayer();
         try {
+            ArrayList<String> cOptions = VLCOptions.getLibOptions(getContext());
+            String uriString = srcMap.hasKey("uri") ? srcMap.getString("uri") : null;
+            //String extension = srcMap.hasKey("type") ? srcMap.getString("type") : null;
+            boolean isNetwork = srcMap.hasKey("isNetwork") ? srcMap.getBoolean("isNetwork") : false;
+            boolean autoplay = srcMap.hasKey("autoplay") ? srcMap.getBoolean("autoplay") : true;
+            int initType =     srcMap.hasKey("initType") ? srcMap.getInt("initType") : 1;
+            ReadableArray mediaOptions =     srcMap.hasKey("mediaOptions") ? srcMap.getArray("mediaOptions") : null;
+            ReadableArray initOptions = srcMap.hasKey("initOptions") ? srcMap.getArray("initOptions") : null;
+            if(initOptions != null){
+                ArrayList options = initOptions.toArrayList();
+                for(int i=0; i < options.size() - 1 ; i++){
+                    String option = (String)options.get(i);
+                    cOptions.add(option);
+                }
+            }
             // Create LibVLC
-            ArrayList<String> options = new ArrayList<String>(50);
-            libvlc =  VLCInstance.get(getContext());
+            if(initType == 2){
+                libvlc =  VLCInstance.get(getContext());
+            }else{
+                libvlc =  new LibVLC(getContext(), cOptions);
+            }
             //libvlc = new LibVLC(getContext(), options);
             // Create media player
             mMediaPlayer = new MediaPlayer(libvlc);
@@ -304,18 +342,31 @@ class ReactVlcPlayerView extends SurfaceView implements
             }
             DisplayMetrics dm = getResources().getDisplayMetrics();
             Media m = null;
-            if(netStrTag){
-                Uri uri = Uri.parse(this.src);
+            if(isNetwork){
+                Uri uri = Uri.parse(uriString);
                 m = new Media(libvlc, uri);
             }else{
-                m = new Media(libvlc, this.src);
+                m = new Media(libvlc, uriString);
             }
-
+            //添加media  option
+            if(mediaOptions != null){
+                ArrayList options = mediaOptions.toArrayList();
+                for(int i=0; i < options.size() - 1 ; i++){
+                    String option = (String)options.get(i);
+                     m.addOption(option);
+                }
+            }
             mMediaPlayer.setMedia(m);
             mMediaPlayer.setScale(0);
-            if(autoplay){
-                isPaused = false;
-                mMediaPlayer.play();
+            if(isResume){
+                if(autoplayResume){
+                    mMediaPlayer.play();
+                }
+            }else{
+                if(autoplay){
+                    isPaused = false;
+                    mMediaPlayer.play();
+                }
             }
             eventEmitter.loadStart();
         } catch (Exception e) {
@@ -354,7 +405,12 @@ class ReactVlcPlayerView extends SurfaceView implements
     public void setSrc(String uri, boolean isNetStr, boolean autoplay) {
         this.src = uri;
         this.netStrTag = isNetStr;
-        createPlayer(autoplay);
+        createPlayer(autoplay,false);
+    }
+
+    public void setSrc(ReadableMap src){
+        this.srcMap = src;
+        createPlayer(true,false);
     }
 
 
@@ -433,7 +489,7 @@ class ReactVlcPlayerView extends SurfaceView implements
      * @param autoplay
      */
     public void doResume(boolean autoplay){
-        createPlayer(autoplay);
+        createPlayer(autoplay,true);
     }
 
 
