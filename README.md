@@ -307,8 +307,8 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
 ## example project 
      
    [https://github.com/xuyuanzhou/vlcplayerExample](https://github.com/xuyuanzhou/vlcplayerExample)
-
-
+   ![](https://github.com/xuyuanzhou/resource/blob/master/gif/lizi.gif)
+     
 ## Simple Example
 
 ### 1.1.0+
