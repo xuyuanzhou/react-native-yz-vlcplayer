@@ -133,13 +133,6 @@ static NSString *const playbackRate = @"rate";
                                         @"target": self.reactTag
                                         });
             }
-        }else{
-            if(self.onVideoStateChange){
-                self.onVideoStateChange(@{
-                                        @"target": self.reactTag,
-                                        @"type": @"urlError",
-                                        });
-            }
         }
     }
     @catch(NSException *exception){
@@ -194,13 +187,6 @@ static NSString *const playbackRate = @"rate";
                 self.onVideoLoadStart(@{
                                        @"target": self.reactTag
                                        });
-            }
-        }else{
-            if(self.onVideoStateChange){
-                self.onVideoStateChange(@{
-                                          @"target": self.reactTag,
-                                          @"type": @"urlError",
-                                          });
             }
         }
     }

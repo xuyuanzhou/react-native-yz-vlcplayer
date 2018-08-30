@@ -98,6 +98,7 @@ export default class VlCPlayerViewByMethod extends Component {
   };
 
   static defaultProps = {
+    autoplay: true,
     showAd: false,
     showTop: false,
     adUrl: '',
@@ -194,7 +195,7 @@ export default class VlCPlayerViewByMethod extends Component {
     /**
      * 关闭全屏
      */
-    closeFullScreen: PropTypes.func,
+    onCloseFullScreen: PropTypes.func,
 
     /**
      * 是否显示顶部
@@ -476,7 +477,7 @@ export default class VlCPlayerViewByMethod extends Component {
 
   _onBuffering = (event) => {
     if(__DEV__){
-      console.log(event);
+      //console.log(event);
     }
     let { isPlaying, duration, hasVideoOut} = event;
     if(isPlaying){
@@ -516,7 +517,7 @@ export default class VlCPlayerViewByMethod extends Component {
    * handle the first time video play
    */
   handleVideoFirstTimePlay = ()=> {
-    let { lookTime, totalTime, showAd } = this.props;
+    let { lookTime, totalTime, showAd, autoplay } = this.props;
     let { isEndAd } = this.state;
     this.initSuccess = true;
     if(lookTime && totalTime){
@@ -532,6 +533,9 @@ export default class VlCPlayerViewByMethod extends Component {
       currentTime: lookTime || 0
     })
     if(showAd && !isEndAd){
+      this.pause();
+    }
+    if(!autoplay){
       this.pause();
     }
   }
@@ -571,7 +575,11 @@ export default class VlCPlayerViewByMethod extends Component {
    * @private
    */
   _onEnd = (data) => {
-    console.log('end',data);
+
+    if(__DEV__){
+      let { url } = this.props;
+      console.log(url+' --> end',data);
+    }
     let { currentTime, duration} = data;
     let { endDiffLength, onNext, onEnd, hadNext, autoPlayNext, autoRePlay } = this.props;
     if(duration){
@@ -622,6 +630,10 @@ export default class VlCPlayerViewByMethod extends Component {
    * @private
    */
   _onLoadStart = e => {
+    if(__DEV__){
+      let { url } = this.props;
+      console.log(url+' --> _onLoadStart',e);
+    }
     let { isError, isEndAd } = this.state;
     if (isError) {
         let { currentTime, totalTime } = this.state;
@@ -660,19 +672,35 @@ export default class VlCPlayerViewByMethod extends Component {
    * @private
    */
   _onStopped = (e)=> {
-    let { showAd } = this.props;
-    let { isEndAd } = this.state;
-    if(showAd && !isEndAd){
-      this.setState({
-        isEnding: true,
-        isEndAd: true,
-      })
-    }else{
-      this.setState({
-        isEnding: true,
-      })
+    if(__DEV__){
+      let { url } = this.props;
+      console.log(url+' --> _onStopped',e);
     }
-
+    let { showAd } = this.props;
+    let { isEndAd, totalTime } = this.state;
+    if(showAd && !isEndAd){
+      if(totalTime > 0){
+        this.setState({
+          isEnding: true,
+          isEndAd: true,
+        })
+      }else{
+        this.setState({
+          isError: true,
+          isEndAd: true,
+        })
+      }
+    }else{
+      if(totalTime > 0){
+        this.setState({
+          isEnding: true,
+        })
+      }else{
+        this.setState({
+          isError: true,
+        })
+      }
+    }
   }
 
   _onError = (e) => {
@@ -692,6 +720,7 @@ export default class VlCPlayerViewByMethod extends Component {
   }
 
   _onAdIsPlaying = (e)=> {
+    let { autoplay } = this.props;
     let { isPlaying } = e;
     if(isPlaying){
       if(!this.initAdSuccess){
@@ -699,6 +728,9 @@ export default class VlCPlayerViewByMethod extends Component {
         this.setState({
           showAdView: true
         });
+        if(!autoplay){
+          this.pause();
+        }
       }
     }
     this.setState({
@@ -1003,7 +1035,7 @@ export default class VlCPlayerViewByMethod extends Component {
         </View>
         <View style={styles.centerContainer}>
           <Text style={styles.centerContainerText}>视频播放出错</Text>
-          <TouchableOpacity style={styles.centerContainerBtn} onPress={this.reloadCurrent} activeOpacity={1}>
+          <TouchableOpacity style={styles.centerContainerBtn} onPress={this.reloadCurrent} activeOpacity={0.8}>
             <Icon name={'reload'} size={20} color="#fff" />
             <Text style={styles.centerContainerBtnText}>重新播放</Text>
           </TouchableOpacity>
@@ -1325,6 +1357,7 @@ export default class VlCPlayerViewByMethod extends Component {
       showBack,
       style,
       fullStyle,
+      autoplay,
       videoAspectRatio,
       fullVideoAspectRatio,
       considerStatusBar,
@@ -1393,6 +1426,7 @@ export default class VlCPlayerViewByMethod extends Component {
               {...this.props}
               videoAspectRatio={currentVideoAspectRatio}
               url={adUrl}
+              //autoplay={autoplay}
               isAd={true}
               onIsPlaying={this._onAdIsPlaying}
               onBuffering={this._onAdBuffering}
@@ -1411,6 +1445,7 @@ export default class VlCPlayerViewByMethod extends Component {
               {...this.props}
               showAd={showAd}
               isAd={false}
+              //autoplay={autoplay}
               url={currentUrl}
               isEndAd={isEndAd}
               style={showAd && !isEndAd ? { position: 'absolute', zIndex: -1 } : {}}

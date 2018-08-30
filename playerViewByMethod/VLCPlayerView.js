@@ -18,6 +18,7 @@ export default class VLCPlayerView extends Component {
     uri: PropTypes.string,
   };
 
+
   constructor(props) {
     super(props);
     this.state = {
@@ -148,6 +149,7 @@ export default class VLCPlayerView extends Component {
       showAdLoading: true,
       showLoading: true,
     });
+    console.log('_onLoadStart');
     this.props.onLoadStart && this.props.onLoadStart(e);
   };
 
@@ -274,7 +276,7 @@ export default class VLCPlayerView extends Component {
         )
       }
     }else{
-      if(showLoading && (showAd && isEndAd)){
+      if(showLoading && ((showAd && isEndAd) || !showAd)){
         return(
           <View style={styles.loading}>
             <ActivityIndicator size={'large'} animating={true} color="#fff" />
@@ -296,7 +298,8 @@ export default class VLCPlayerView extends Component {
       videoAspectRatio,
       mediaOptions,
       initOptions,
-      initType
+      initType,
+      autoplay
     } = this.props;
     let source = {};
     if (url) {
@@ -312,6 +315,7 @@ export default class VLCPlayerView extends Component {
           <VLCPlayer
             ref={ref => (this.vlcPlayer = ref)}
             style={styles.video}
+            autoplay={autoplay}
             source={source}
             volume={this.state.volume}
             muted={this.state.muted}

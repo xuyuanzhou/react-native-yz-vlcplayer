@@ -69,27 +69,25 @@ export default class ControlBtn extends Component {
                 onPress={() => {
                   onPausedPress && onPausedPress(!paused);
                 }}
-                style={{ width: 40, alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name={paused ? 'play' : 'pause'} size={28} color="#fff" />
+                style={{ width: 35, alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name={paused ? 'play' : 'pause'} size={26} color="#fff" />
               </TouchableOpacity>
               <TouchableOpacity
                 activeOpacity={1}
                 onPress={() => {
                   onMutePress && onMutePress(!paused);
                 }}
-                style={{ width: 40, alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name={muted ? 'volume-off' : 'volume-high'} size={26} color="#fff" />
+                style={{ width: 35, alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name={muted ? 'volume-off' : 'volume-high'} size={24} color="#fff" />
               </TouchableOpacity>
-                {totalTime <= 0 &&
                 <TouchableOpacity
                   activeOpacity={1}
                   onPress={() => {
                   onReload && onReload();
                 }}
-                  style={{ width: 40, alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon name={'reload'} size={26} color="#fff"/>
+                  style={{ width: 35, alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon name={'reload'} size={24} color="#fff"/>
                 </TouchableOpacity>
-                }
               </View>
               {showSlider &&
                 totalTime > 0 && (
@@ -148,8 +146,8 @@ export default class ControlBtn extends Component {
                 onPress={() => {
                   onFullPress && onFullPress(!isFull);
                 }}
-                style={{ width: 50, alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name={isFull ? 'fullscreen-exit' : 'fullscreen'} size={28} color="#fff" />
+                style={{ width: 35, alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name={isFull ? 'fullscreen-exit' : 'fullscreen'} size={26} color="#fff" />
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
