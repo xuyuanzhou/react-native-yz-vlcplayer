@@ -311,70 +311,26 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
 
 ## Simple Example
 
+### 1.1.0+
 ````
-   import { VLCPlayer, VlCPlayerView, VlCPlayerViewByMethod } from 'react-native-yz-vlcplayer';
+   import { VLCPlayer, VlcSimplePlayer } from 'react-native-yz-vlcplayer';
    import Orientation from 'react-native-orientation';
+            <VlcSimplePlayer
+               ref={ ref => this.vlCPlayerView = ref}
+               url={"rtmp://live.hkstv.hk.lxdns.com/live/hks"}
+               Orientation={Orientation}                          
+            />
+        
+````
 
-   (1)  <VlCPlayerView
-           url={this.state.url}           //视频url 
-           Orientation={Orientation}      
-           //BackHandle={BackHandle}
-           AdUrl=""                      // 广告url
-           showAd={false}                // 是否显示广告
-           showTitle={true}              // 是否显示标题
-           title=""                      // 标题
-           showBack={true}               // 是否显示返回按钮
-           onLeftPress={()=>{}}          // 返回按钮点击事件
-           startFullScreen={() => {      
-              this.setState({
-              isFull: true,
-             });
-           }}
-           closeFullScreen={() => {
-              this.setState({
-              isFull: false,
-             });
-           }}
-       />
-    
-    
-   (2)
-       
-       use  `this.vlcPlayer.play(bool)`   instead of  parameter  `paused`
-       
+### ~1.0.9
+````
+   import { VLCPlayer, VlCPlayerViewByMethod } from 'react-native-yz-vlcplayer';
+   import Orientation from 'react-native-orientation';
             <VlCPlayerViewByMethod
                ref={ ref => this.vlCPlayerView = ref}
-               onVipPress={this._onVipPress.bind(this)}
-               autoPlay={true}
                url={"rtmp://live.hkstv.hk.lxdns.com/live/hks"}
-               onLeftPress={() => {
-               }}
-               onProgressChange={this._onProgressChange}
-               //title={title}              
-               //showTitle={true}
-               //showBack={true}
-               //lookTime={timeStudied}
-               //totalTime={timeTotal}
-               //useVip={!hadOwn}
-               onEnd={this._onEnd}
-               Orientation={Orientation}
-               BackHandle={BackHandle}
-               //autoPlayNext={false}
-               //autoRePlay={false}
-               //hadNext={false}
-               showAd={true}
-               adUrl="http://bxyzweb.doctorz.cn/ofafilm/03.swf"             
-               //chapterElements={this._renderList()}
-               onStartFullScreen={() => {
-                 this.setState({
-                   isFull: true,
-                 });
-               }}
-               onCloseFullScreen={() => {
-                 this.setState({
-                   isFull: false,
-                 });
-               }}
+               Orientation={Orientation}                          
             />
         
 ````
