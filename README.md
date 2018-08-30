@@ -313,14 +313,120 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
 
 ### 1.1.0+
 ````
+   (1)
+      1. npm install react-native-orientation --save
+      
+         react-native link react-native-orientation
+         
+      2. npm install react-native-slider --save
+      
+      3. npm install react-native-vector-icons --save
+      
+         react-native link react-native-vector-icons
    
-   import { VLCPlayer, VlcSimplePlayer } from 'react-native-yz-vlcplayer';
-   import Orientation from 'react-native-orientation';
-            <VlcSimplePlayer
-               ref={ ref => this.vlCPlayerView = ref}
-               url={"rtmp://live.hkstv.hk.lxdns.com/live/hks"}
-               Orientation={Orientation}                          
-            />
+   (2)
+   
+       import { VLCPlayer, VlcSimplePlayer } from 'react-native-yz-vlcplayer';
+       import Orientation from 'react-native-orientation';
+           
+       <VlcSimplePlayer
+           ref={ ref => this.vlCPlayerView = ref}
+           url={"rtmp://live.hkstv.hk.lxdns.com/live/hks"}
+           Orientation={Orientation}                          
+       />
+       
+       
+       static propTypes = {
+           /**
+            * 视频路径： 本地或者网络
+            */
+           url: PropTypes.oneOfType([PropTypes.string,PropTypes.object]).isRequired,
+           /**
+            * 视频样式
+            */
+           style: PropTypes.object,
+           /**
+            * 全屏视频样式
+            */
+           fullStyle: PropTypes.object,
+           /**
+            * 以全屏初始化
+            */
+           initWithFull: PropTypes.bool,
+           /**
+            * 是否使用vip
+            */
+           useVip: PropTypes.bool,
+           /**
+            * 非vip观看长度
+            */
+           vipPlayLength: PropTypes.number,
+           /**
+            * 是否有下一视频源
+            */
+           hadNext: PropTypes.bool,
+           /**
+            * 自动播放下一个视频
+            */
+           autoPlayNext: PropTypes.bool,
+           /**
+            * 自动重复播放
+            */
+           autoRePlay: PropTypes.bool,
+           /**
+            * 观看时间
+            */
+           lookTime: PropTypes.number,
+           /**
+            * 总时间
+            */
+           totalTime: PropTypes.number,
+           /**
+            * 是否需要考虑statusBar   only for ios
+            */
+           considerStatusBar: PropTypes.bool,
+           /**
+            * 视频播放结束
+            */
+           onEnd: PropTypes.func,
+           /**
+            *
+            */
+           onNext: PropTypes.func,
+           /**
+            * 广告头播放结束
+            */
+           onAdEnd: PropTypes.func,
+           /**
+            * 开启全屏
+            */
+           onStartFullScreen: PropTypes.func,
+           /**
+            * 关闭全屏
+            */
+           closeFullScreen: PropTypes.func,
+       
+           /**
+            * 是否显示顶部
+            */
+           showTop: PropTypes.bool,
+               /**
+                * 标题
+                */
+               title: PropTypes.string,
+               /**
+                * 是否显示返回按钮
+                */
+               showBack: PropTypes.bool,
+               /**
+                * 是否显示标题
+                */
+               showTitle: PropTypes.bool,
+               /**
+                * 返回按钮点击事件
+                */
+               onLeftPress: PropTypes.func,
+         };
         
 ````
 
