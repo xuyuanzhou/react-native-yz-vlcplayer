@@ -137,6 +137,9 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
    | paused      | bool     |         |            |
    | muted       | bool     |         |            |
    | volume      | bool     | 0---200 |            |
+   | initType    | number   |         |            |
+   | initOptions | array    |         |            |
+   | mediaOptions| object   |         |            |
    | source      | object   | { uri: 'http:...' }| |
    | autoplay    | bool     |       |  是否自动播放（默认true）        |
    | onLoadStart | func     |       |  vlc视频容器初始化完毕  |
@@ -149,6 +152,22 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
    | onError     | func     |       |  播放视频出错       |
    | onIsPlaying | func     | {isPlaying:true}   |  视频是否正在播放       |
 
+   
+   ```
+      initType:   1,2     default value: 1
+        example:
+             ios: 
+                   1: [[VLCMediaPlayer alloc] init]
+                   2: [[VLCMediaPlayer alloc] initWithOptions:options];
+         
+   ```
+   
+   initOptions: 
+   
+   [https://wiki.videolan.org/VLC_command-line_help](https://wiki.videolan.org/VLC_command-line_help)
+   
+   [https://www.cnblogs.com/waimai/p/3342739.html](https://www.cnblogs.com/waimai/p/3342739.html)
+   
    
    
    ```
