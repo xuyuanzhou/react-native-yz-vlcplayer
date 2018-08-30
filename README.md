@@ -354,6 +354,10 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
             */
            initWithFull: PropTypes.bool,
            /**
+            * 自动播放
+            */
+           autoplay: PropTypes.bool,
+           /**
             * 是否使用vip
             */
            useVip: PropTypes.bool,
@@ -404,7 +408,7 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
            /**
             * 关闭全屏
             */
-           closeFullScreen: PropTypes.func,
+           onCloseFullScreen: PropTypes.func,
        
            /**
             * 是否显示顶部
