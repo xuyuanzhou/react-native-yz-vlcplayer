@@ -313,6 +313,7 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
 
 ### 1.1.0+
 ````
+   
    import { VLCPlayer, VlcSimplePlayer } from 'react-native-yz-vlcplayer';
    import Orientation from 'react-native-orientation';
             <VlcSimplePlayer
