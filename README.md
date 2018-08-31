@@ -10,6 +10,12 @@ VLCPlayer 支持各种格式(mp4,m3u8,flv,mov,rtsp,rtmp,etc.)，具体参看[vlc
 [https://code.videolan.org/videolan/VLCKit](https://code.videolan.org/videolan/VLCKit)
 
 
+## Example project 
+     
+   [https://github.com/xuyuanzhou/vlcplayerExample](https://github.com/xuyuanzhou/vlcplayerExample)
+  
+   ![](https://github.com/xuyuanzhou/resource/blob/master/gif/lizi.gif)
+
 
 
 ###  install
@@ -150,6 +156,7 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
    | onPlaying   | func     |       |  视频正在播放        |
    | onPaused    | func     |       |  视频暂停           |
    | onError     | func     |       |  播放视频出错       |
+   | onStopped   | func     |       |  视频停止播放(直播视频请根据这个判断) |
    | onIsPlaying | func     | {isPlaying:true}   |  视频是否正在播放       |
 
    
@@ -196,6 +203,8 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
                 {
                     isPlaying: true
                 }
+      
+      
    
    ```
    
@@ -303,11 +312,6 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
   
 ````
 
-   
-## example project 
-     
-   [https://github.com/xuyuanzhou/vlcplayerExample](https://github.com/xuyuanzhou/vlcplayerExample)
-   ![](https://github.com/xuyuanzhou/resource/blob/master/gif/lizi.gif)
      
 ## Simple Example
 
