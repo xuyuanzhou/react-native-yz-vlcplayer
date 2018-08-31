@@ -170,6 +170,9 @@ export default class VlCPlayerViewByMethod extends Component {
         reloadWithAd: PropTypes.bool,
         //广告头播放结束
         onAdEnd: PropTypes.func,
+        //广告是否在播放
+        onIsAdPlaying: PropTypes.func,
+
 
     /**
      * 屏幕相关
@@ -191,6 +194,8 @@ export default class VlCPlayerViewByMethod extends Component {
         url: PropTypes.oneOfType([PropTypes.string,PropTypes.number]).isRequired,
         //视频播放结束
         onEnd: PropTypes.func,
+        //是否在播放
+        onIsPlaying: PropTypes.func,
         //已经观看时间
         lookTime: PropTypes.number,
         //总时间
@@ -201,6 +206,7 @@ export default class VlCPlayerViewByMethod extends Component {
         autoPlayNext: PropTypes.bool,
         //自动重复播放
         autoRePlay: PropTypes.bool,
+
 
     /**
      * 样式相关
@@ -284,6 +290,16 @@ export default class VlCPlayerViewByMethod extends Component {
 
   componentDidMount() {
     let { style, isAd, initWithFull } = this.props;
+    let { autoplay, showAd } = this.props;
+    //当显示广告并且自动播放为false时,不显示广告
+    if(showAd && !autoplay){
+      if(this.autoplayAdSize < 1){
+        this.autoplayAdSize = 1;
+        this.setState({
+          isEndAd: true
+        });
+      }
+    }
     NetInfo.getConnectionInfo().then((connectionInfo) => {
       NetInfo.isConnected.fetch().then(isConnected => {
         this.setState({
@@ -407,6 +423,7 @@ export default class VlCPlayerViewByMethod extends Component {
     this.vlcPlayerViewRef && this.vlcPlayerViewRef.reload(true);
   }
 
+
   seek = (value) => {
     this.vlcPlayerViewRef && this.vlcPlayerViewRef.seek(value);
   }
@@ -452,6 +469,10 @@ export default class VlCPlayerViewByMethod extends Component {
     this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.snapshot(path);
   }
 
+  resumeAd = ()=> {
+    this.initAdSuccess = false;
+    this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.reload(true);
+  }
 
   seekAd = (value) => {
     this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.seek(value);
@@ -521,6 +542,8 @@ export default class VlCPlayerViewByMethod extends Component {
 
   _onIsPlaying = (event)=> {
     let { isPlaying } = event;
+    let { onIsPlaying } = this.props;
+    onIsPlaying && onIsPlaying(event);
     if(isPlaying){
       if(!this.initSuccess){
         this.handleVideoFirstTimePlay();
@@ -757,10 +780,13 @@ export default class VlCPlayerViewByMethod extends Component {
    *****************************/
 
   _onAdBuffering = e => {
+    console.log(e)
   }
 
   _onAdIsPlaying = (e)=> {
-    let { autoplay } = this.props;
+    console.log(e)
+    let { autoplay, onIsAdPlaying } = this.props;
+    onIsAdPlaying && onIsAdPlaying(e);
     let { isPlaying } = e;
     if(isPlaying){
       if(!this.initAdSuccess){
@@ -784,15 +810,19 @@ export default class VlCPlayerViewByMethod extends Component {
   }
 
   _onAdStopped = (e)=> {
+    console.log("_onAdStopped",e);
     this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.seek(0);
+    this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.play();
   }
 
   _onAdLoadStart = e=> {
+    console.log("_onAdLoadStart",e);
     this.initAdSuccess = false;
   }
 
   _onAdEnd = e => {
     this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.seek(0);
+    this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.play();
   }
 
 
@@ -805,18 +835,19 @@ export default class VlCPlayerViewByMethod extends Component {
 
 
   reload = () => {
-    let { storeUrl } = this.state;
+    let { storeUrl, adUrl } = this.state;
     let { reloadWithAd } = this.props;
     let isEndAd = true;
     if(reloadWithAd){
       isEndAd = false;
+      this.adUrl = adUrl;
       this.initAdSuccess = false;
-      this.initSuccess = false;
     }
+    this.initSuccess = false;
     this.setState(
       {
         currentTime: 0,
-        isEndAd,
+        isEndAd: isEndAd,
         currentUrl: '',
         showControls: false,
       },
@@ -824,6 +855,10 @@ export default class VlCPlayerViewByMethod extends Component {
         this.setState({
           isEnding: false,
           currentUrl: storeUrl,
+        },()=>{
+          if(reloadWithAd){
+            this.resumeAd();
+          }
         });
       },
     );
@@ -840,16 +875,20 @@ export default class VlCPlayerViewByMethod extends Component {
     if(reloadWithAd){
       isEndAd = false;
       this.initAdSuccess = false;
-      this.initSuccess = false;
     }
+    this.initSuccess = false;
     this.setState({
       currentUrl: '',
-      isEndAd,
+      isEndAd: isEndAd,
       showControls: false
     }, () => {
       this.setState({
         isEnding: false,
         currentUrl: storeUrl,
+      },()=>{
+        if(reloadWithAd){
+          this.resumeAd();
+        }
       });
     });
   }
@@ -1201,8 +1240,13 @@ export default class VlCPlayerViewByMethod extends Component {
 
   getCommonView = ()=>{
     let { showBack } = this.props;
+    let { paused } = this.state;
     return (<View style={styles.commonView}>
-      <TouchableOpacity activeOpacity={1} style={{flex:1}} onPressIn={this._onBodyPressIn} onPressOut={this._onBodyPress}>
+      <TouchableOpacity activeOpacity={1} style={{flex:1,justifyContent:'center',alignItems:'center'}} onPressIn={this._onBodyPressIn} onPressOut={this._onBodyPress}>
+        {this.initSuccess && paused &&<TouchableOpacity activeOpacity={0.8} style={{paddingTop:2,paddingLeft:2,backgroundColor:'rgba(0,0,0,0.5)',justifyContent:'center',alignItems:'center',width:50,height:50,borderRadius:25}} onPress={this.play}>
+          <Icon name={'play'} size={30} color="#fff"/>
+        </TouchableOpacity>
+        }
       </TouchableOpacity>
       <View style={[styles.backBtn,{position:'absolute',left:0,top:0, zIndex:999}]}>
         {showBack && (

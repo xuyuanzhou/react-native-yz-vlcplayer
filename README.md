@@ -340,9 +340,7 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
        />
        
        
-       static propTypes = {
-       
-           /**
+        /**
             * vlc 播放类型相关
             */
                //广告初始化类型
@@ -374,6 +372,9 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
                reloadWithAd: PropTypes.bool,
                //广告头播放结束
                onAdEnd: PropTypes.func,
+               //广告是否在播放
+               onIsAdPlaying: PropTypes.func,
+       
        
            /**
             * 屏幕相关
@@ -395,6 +396,8 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
                url: PropTypes.oneOfType([PropTypes.string,PropTypes.number]).isRequired,
                //视频播放结束
                onEnd: PropTypes.func,
+               //是否在播放
+               onIsPlaying: PropTypes.func,
                //已经观看时间
                lookTime: PropTypes.number,
                //总时间
@@ -405,6 +408,7 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
                autoPlayNext: PropTypes.bool,
                //自动重复播放
                autoRePlay: PropTypes.bool,
+       
        
            /**
             * 样式相关

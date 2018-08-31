@@ -92,9 +92,11 @@ export default class VLCPlayerView extends Component {
         });
       }
     }else{
-      this.setState({
-        showLoading: true,
-      });
+      if(!this.initSuccess){
+        this.setState({
+          showLoading: true,
+        });
+      }
     }
    // console.log(event);
   }
@@ -111,6 +113,12 @@ export default class VLCPlayerView extends Component {
         this.setState({
           showAdLoading: false,
         })
+      }
+    }else{
+      if(this.initSuccess){
+        this.setState({
+          showLoading: false,
+        });
       }
     }
     this.props.onIsPlaying && this.props.onIsPlaying(event)
