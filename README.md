@@ -341,99 +341,99 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
        
        
        static propTypes = {
+       
            /**
-            * 视频路径： 本地或者网络
+            * vlc 播放类型相关
             */
-           url: PropTypes.oneOfType([PropTypes.string,PropTypes.object]).isRequired,
+               //广告初始化类型
+               initAdType: PropTypes.oneOf([1,2]),
+               //广告初始化参数
+               initAdOptions: PropTypes.array,
+       
+               //视频初始化类型
+               initType: PropTypes.oneOf([1,2]),
+               //视频初始化参数
+               initOptions: PropTypes.array,
+       
            /**
-            * 视频样式
+            * 直播相关
             */
-           style: PropTypes.object,
+                //是否直播
+                isLive: PropTypes.bool,
+                //是否自动reload  live
+                autoReloadLive: PropTypes.bool,
+       
            /**
-            * 全屏视频样式
+            * 广告相关
             */
-           fullStyle: PropTypes.object,
+               //是否显示广告
+               showAd:  PropTypes.bool,
+               //广告url
+               adUrl: PropTypes.oneOfType([PropTypes.string,PropTypes.number]).isRequired,
+               //重新加载包括广告
+               reloadWithAd: PropTypes.bool,
+               //广告头播放结束
+               onAdEnd: PropTypes.func,
+       
            /**
-            * 以全屏初始化
+            * 屏幕相关
             */
+           // 以全屏初始化
            initWithFull: PropTypes.bool,
-           /**
-            * 自动播放
-            */
-           autoplay: PropTypes.bool,
-           /**
-            * 是否使用vip
-            */
-           useVip: PropTypes.bool,
-           /**
-            * 非vip观看长度
-            */
-           vipPlayLength: PropTypes.number,
-           /**
-            * 是否有下一视频源
-            */
-           hadNext: PropTypes.bool,
-           /**
-            * 自动播放下一个视频
-            */
-           autoPlayNext: PropTypes.bool,
-           /**
-            * 自动重复播放
-            */
-           autoRePlay: PropTypes.bool,
-           /**
-            * 观看时间
-            */
-           lookTime: PropTypes.number,
-           /**
-            * 总时间
-            */
-           totalTime: PropTypes.number,
-           /**
-            * 是否需要考虑statusBar   only for ios
-            */
-           considerStatusBar: PropTypes.bool,
-           /**
-            * 视频播放结束
-            */
-           onEnd: PropTypes.func,
-           /**
-            *
-            */
-           onNext: PropTypes.func,
-           /**
-            * 广告头播放结束
-            */
-           onAdEnd: PropTypes.func,
-           /**
-            * 开启全屏
-            */
+           //开启全屏回调函数
            onStartFullScreen: PropTypes.func,
-           /**
-            * 关闭全屏
-            */
+           //关闭全屏回调函数
            onCloseFullScreen: PropTypes.func,
        
            /**
-            * 是否显示顶部
+            * 视频相关
             */
-           showTop: PropTypes.bool,
-               /**
-                * 标题
-                */
+       
+               //视频路径：
+                    //string:  本地或者网络资源路径
+                    //number:  require('./resource/1.mp4')
+               url: PropTypes.oneOfType([PropTypes.string,PropTypes.number]).isRequired,
+               //视频播放结束
+               onEnd: PropTypes.func,
+               //已经观看时间
+               lookTime: PropTypes.number,
+               //总时间
+               totalTime: PropTypes.number,
+               //是否有下一视频源
+               hadNext: PropTypes.bool,
+               //自动播放下一个视频
+               autoPlayNext: PropTypes.bool,
+               //自动重复播放
+               autoRePlay: PropTypes.bool,
+       
+           /**
+            * 样式相关
+            */
+               //视频样式
+               style: PropTypes.object,
+               //全屏视频样式
+               fullStyle: PropTypes.object,
+               //是否需要考虑statusBar   only for ios
+               considerStatusBar: PropTypes.bool,
+               //是否显示顶部
+               showTop: PropTypes.bool,
+               //标题
                title: PropTypes.string,
-               /**
-                * 是否显示返回按钮
-                */
-               showBack: PropTypes.bool,
-               /**
-                * 是否显示标题
-                */
+               //是否显示标题
                showTitle: PropTypes.bool,
-               /**
-                * 返回按钮点击事件
-                */
+               //是否显示返回按钮
+               showBack: PropTypes.bool,
+               //返回按钮点击事件
                onLeftPress: PropTypes.func,
+       
+           /**
+            * vip相关
+            */
+               //是否使用vip
+               useVip: PropTypes.bool,
+               //非vip观看长度
+               vipPlayLength: PropTypes.number,
+       
          };
         
 ````
