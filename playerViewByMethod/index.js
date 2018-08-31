@@ -522,7 +522,9 @@ export default class VlCPlayerViewByMethod extends Component {
    ************************/
 
   _onBuffering = (event) => {
-    console.log(this.props.url,event);
+    if(__DEV__){
+      console.log('_onBuffering:'+this.props.url,event);
+    }
     if (this.isReloadingError) {
       this.handleError();
     }
@@ -552,7 +554,9 @@ export default class VlCPlayerViewByMethod extends Component {
 
     let { isPlaying } = event;
     let { onIsPlaying } = this.props;
-    console.log(this.props.url,this.state.isError+":"+isPlaying)
+    if(__DEV__){
+      console.log('_onIsPlaying:'+this.props.url,this.state.isError+":"+isPlaying)
+    }
     if(!this.initSuccess){
       this.handleInitSuccess();
     }
@@ -655,7 +659,7 @@ export default class VlCPlayerViewByMethod extends Component {
   _onEnd = (data) => {
     let { url, isLive } = this.props;
     if(__DEV__){
-      console.log(url+' --> end',data);
+      console.log('_onEnd:'+url+' --> end',data);
     }
     this.handleEnd = true
     let { currentTime, duration} = data;
@@ -699,8 +703,9 @@ export default class VlCPlayerViewByMethod extends Component {
    * @private
    */
   _onOpen = e => {
-    console.log('onOpen',e);
-   // console.log(e);
+    if(__DEV__){
+      console.log('onOpen',e);
+    }
   };
 
   /**
@@ -712,7 +717,7 @@ export default class VlCPlayerViewByMethod extends Component {
     let { url , autoplay} = this.props;
     let { isError }  = this.state;
     if(__DEV__){
-      console.log(url+' --> _onLoadStart',e);
+      console.log('_onLoadStart:'+url+' --> _onLoadStart',e);
     }
     if (isError) {
      this.handleError();
@@ -798,11 +803,15 @@ export default class VlCPlayerViewByMethod extends Component {
    *****************************/
 
   _onAdBuffering = e => {
-    console.log(e)
+    if(__DEV__){
+      console.log('_onAdBuffering',e)
+    }
   }
 
   _onAdIsPlaying = (e)=> {
-    console.log(e)
+    if(__DEV__){
+      console.log('_onAdIsPlaying',e)
+    }
     let { autoplay, onIsAdPlaying } = this.props;
     onIsAdPlaying && onIsAdPlaying(e);
     let { isPlaying } = e;
@@ -828,13 +837,17 @@ export default class VlCPlayerViewByMethod extends Component {
   }
 
   _onAdStopped = (e)=> {
-    console.log("_onAdStopped",e);
+    if(__DEV__){
+      console.log("_onAdStopped",e);
+    }
     this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.seek(0);
     this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.play();
   }
 
   _onAdLoadStart = e=> {
-    console.log("_onAdLoadStart",e);
+    if(__DEV__){
+      console.log("_onAdLoadStart",e);
+    }
     this.initAdSuccess = false;
   }
 
@@ -906,6 +919,7 @@ export default class VlCPlayerViewByMethod extends Component {
     let { reloadWithAd,  isLive } = this.props;
     if(isLive){
       this.setState({
+        showControls: false,
         pauseByAutoplay: false,
       });
       this.reloadLive();
