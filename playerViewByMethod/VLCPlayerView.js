@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 
 export default class VLCPlayerView extends Component {
   static propTypes = {
-    uri: PropTypes.string,
+    //uri: PropTypes.string,
   };
 
 
@@ -173,9 +173,11 @@ export default class VLCPlayerView extends Component {
    * @param event
    */
   _onEnded = (event) => {
-    this.setState({
-      showLoading: false
-    });
+    if(this.initSuccess){
+      this.setState({
+        showLoading: false
+      });
+    }
     let { onEnd } = this.props;
     onEnd && onEnd(event);
   }
@@ -186,9 +188,11 @@ export default class VLCPlayerView extends Component {
    * @private
    */
   _onStopped = (event) => {
-    this.setState({
-      showLoading: false
-    });
+    if(this.initSuccess){
+      this.setState({
+        showLoading: false
+      });
+    }
     this.props.onStopped && this.props.onStopped(event);
   }
 

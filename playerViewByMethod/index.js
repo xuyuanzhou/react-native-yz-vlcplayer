@@ -73,6 +73,8 @@ export default class VlCPlayerViewByMethod extends Component {
     this.initialCurrentTime = 0;
     this.initSuccess = false;
     this.initAdLoadStart = false;
+    this.autoplaySize = 0;
+    this.autoplayAdSize = 0;
   }
 
   static navigationOptions = {
@@ -103,6 +105,9 @@ export default class VlCPlayerViewByMethod extends Component {
     showTop: false,
     adUrl: '',
     url: '',
+    isLive: false,
+    autoReloadLive: false,
+    reloadWithAd: false,
     showBack: false,
     showTitle: false,
     autoPlayNext: false,
@@ -132,91 +137,99 @@ export default class VlCPlayerViewByMethod extends Component {
   };
 
   static propTypes = {
+
     /**
-     * 视频路径： 本地或者网络
+     * vlc 播放类型相关
      */
-    url: PropTypes.oneOfType([PropTypes.string,PropTypes.object]).isRequired,
+        //广告初始化类型
+        initAdType: PropTypes.oneOf([1,2]),
+        //广告初始化参数
+        initAdOptions: PropTypes.array,
+
+        //视频初始化类型
+        initType: PropTypes.oneOf([1,2]),
+        //视频初始化参数
+        initOptions: PropTypes.array,
+
     /**
-     * 视频样式
+     * 直播相关
      */
-    style: PropTypes.object,
+         //是否直播
+         isLive: PropTypes.bool,
+         //是否自动reload  live
+         autoReloadLive: PropTypes.bool,
+
     /**
-     * 全屏视频样式
+     * 广告相关
      */
-    fullStyle: PropTypes.object,
+        //是否显示广告
+        showAd:  PropTypes.bool,
+        //广告url
+        adUrl: PropTypes.oneOfType([PropTypes.string,PropTypes.number]).isRequired,
+        //重新加载包括广告
+        reloadWithAd: PropTypes.bool,
+        //广告头播放结束
+        onAdEnd: PropTypes.func,
+
     /**
-     * 以全屏初始化
+     * 屏幕相关
      */
+    // 以全屏初始化
     initWithFull: PropTypes.bool,
-    /**
-     * 是否使用vip
-     */
-    useVip: PropTypes.bool,
-    /**
-     * 非vip观看长度
-     */
-    vipPlayLength: PropTypes.number,
-    /**
-     * 是否有下一视频源
-     */
-    hadNext: PropTypes.bool,
-    /**
-     * 自动播放下一个视频
-     */
-    autoPlayNext: PropTypes.bool,
-    /**
-     * 自动重复播放
-     */
-    autoRePlay: PropTypes.bool,
-    /**
-     * 观看时间
-     */
-    lookTime: PropTypes.number,
-    /**
-     * 总时间
-     */
-    totalTime: PropTypes.number,
-    /**
-     * 是否需要考虑statusBar   only for ios
-     */
-    considerStatusBar: PropTypes.bool,
-    /**
-     * 视频播放结束
-     */
-    onEnd: PropTypes.func,
-    /**
-     * 广告头播放结束
-     */
-    onAdEnd: PropTypes.func,
-    /**
-     * 开启全屏
-     */
+    //开启全屏回调函数
     onStartFullScreen: PropTypes.func,
-    /**
-     * 关闭全屏
-     */
+    //关闭全屏回调函数
     onCloseFullScreen: PropTypes.func,
 
     /**
-     * 是否显示顶部
+     * 视频相关
      */
-    showTop: PropTypes.bool,
-        /**
-         * 标题
-         */
+
+        //视频路径：
+             //string:  本地或者网络资源路径
+             //number:  require('./resource/1.mp4')
+        url: PropTypes.oneOfType([PropTypes.string,PropTypes.number]).isRequired,
+        //视频播放结束
+        onEnd: PropTypes.func,
+        //已经观看时间
+        lookTime: PropTypes.number,
+        //总时间
+        totalTime: PropTypes.number,
+        //是否有下一视频源
+        hadNext: PropTypes.bool,
+        //自动播放下一个视频
+        autoPlayNext: PropTypes.bool,
+        //自动重复播放
+        autoRePlay: PropTypes.bool,
+
+    /**
+     * 样式相关
+     */
+        //视频样式
+        style: PropTypes.object,
+        //全屏视频样式
+        fullStyle: PropTypes.object,
+        //是否需要考虑statusBar   only for ios
+        considerStatusBar: PropTypes.bool,
+        //是否显示顶部
+        showTop: PropTypes.bool,
+        //标题
         title: PropTypes.string,
-        /**
-         * 是否显示返回按钮
-         */
-        showBack: PropTypes.bool,
-        /**
-         * 是否显示标题
-         */
+        //是否显示标题
         showTitle: PropTypes.bool,
-        /**
-         * 返回按钮点击事件
-         */
+        //是否显示返回按钮
+        showBack: PropTypes.bool,
+        //返回按钮点击事件
         onLeftPress: PropTypes.func,
+
+    /**
+     * vip相关
+     */
+        //是否使用vip
+        useVip: PropTypes.bool,
+        //非vip观看长度
+        vipPlayLength: PropTypes.number,
+
   };
 
   /*****************************
@@ -389,6 +402,11 @@ export default class VlCPlayerViewByMethod extends Component {
     this.vlcPlayerViewRef && this.vlcPlayerViewRef.pause();
   }
 
+  resume = ()=> {
+    this.initSuccess = false;
+    this.vlcPlayerViewRef && this.vlcPlayerViewRef.reload(true);
+  }
+
   seek = (value) => {
     this.vlcPlayerViewRef && this.vlcPlayerViewRef.seek(value);
   }
@@ -535,7 +553,8 @@ export default class VlCPlayerViewByMethod extends Component {
     if(showAd && !isEndAd){
       this.pause();
     }
-    if(!autoplay){
+    if(!autoplay && this.autoplaySize < 1){
+      this.autoplaySize++;
       this.pause();
     }
   }
@@ -676,29 +695,50 @@ export default class VlCPlayerViewByMethod extends Component {
       let { url } = this.props;
       console.log(url+' --> _onStopped',e);
     }
-    let { showAd } = this.props;
+    let { showAd, isLive, autoReloadLive } = this.props;
     let { isEndAd, totalTime } = this.state;
     if(showAd && !isEndAd){
-      if(totalTime > 0){
-        this.setState({
-          isEnding: true,
-          isEndAd: true,
-        })
+      if(isLive){
+        if(autoReloadLive){
+          this.reloadLive();
+        }else{
+          this.setState({
+            isError: true,
+            isEndAd: true,
+          })
+        }
       }else{
-        this.setState({
-          isError: true,
-          isEndAd: true,
-        })
+        if(totalTime > 0){
+          this.setState({
+            isEnding: true,
+            isEndAd: true,
+          })
+        }else{
+          this.setState({
+            isError: true,
+            isEndAd: true,
+          })
+        }
       }
     }else{
-      if(totalTime > 0){
-        this.setState({
-          isEnding: true,
-        })
+      if(isLive) {
+        if (autoReloadLive) {
+          this.reloadLive();
+        } else {
+          this.setState({
+            isError: true
+          })
+        }
       }else{
-        this.setState({
-          isError: true,
-        })
+        if(totalTime > 0){
+          this.setState({
+            isEnding: true,
+          })
+        }else{
+          this.setState({
+            isError: true,
+          })
+        }
       }
     }
   }
@@ -728,7 +768,8 @@ export default class VlCPlayerViewByMethod extends Component {
         this.setState({
           showAdView: true
         });
-        if(!autoplay){
+        if(!autoplay && this.autoplayAdSize < 1){
+          this.autoplayAdSize ++ ;
           this.pause();
         }
       }
@@ -765,9 +806,17 @@ export default class VlCPlayerViewByMethod extends Component {
 
   reload = () => {
     let { storeUrl } = this.state;
+    let { reloadWithAd } = this.props;
+    let isEndAd = true;
+    if(reloadWithAd){
+      isEndAd = false;
+      this.initAdSuccess = false;
+      this.initSuccess = false;
+    }
     this.setState(
       {
         currentTime: 0,
+        isEndAd,
         currentUrl: '',
         showControls: false,
       },
@@ -780,9 +829,24 @@ export default class VlCPlayerViewByMethod extends Component {
     );
   };
 
+  reloadLive = ()=> {
+    this.resume(true);
+  }
+
   reloadCurrent = () => {
     let {storeUrl} = this.state;
-    this.setState({currentUrl: '', showControls: false}, () => {
+    let { reloadWithAd } = this.props;
+    let isEndAd = true;
+    if(reloadWithAd){
+      isEndAd = false;
+      this.initAdSuccess = false;
+      this.initSuccess = false;
+    }
+    this.setState({
+      currentUrl: '',
+      isEndAd,
+      showControls: false
+    }, () => {
       this.setState({
         isEnding: false,
         currentUrl: storeUrl,
@@ -960,16 +1024,17 @@ export default class VlCPlayerViewByMethod extends Component {
 
 
   getVipEndView = () => {
-    let { onVipPress } = this.props;
+    let { onVipPress, showBack } = this.props;
       return (
         <View style={[styles.loading, { backgroundColor: 'rgb(0,0,0)' }]}>
-          <View style={{ height: 37, width: 40, position:'absolute', top:0, left:0,zIndex: 999 }}>
+          {showBack && <View style={{ height: 37, width: 40, position:'absolute', top:0, left:0,zIndex: 999 }}>
             <View style={styles.backBtn}>
               <TouchableOpacity onPress={this._onLeftPress} style={styles.btn} activeOpacity={0.8}>
-                <Icon name={'chevron-left'} size={30} color="#fff" />
+                <Icon name={'chevron-left'} size={30} color="#fff"/>
               </TouchableOpacity>
             </View>
           </View>
+          }
           <View style={styles.centerContainer}>
             <Text style={styles.centerContainerText} numberOfLines={1}>试看结束，请购买后观看</Text>
             <TouchableOpacity activeOpacity={0.8} onPress={() => {onVipPress && onVipPress()}} style={[styles.centerContainerBtn,{ backgroundColor: 'rgb(230,33,41)'}]}>
@@ -1165,6 +1230,7 @@ export default class VlCPlayerViewByMethod extends Component {
       isAd,
       type,
       showAd,
+      chapterElements
     } = this.props;
     let {
       muted,
@@ -1209,10 +1275,10 @@ export default class VlCPlayerViewByMethod extends Component {
                     <Icon name={'chevron-left'} size={30} color="#fff"/>
                   </TouchableOpacity>
                 )}
-                <View style={{ justifyContent: 'center', flex: 1, marginRight: 10 }}>
+                <View style={{ justifyContent: 'center', flex: 1, marginLeft:10, marginRight: 10 }}>
                   {showTitle && (<Text style={{ color: '#fff', fontSize: 12 }} numberOfLines={1}>{title}</Text>)}
                 </View>
-                {isFull && (
+                {isFull && chapterElements && (
                   <TouchableOpacity
                     style={{
                             width: 40,
@@ -1502,7 +1568,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     //marginLeft: 10,
-    marginRight: 8,
+   // marginRight: 8,
     justifyContent: 'center',
     alignItems: 'center',
     height: 37,

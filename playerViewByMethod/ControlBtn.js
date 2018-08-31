@@ -65,7 +65,7 @@ export default class ControlBtn extends Component {
             <View style={styles.controlContent2}>
               <View style={{flexDirection:'row'}}>
               <TouchableOpacity
-                activeOpacity={1}
+                activeOpacity={0.8}
                 onPress={() => {
                   onPausedPress && onPausedPress(!paused);
                 }}
@@ -73,7 +73,7 @@ export default class ControlBtn extends Component {
                 <Icon name={paused ? 'play' : 'pause'} size={26} color="#fff" />
               </TouchableOpacity>
               <TouchableOpacity
-                activeOpacity={1}
+                activeOpacity={0.8}
                 onPress={() => {
                   onMutePress && onMutePress(!paused);
                 }}
@@ -81,7 +81,7 @@ export default class ControlBtn extends Component {
                 <Icon name={muted ? 'volume-off' : 'volume-high'} size={24} color="#fff" />
               </TouchableOpacity>
                 <TouchableOpacity
-                  activeOpacity={1}
+                  activeOpacity={0.8}
                   onPress={() => {
                   onReload && onReload();
                 }}
@@ -142,7 +142,7 @@ export default class ControlBtn extends Component {
                   </View>
                 )}
               <TouchableOpacity
-                activeOpacity={1}
+                activeOpacity={0.8}
                 onPress={() => {
                   onFullPress && onFullPress(!isFull);
                 }}
