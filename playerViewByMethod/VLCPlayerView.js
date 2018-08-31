@@ -80,25 +80,6 @@ export default class VLCPlayerView extends Component {
    */
   _onBuffering = (event) => {
     this.props.onBuffering &&  this.props.onBuffering(event);
-    let { isPlaying, duration} = event;
-    if(isPlaying){
-      if(duration <= 0){
-        this.setState({
-          showLoading: false,
-        });
-      }else{
-        this.setState({
-          showLoading: true,
-        });
-      }
-    }else{
-      if(!this.initSuccess){
-        this.setState({
-          showLoading: true,
-        });
-      }
-    }
-   // console.log(event);
   }
 
   /**
@@ -107,20 +88,6 @@ export default class VLCPlayerView extends Component {
    * @private
    */
   _onIsPlaying =(event)=>{
-    if(event.isPlaying){
-      if(!this.initSuccess){
-        this.initSuccess = true;
-        this.setState({
-          showAdLoading: false,
-        })
-      }
-    }else{
-      if(this.initSuccess){
-        this.setState({
-          showLoading: false,
-        });
-      }
-    }
     this.props.onIsPlaying && this.props.onIsPlaying(event)
   }
 
@@ -153,11 +120,6 @@ export default class VLCPlayerView extends Component {
    * @private
    */
   _onLoadStart = e => {
-    this.setState({
-      showAdLoading: true,
-      showLoading: true,
-    });
-    console.log('_onLoadStart');
     this.props.onLoadStart && this.props.onLoadStart(e);
   };
 
@@ -166,9 +128,6 @@ export default class VLCPlayerView extends Component {
    * @param event
    */
   _onProgress = (event) => {
-    this.setState({
-      showLoading: false
-    });
     this.props.onProgressChange &&
     this.props.onProgressChange({
       currentTime: event.currentTime / 1000,
@@ -181,11 +140,6 @@ export default class VLCPlayerView extends Component {
    * @param event
    */
   _onEnded = (event) => {
-    if(this.initSuccess){
-      this.setState({
-        showLoading: false
-      });
-    }
     let { onEnd } = this.props;
     onEnd && onEnd(event);
   }
@@ -196,11 +150,6 @@ export default class VLCPlayerView extends Component {
    * @private
    */
   _onStopped = (event) => {
-    if(this.initSuccess){
-      this.setState({
-        showLoading: false
-      });
-    }
     this.props.onStopped && this.props.onStopped(event);
   }
 
@@ -277,25 +226,28 @@ export default class VLCPlayerView extends Component {
    * @private
    */
   _renderLoading = ()=>{
-    let { showAd, isEndAd, isAd} = this.props;
+    let { showAd, isEndAd, isAd, pauseByAutoplay} = this.props;
     let { showLoading, showAdLoading } = this.state;
-    if(isAd){
-      if(showAdLoading){
-        return(
-          <View style={styles.loading}>
-            <ActivityIndicator size={'large'} animating={true} color="#fff" />
-          </View>
-        )
-      }
-    }else{
-      if(showLoading && ((showAd && isEndAd) || !showAd)){
-        return(
-          <View style={styles.loading}>
-            <ActivityIndicator size={'large'} animating={true} color="#fff" />
-          </View>
-        )
+    if(!pauseByAutoplay){
+      if(isAd){
+        if(showAdLoading){
+          return(
+            <View style={styles.loading}>
+              <ActivityIndicator size={'large'} animating={true} color="#fff" />
+            </View>
+          )
+        }
+      }else{
+        if(showLoading && ((showAd && isEndAd) || !showAd)){
+          return(
+            <View style={styles.loading}>
+              <ActivityIndicator size={'large'} animating={true} color="#fff" />
+            </View>
+          )
+        }
       }
     }
+
     return null;
   }
 
@@ -353,7 +305,7 @@ export default class VLCPlayerView extends Component {
             initType={initType || 1}
           />
         </View>
-        {this._renderLoading()}
+       {/* {this._renderLoading()}*/}
       </View>
     );
   }
