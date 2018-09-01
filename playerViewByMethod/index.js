@@ -665,7 +665,7 @@ export default class VlCPlayerViewByMethod extends Component {
     if(__DEV__){
       console.log('_onEnd:'+url+' --> end',data);
     }
-    this.handleEnd = true
+    this.hadEnd = true;
     let { currentTime, duration} = data;
     let { endDiffLength, onNext, onEnd, hadNext, autoPlayNext, autoRePlay } = this.props;
     if(duration){
@@ -742,7 +742,7 @@ export default class VlCPlayerViewByMethod extends Component {
       console.log(url+' --> _onStopped',e);
     }
     let { showAd, isLive, autoReloadLive } = this.props;
-    let { isEndAd, totalTime, pauseByAutoplay, realPaused } = this.state;
+    let { isEndAd, isEndding, isError, totalTime, pauseByAutoplay, realPaused } = this.state;
     if(isLive){
       if(autoReloadLive && !pauseByAutoplay){
         if(this.autoReloadLiveSize < 20){
@@ -760,6 +760,11 @@ export default class VlCPlayerViewByMethod extends Component {
           isError: true,
           isEndAd: true,
         })
+      }
+    }else{
+      //视频可能因某些原因触发了该事件，此时需要重新让它播放(默认设置autoplay为false除外)
+      if(!pauseByAutoplay && !this.hadEnd){
+        this.play();
       }
     }
   }
@@ -858,6 +863,7 @@ export default class VlCPlayerViewByMethod extends Component {
 
   startReload = (isCurrent = false)=>{
     this.firstPlaying = false;
+    this.hadEnd = false;
     let { storeUrl, adUrl, currentTime } = this.state;
     let { reloadWithAd, isLive } = this.props;
 
@@ -871,6 +877,7 @@ export default class VlCPlayerViewByMethod extends Component {
       currentTime: isCurrent ? currentTime : 0 ,
       pauseByAutoplay: false,
       isEndAd:isEndAd,
+      isEnding: false,
       showControls: false,
     },()=>{
       if(reloadWithAd){
@@ -1078,9 +1085,10 @@ export default class VlCPlayerViewByMethod extends Component {
 
   getVipEndView = () => {
     let { onVipPress, showBack } = this.props;
+    let { isFull } = this.state;
       return (
         <View style={[styles.loading, { backgroundColor: 'rgb(0,0,0)' }]}>
-          {showBack && <View style={{ height: 37, width: 40, position:'absolute', top:0, left:0,zIndex: 999 }}>
+          {isFull && <View style={{ height: 37, width: 40, position:'absolute', top:0, left:0,zIndex: 999 }}>
             <View style={styles.backBtn}>
               <TouchableOpacity onPress={this._onLeftPress} style={styles.btn} activeOpacity={0.8}>
                 <Icon name={'chevron-left'} size={30} color="#fff"/>
@@ -1104,7 +1112,7 @@ export default class VlCPlayerViewByMethod extends Component {
       hadNext,
       showBack
     } = this.props;
-    let { height, width } = this.state;
+    let { height, width, isFull} = this.state;
     return(
       <View style={[styles.commonView,{ backgroundColor:'rgba(0,0,0,0)'}]}>
         <View style={styles.centerContainer}>
@@ -1123,7 +1131,7 @@ export default class VlCPlayerViewByMethod extends Component {
           </View>
         </View>
         <View style={{ height: 37, width: 40, position:'absolute', top:0, left:0,zIndex: 999 }}>
-          {showBack && (
+          {isFull && (
             <TouchableOpacity
               onPress={this._onLeftPress}
               style={styles.btn}
@@ -1142,7 +1150,7 @@ export default class VlCPlayerViewByMethod extends Component {
     return (
       <View style={[styles.loading, { zIndex:999, backgroundColor: '#000' }]}>
         <View style={[styles.backBtn,{position:'absolute',left:0,top:0,zIndex:999}]}>
-          {showBack && (
+          {isFull && (
             <TouchableOpacity
               onPress={this._onLeftPress}
               style={styles.btn}
@@ -1171,7 +1179,7 @@ export default class VlCPlayerViewByMethod extends Component {
         <View
           style={[styles.loading,{zIndex:999, backgroundColor:'#000',}]}>
           <View style={[styles.backBtn,{position:'absolute',left:0,top:0}]}>
-            {showBack && (
+            {isFull && (
               <TouchableOpacity
                 onPress={this._onLeftPress}
                 style={styles.btn}
@@ -1254,7 +1262,7 @@ export default class VlCPlayerViewByMethod extends Component {
 
   getCommonView = ()=>{
     let { showBack } = this.props;
-    let { paused, pauseByAutoplay } = this.state;
+    let { paused, pauseByAutoplay, isFull } = this.state;
     let showPaused = false;
     if(this.firstPlaying || pauseByAutoplay){
       if(paused){
@@ -1269,7 +1277,7 @@ export default class VlCPlayerViewByMethod extends Component {
         }
       </TouchableOpacity>
       <View style={[styles.backBtn,{position:'absolute',left:0,top:0, zIndex:999}]}>
-        {showBack && (
+        {isFull && (
           <TouchableOpacity
             onPress={this._onLeftPress}
             style={styles.btn}
