@@ -1485,7 +1485,7 @@ export default class VlCPlayerViewByMethod extends Component {
                   if (Platform.OS === 'ios') {
                     this.seek(Number((value / totalTime).toFixed(17)));
                   } else {
-                    this.seek(value * 1000);
+                    this.seek(value);
                   }
                 }
                 this.setState({
