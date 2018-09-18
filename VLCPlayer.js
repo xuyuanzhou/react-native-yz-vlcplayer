@@ -40,6 +40,10 @@ export default class VLCPlayer extends Component {
     this.setNativeProps({ paused: paused });
   }
 
+  position(position){
+    this.setNativeProps({ position: position });
+  }
+
   resume(isResume) {
     this.setNativeProps({ resume: isResume });
   }
@@ -56,7 +60,9 @@ export default class VLCPlayer extends Component {
     //
     let type = event.nativeEvent.type;
     if(__DEV__){
-     // console.log(type,event.nativeEvent);
+      if(type === 'onNewVideoLayout'){
+        console.log(type,event.nativeEvent);
+      }
     }
     switch (type){
       case 'Opening':
@@ -171,6 +177,7 @@ VLCPlayer.propTypes = {
   rate: PropTypes.number,
   seek: PropTypes.number,
   resume: PropTypes.bool,
+  position: PropTypes.number,
   snapshotPath: PropTypes.string,
   paused: PropTypes.bool,
   videoAspectRatio: PropTypes.string,

@@ -25,6 +25,7 @@ static NSString *const playbackRate = @"rate";
     BOOL _paused;
     BOOL _started;
     
+    
 }
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher
@@ -91,7 +92,9 @@ static NSString *const playbackRate = @"rate";
 -(void)setResume:(BOOL)autoplay
 {
     @try{
+        char * videoRatio = nil;
         if(_player){
+            videoRatio = _player.videoAspectRatio;
             [_player stop];
             _player = nil;
         }
@@ -123,6 +126,9 @@ static NSString *const playbackRate = @"rate";
             media.delegate = self;
             if(mediaOptions){
                 [media addOptions:mediaOptions];
+            }
+            if(videoRatio){
+                _player.videoAspectRatio = videoRatio;
             }
             [media parseWithOptions:VLCMediaParseLocal|VLCMediaFetchLocal|VLCMediaParseNetwork|VLCMediaFetchNetwork];
             _player.media = media;
@@ -204,7 +210,7 @@ static NSString *const playbackRate = @"rate";
 }
 
 
-/*- (void)mediaMetaDataDidChange:(VLCMedia *)aMedia{
+- (void)mediaMetaDataDidChange:(VLCMedia *)aMedia{
     NSLog(@"mediaMetaDataDidChange");
     NSInteger readBytes = aMedia.numberOfReadBytesOnInput;
     NSLog(@"readBytes %zd", readBytes);
@@ -231,7 +237,7 @@ static NSString *const playbackRate = @"rate";
                               });
     //NSLog(@"readBytes %zd", readBytes);
 }
-*/
+
 - (void)mediaPlayerTimeChanged:(NSNotification *)aNotification
 {
     [self updateVideoProgress];

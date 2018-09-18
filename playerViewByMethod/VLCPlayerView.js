@@ -9,9 +9,12 @@ import {
   ActivityIndicator,
   Platform,
   Animated,
+  Dimensions
 } from 'react-native';
 import VLCPlayer from '../VLCPlayer';
 import PropTypes from 'prop-types';
+const deviceHeight = Dimensions.get('window').height;
+const deviceWidth = Dimensions.get('window').width;
 
 export default class VLCPlayerView extends Component {
   static propTypes = {
@@ -46,7 +49,7 @@ export default class VLCPlayerView extends Component {
     seek: 0,
     playInBackground: false,
     isAd: false,
-    autoplay: true,
+    autoplay: false,
     lookTime: 0,
     totalTime: 0,
   };
@@ -191,6 +194,16 @@ export default class VLCPlayerView extends Component {
     this.vlcPlayer.seek(value);
   }
 
+  position = (position)=> {
+    this.vlcPlayer.position(position);
+  }
+
+  volume = (volume)=>{
+   this.setState({
+     volume: volume
+   })
+  }
+
   /**
    * reload the video
    * @param value
@@ -251,6 +264,20 @@ export default class VLCPlayerView extends Component {
     return null;
   }
 
+  /**
+   * 布局发生变化
+   * @param e
+   * @private
+   */
+  onLayout = e => {
+    let { width, height } = e.nativeEvent.layout;
+    this.setState({
+      width,
+      height
+    })
+  };
+
+
   render() {
     let {
       onEnd,
@@ -263,8 +290,10 @@ export default class VLCPlayerView extends Component {
       mediaOptions,
       initOptions,
       initType,
-      autoplay
+      autoplay,
+      isFull
     } = this.props;
+    let { width, height} = this.state;
     let source = {};
     if (url) {
       if (url.split) {
@@ -273,9 +302,21 @@ export default class VLCPlayerView extends Component {
         source = url;
       }
     }
+    /*if(!videoAspectRatio){
+      if(isFull){
+        if(width + height - deviceWidth+deviceHeight <= 50){
+          videoAspectRatio =  width + ':' + height;
+        }
+      }else{
+        if(width*height > 0){
+          videoAspectRatio =  width + ':' + height;
+        }
+      }
+    }
+    console.log(videoAspectRatio);*/
     return (
       <View style={[{flex:1},style]}>
-        <View style={{flex:1}}>
+        <View style={{flex:1}} onLayout={this.onLayout}>
           <VLCPlayer
             ref={ref => (this.vlcPlayer = ref)}
             style={styles.video}

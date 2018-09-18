@@ -135,9 +135,11 @@ export default class VlCPlayerViewByMethod extends Component {
       zIndex: 9999,
     },
     initAdType: 2,
-    initAdOptions: ["--input-repeat=1000","--repeat"],
+    initAdOptions: Platform.OS === 'ios' ? ["--input-repeat=1000","--repeat"] : [],
     initType: 1,
     initOptions: [],
+    fullVideoAspectRatio: deviceHeight + ':' + deviceWidth,
+    videoAspectRatio: deviceWidth + ':' + 211.5,
   };
 
   static propTypes = {
@@ -285,6 +287,8 @@ export default class VlCPlayerViewByMethod extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.url !== prevState.storeUrl) {
+      this._hideChapter(0);
+      this.initSuccess = false;
       this.setState({
         storeUrl: this.props.url,
         currentUrl: this.props.url,
@@ -526,9 +530,10 @@ export default class VlCPlayerViewByMethod extends Component {
    ************************/
 
   _onBuffering = (event) => {
-    if(__DEV__){
+    /*if(__DEV__){
       console.log('_onBuffering:'+this.props.url,event);
-    }
+    }*/
+    this.isProgressChange = false;
     if (this.isReloadingError) {
       this.handleError();
     }
@@ -557,10 +562,11 @@ export default class VlCPlayerViewByMethod extends Component {
   _onIsPlaying = (event)=> {
 
     let { isPlaying } = event;
-    let { onIsPlaying } = this.props;
-    if(__DEV__){
+    let { onIsPlaying, showAd } = this.props;
+    let { isEndAd, paused } = this.state;
+    /*if(__DEV__){
       console.log('_onIsPlaying:'+this.props.url,this.state.isError+":"+isPlaying)
-    }
+    }*/
     if(!this.initSuccess){
       this.handleInitSuccess();
     }
@@ -570,24 +576,30 @@ export default class VlCPlayerViewByMethod extends Component {
     if(isPlaying){
       if(!this.firstPlaying){
         this.firstPlaying = true;
+        //存在广告且广告未结束，停止播放
+        if(showAd && !isEndAd){
+          this.pause();
+        }
       }
       this.setState({
         isError: false
       })
     }
     onIsPlaying && onIsPlaying(event);
-    this.setState({
-      paused: !isPlaying
-    })
+    if(paused !== !isPlaying){
+      this.setState({
+        paused: !isPlaying
+      })
+    }
   }
 
   /**
    * handle the first time video play
    */
   handleInitSuccess = ()=> {
-    let { isError } = this.state;
+    let { isError, isEndAd } = this.state;
     this.initSuccess = true;
-      let { lookTime, totalTime, showAd, isEndAd, autoplay } = this.props;
+      let { lookTime, totalTime, showAd, autoplay } = this.props;
       if(lookTime && totalTime){
         if (Platform.OS === 'ios') {
           this.seek(Number((lookTime / totalTime).toFixed(17)));
@@ -633,6 +645,7 @@ export default class VlCPlayerViewByMethod extends Component {
    * @private
    */
   _onProgressChange = ({ currentTime, totalTime }) => {
+    this.isProgressChange = true;
     if(!this.changingSlider){
       if(totalTime && currentTime){
         this.setState({
@@ -720,9 +733,9 @@ export default class VlCPlayerViewByMethod extends Component {
   _onLoadStart = e => {
     let { url , autoplay} = this.props;
     let { isError }  = this.state;
-    if(__DEV__){
+   /* if(__DEV__){
       console.log('_onLoadStart:'+url+' --> _onLoadStart',e);
-    }
+    }*/
     if (isError) {
      this.handleError();
     }
@@ -737,10 +750,10 @@ export default class VlCPlayerViewByMethod extends Component {
    * @private
    */
   _onStopped = (e)=> {
-    if(__DEV__){
+    /*if(__DEV__){
       let { url } = this.props;
       console.log(url+' --> _onStopped',e);
-    }
+    }*/
     let { showAd, isLive, autoReloadLive } = this.props;
     let { isEndAd, isEndding, isError, totalTime, pauseByAutoplay, realPaused } = this.state;
     if(isLive){
@@ -770,7 +783,7 @@ export default class VlCPlayerViewByMethod extends Component {
   }
 
   _onError = (e) => {
-    console.log(e);
+    //console.log(e);
     this.setState({
       isError: true
     })
@@ -784,9 +797,9 @@ export default class VlCPlayerViewByMethod extends Component {
    *****************************/
 
   _onAdBuffering = e => {
-    if(__DEV__){
+    /*if(__DEV__){
       console.log('_onAdBuffering',e)
-    }
+    }*/
   }
 
   _onAdIsPlaying = (e)=> {
@@ -821,8 +834,13 @@ export default class VlCPlayerViewByMethod extends Component {
     if(__DEV__){
       console.log("_onAdStopped",e);
     }
+    this.setState({ isEndAd: true, showAdView:false },()=>{
+      this.play();
+      this.vlcPlayerViewRef.volume(199);
+    });
+    /*this.vlcPlayerViewAdRef &&  this.vlcPlayerViewAdRef.position(0);
     this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.seek(0);
-    this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.play();
+    this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.play();*/
   }
 
   _onAdLoadStart = e=> {
@@ -833,8 +851,18 @@ export default class VlCPlayerViewByMethod extends Component {
   }
 
   _onAdEnd = e => {
-    this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.seek(0);
-    this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.play();
+    if(__DEV__){
+      console.log("_onAdEnd",e);
+    }
+    let { position } = e;
+    if(position === 1){
+      this.setState({ isEndAd: true, showAdView:false },()=>{
+        this.play();
+        this.vlcPlayerViewRef.volume(199);
+      });
+    }
+    /*this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.seek(0);
+    this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.play();*/
   }
 
 
@@ -1088,7 +1116,7 @@ export default class VlCPlayerViewByMethod extends Component {
     let { isFull } = this.state;
       return (
         <View style={[styles.loading, { backgroundColor: 'rgb(0,0,0)' }]}>
-          {isFull && <View style={{ height: 37, width: 40, position:'absolute', top:0, left:0,zIndex: 999 }}>
+          {(isFull || showBack) && <View style={{ height: 37, width: 40, position:'absolute', top:0, left:0,zIndex: 999 }}>
             <View style={styles.backBtn}>
               <TouchableOpacity onPress={this._onLeftPress} style={styles.btn} activeOpacity={0.8}>
                 <Icon name={'chevron-left'} size={30} color="#fff"/>
@@ -1114,7 +1142,7 @@ export default class VlCPlayerViewByMethod extends Component {
     } = this.props;
     let { height, width, isFull} = this.state;
     return(
-      <View style={[styles.commonView,{ backgroundColor:'rgba(0,0,0,0)'}]}>
+      <View style={[styles.commonView,{ backgroundColor:'rgba(0,0,0,0.5)'}]}>
         <View style={styles.centerContainer}>
           <Text style={styles.centerContainerText}>视频播放结束</Text>
           <View style={styles.centerRowContainer}>
@@ -1131,7 +1159,7 @@ export default class VlCPlayerViewByMethod extends Component {
           </View>
         </View>
         <View style={{ height: 37, width: 40, position:'absolute', top:0, left:0,zIndex: 999 }}>
-          {isFull && (
+          {(isFull || showBack) && (
             <TouchableOpacity
               onPress={this._onLeftPress}
               style={styles.btn}
@@ -1150,7 +1178,7 @@ export default class VlCPlayerViewByMethod extends Component {
     return (
       <View style={[styles.loading, { zIndex:999, backgroundColor: '#000' }]}>
         <View style={[styles.backBtn,{position:'absolute',left:0,top:0,zIndex:999}]}>
-          {isFull && (
+          {(isFull || showBack) && (
             <TouchableOpacity
               onPress={this._onLeftPress}
               style={styles.btn}
@@ -1179,7 +1207,7 @@ export default class VlCPlayerViewByMethod extends Component {
         <View
           style={[styles.loading,{zIndex:999, backgroundColor:'#000',}]}>
           <View style={[styles.backBtn,{position:'absolute',left:0,top:0}]}>
-            {isFull && (
+            {(isFull || showBack) && (
               <TouchableOpacity
                 onPress={this._onLeftPress}
                 style={styles.btn}
@@ -1204,7 +1232,7 @@ export default class VlCPlayerViewByMethod extends Component {
     let { showAdView, showChapter, isFull, adMuted, adPaused, isEndAd } = this.state;
     return(
       <View style={{position:'absolute',height:'100%',width:'100%',top:0,left:0,zIndex:888,}}>
-        {showBack && (
+        {(isFull || showBack) && (
           <TouchableOpacity
             onPress={this._onLeftPress}
             style={[styles.adBtn,{position:'absolute', left: 10, top: 10,}]}
@@ -1214,10 +1242,12 @@ export default class VlCPlayerViewByMethod extends Component {
         )}
         <View style={[styles.ad,{position:'absolute',right:0,top:10}]}>
           <TimeLimt
-            maxTime={30}
+            //maxTime={30}
             onEnd={()=>{
                 this.setState({ isEndAd: true, showAdView:false },()=>{
                   this.play();
+                  this.vlcPlayerViewRef.volume(199);
+
                 });
                 onAdEnd && onAdEnd();
               }}
@@ -1245,9 +1275,10 @@ export default class VlCPlayerViewByMethod extends Component {
 
   getLoadingView = ()=>{
     let { showBack } = this.props;
+    let { isFull } = this.props;
     return (<View style={[styles.loading,{zIndex:666}]}>
       <View style={[styles.backBtn,{position:'absolute',left:0,top:0,zIndex:999}]}>
-        {showBack && (
+        {(isFull || showBack) && (
           <TouchableOpacity
             onPress={this._onLeftPress}
             style={styles.btn}
@@ -1277,7 +1308,7 @@ export default class VlCPlayerViewByMethod extends Component {
         }
       </TouchableOpacity>
       <View style={[styles.backBtn,{position:'absolute',left:0,top:0, zIndex:999}]}>
-        {isFull && (
+        {(isFull || showBack) && (
           <TouchableOpacity
             onPress={this._onLeftPress}
             style={styles.btn}
@@ -1470,9 +1501,13 @@ export default class VlCPlayerViewByMethod extends Component {
         }
       }
     }else{
+      //console.log('-------!this.initAdSuccess---------')
       if(!this.initAdSuccess){
         realShowLoading = true;
       }
+    }
+    if(this.isProgressChange){
+      realShowLoading = false;
     }
     if(realShowLoading){
       return(
@@ -1562,7 +1597,6 @@ export default class VlCPlayerViewByMethod extends Component {
         currentVideoAspectRatio = videoAspectRatio;
       }
     }
-
     /**
      * check video can be play
      * @type {boolean}
@@ -1582,6 +1616,8 @@ export default class VlCPlayerViewByMethod extends Component {
         showVideo = true;
       }
     }
+    currentUrl = currentUrl.replace(/[“”]/g,"");
+    //console.log('currentUrl:'+currentUrl,realShowAd);
 
     /**
      * check if need consider statusbar
@@ -1617,6 +1653,12 @@ export default class VlCPlayerViewByMethod extends Component {
               onStopped={this._onAdStopped}
               initOptions={initAdOptions}
               initType={initAdType}
+              mediaOptions={
+              {
+                ':network-caching': 0,
+                ':live-caching': 1500,
+              }
+            }
             />
           )}
           {showVideo && (
@@ -1643,6 +1685,12 @@ export default class VlCPlayerViewByMethod extends Component {
               onEnd={this._onEnd}
               initOptions={initOptions}
               initType={initType}
+              mediaOptions={
+                {
+                  ':network-caching': 1500,
+                  ':live-caching': 1500,
+                }
+              }
             />
           )}
             {this._renderLoading()}

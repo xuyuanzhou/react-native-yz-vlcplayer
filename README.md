@@ -340,6 +340,11 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
        />
        
        
+       
+       
+       
+       static propTypes = {
+       
         /**
             * vlc 播放类型相关
             */

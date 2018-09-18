@@ -28,6 +28,7 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
     private static final String PROP_SEEK = "seek";
     private static final String PROP_RESUME = "resume";
     private static final String PROP_RATE = "rate";
+    private static final String PROP_POTISION = "position";
     private static final String PROP_VIDEO_ASPECT_RATIO = "videoAspectRatio";
     private static final String PROP_SRC_IS_NETWORK = "isNetwork";
     private static final String PROP_SNAPSHOT_PATH = "snapshotPath";
@@ -106,6 +107,13 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
     public void setRate(final ReactVlcPlayerView videoView, final float rate) {
         videoView.setRateModifier(rate);
     }
+
+    @ReactProp(name = PROP_POTISION)
+    public void setPosition(final ReactVlcPlayerView videoView, final float potision) {
+        videoView.setPosition(potision);
+    }
+
+
 
     @ReactProp(name = PROP_VIDEO_ASPECT_RATIO)
     public void setVideoAspectRatio(final ReactVlcPlayerView videoView, final String aspectRatio) {

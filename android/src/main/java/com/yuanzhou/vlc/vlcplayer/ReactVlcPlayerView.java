@@ -100,6 +100,8 @@ class ReactVlcPlayerView extends SurfaceView implements
         DisplayMetrics dm = getResources().getDisplayMetrics();
         screenHeight = dm.heightPixels;
         screenWidth = dm.widthPixels;
+        surfaceView = this;
+        surfaceView.addOnLayoutChangeListener(onLayoutChangeListener);
     }
 
 
@@ -177,8 +179,11 @@ class ReactVlcPlayerView extends SurfaceView implements
         public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
             mVideoWidth = view.getWidth(); // 获取宽度
             mVideoHeight = view.getHeight(); // 获取高度
-            IVLCVout vlcOut =  mMediaPlayer.getVLCVout();
-            vlcOut.setWindowSize(mVideoWidth,mVideoHeight);
+            if(mMediaPlayer != null) {
+                IVLCVout vlcOut = mMediaPlayer.getVLCVout();
+                vlcOut.setWindowSize(mVideoWidth, mVideoHeight);
+                //mMediaPlayer.setAspectRatio(mVideoWidth + ":" + mVideoHeight);
+            }
         }
     };
 
@@ -318,7 +323,7 @@ class ReactVlcPlayerView extends SurfaceView implements
                 }
             }
             // Create LibVLC
-            if(initType == 2){
+            if(initType == 1){
                 libvlc =  VLCInstance.get(getContext());
             }else{
                 libvlc =  new LibVLC(getContext(), cOptions);
@@ -327,12 +332,11 @@ class ReactVlcPlayerView extends SurfaceView implements
             // Create media player
             mMediaPlayer = new MediaPlayer(libvlc);
             mMediaPlayer.setEventListener(mPlayerListener);
-            surfaceView = this;
-            surfaceView.addOnLayoutChangeListener(onLayoutChangeListener);
             this.getHolder().setKeepScreenOn(true);
             IVLCVout vlcOut =  mMediaPlayer.getVLCVout();
             if(mVideoWidth > 0 && mVideoHeight > 0){
                 vlcOut.setWindowSize(mVideoWidth,mVideoHeight);
+                mMediaPlayer.setAspectRatio(mVideoWidth+":"+mVideoHeight);
             }
             if (!vlcOut.areViewsAttached()) {
                 vlcOut.addCallback(callback);
@@ -381,7 +385,7 @@ class ReactVlcPlayerView extends SurfaceView implements
         final IVLCVout vout = mMediaPlayer.getVLCVout();
         vout.removeCallback(callback);
         vout.detachViews();
-        surfaceView.removeOnLayoutChangeListener(onLayoutChangeListener);
+        //surfaceView.removeOnLayoutChangeListener(onLayoutChangeListener);
         libvlc.release();
         libvlc = null;
     }
@@ -393,7 +397,14 @@ class ReactVlcPlayerView extends SurfaceView implements
     public void seekTo(long time) {
         if(mMediaPlayer != null){
             mMediaPlayer.setTime(time);
-            mMediaPlayer.isSeekable();
+        }
+    }
+
+    public void  setPosition(float position){
+        if(mMediaPlayer != null) {
+            if(position >= 0 && position <= 1){
+                mMediaPlayer.setPosition(position);
+            }
         }
     }
 
@@ -508,6 +519,9 @@ class ReactVlcPlayerView extends SurfaceView implements
     }
 
     public void cleanUpResources() {
+        if(surfaceView != null){
+            surfaceView.removeOnLayoutChangeListener(onLayoutChangeListener);
+        }
         stopPlayback();
     }
 
