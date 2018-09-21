@@ -431,7 +431,6 @@ export default class VlCPlayerViewByMethod extends Component {
   }
 
   resume = ()=> {
-    this.initSuccess = false;
     this.vlcPlayerViewRef && this.vlcPlayerViewRef.reload(true);
   }
 
@@ -581,9 +580,9 @@ export default class VlCPlayerViewByMethod extends Component {
           this.pause();
         }
       }
-      this.setState({
+     /* this.setState({
         isError: false
-      })
+      })*/
     }
     onIsPlaying && onIsPlaying(event);
     if(paused !== !isPlaying){
@@ -600,11 +599,21 @@ export default class VlCPlayerViewByMethod extends Component {
     let { isError, isEndAd } = this.state;
     this.initSuccess = true;
       let { lookTime, totalTime, showAd, autoplay } = this.props;
+      console.log(lookTime + ':' + totalTime)
       if(lookTime && totalTime){
         if (Platform.OS === 'ios') {
-          this.seek(Number((lookTime / totalTime).toFixed(17)));
+          if(lookTime < totalTime){
+            this.seek(Number((lookTime / totalTime).toFixed(17)));
+          }else{
+            this.seek(0);
+          }
         } else {
-          this.seek(lookTime);
+          if(lookTime < totalTime){
+            this.seek(lookTime);
+            this.hadChangeLookTime = false;
+          }else{
+            this.seek(0);
+          }
         }
       }
       this.setState({
@@ -645,6 +654,17 @@ export default class VlCPlayerViewByMethod extends Component {
    * @private
    */
   _onProgressChange = ({ currentTime, totalTime }) => {
+    let { lookTime } = this.props;
+
+    if(Platform.OS === 'android'  && lookTime && this.props.totalTime && !this.hadChangeLookTime){
+      //console.log(currentTime+':'+lookTime)
+      if(lookTime < this.props.totalTime){
+        if(currentTime < lookTime){
+          this.seek(lookTime);
+          this.hadChangeLookTime = true;
+        }
+      }
+    }
     this.isProgressChange = true;
     if(!this.changingSlider){
       if(totalTime && currentTime){
@@ -711,7 +731,10 @@ export default class VlCPlayerViewByMethod extends Component {
         });
       }
     }
-    onEnd && onEnd(data);
+    onEnd && onEnd({
+      currentTime: currentTime/1000,
+      totalTime: duration/1000,
+    });
   };
 
   /**
@@ -803,10 +826,11 @@ export default class VlCPlayerViewByMethod extends Component {
   }
 
   _onAdIsPlaying = (e)=> {
-    if(__DEV__){
+    /*if(__DEV__){
       console.log('_onAdIsPlaying',e)
-    }
+    }*/
     let { autoplay, onIsAdPlaying } = this.props;
+    let { adPaused } = this.state;
     onIsAdPlaying && onIsAdPlaying(e);
     let { isPlaying } = e;
     if(isPlaying){
@@ -821,9 +845,11 @@ export default class VlCPlayerViewByMethod extends Component {
         }
       }
     }
-    this.setState({
-      adPaused: !isPlaying
-    })
+    if(adPaused !== !isPlaying){
+      this.setState({
+        adPaused: !isPlaying
+      })
+    }
   }
 
   _onAdOpen = (e)=> {
@@ -886,7 +912,7 @@ export default class VlCPlayerViewByMethod extends Component {
   reloadError = () => {
     this.firstPlaying = false;
     this.isReloadingError = true;
-    this.startReload(true);
+    this.startReload(false);
   }
 
   startReload = (isCurrent = false)=>{
@@ -894,7 +920,7 @@ export default class VlCPlayerViewByMethod extends Component {
     this.hadEnd = false;
     let { storeUrl, adUrl, currentTime } = this.state;
     let { reloadWithAd, isLive } = this.props;
-
+    console.log(currentTime)
     let isEndAd = true;
     if(reloadWithAd){
       isEndAd = false;
@@ -1232,15 +1258,17 @@ export default class VlCPlayerViewByMethod extends Component {
     let { showAdView, showChapter, isFull, adMuted, adPaused, isEndAd } = this.state;
     return(
       <View style={{position:'absolute',height:'100%',width:'100%',top:0,left:0,zIndex:888,}}>
-        {(isFull || showBack) && (
-          <TouchableOpacity
-            onPress={this._onLeftPress}
-            style={[styles.adBtn,{position:'absolute', left: 10, top: 10,}]}
-            activeOpacity={0.8}>
-            <Icon name={'chevron-left'} size={30} color="#fff" />
-          </TouchableOpacity>
-        )}
-        <View style={[styles.ad,{position:'absolute',right:0,top:10}]}>
+        <View style={[styles.backBtn,{position:'absolute',width:100, left:0,top:0, zIndex:999}]}>
+          {(isFull || showBack) && (
+            <TouchableOpacity
+              onPressIn={this._onLeftPress}
+              style={styles.btn}
+              activeOpacity={0.8}>
+              <Icon name={'chevron-left'} size={30} color="#fff" />
+            </TouchableOpacity>
+          )}
+        </View>
+        <View style={[styles.ad,{position:'absolute',right:0,top:10, zIndex:999}]}>
           <TimeLimt
             //maxTime={30}
             onEnd={()=>{
@@ -1310,7 +1338,7 @@ export default class VlCPlayerViewByMethod extends Component {
       <View style={[styles.backBtn,{position:'absolute',left:0,top:0, zIndex:999}]}>
         {(isFull || showBack) && (
           <TouchableOpacity
-            onPress={this._onLeftPress}
+            onPressIn={this._onLeftPress}
             style={styles.btn}
             activeOpacity={0.8}>
             <Icon name={'chevron-left'} size={30} color="#fff" />
@@ -1405,6 +1433,7 @@ export default class VlCPlayerViewByMethod extends Component {
           <ControlBtn
             showSlider={!isAd}
             muted={muted}
+            isFull={isFull}
             onMutePress={this.muteToggle}
             paused={paused}
             onReload={this.reloadCurrent}
@@ -1440,9 +1469,17 @@ export default class VlCPlayerViewByMethod extends Component {
                   }
                 }else{
                   if (Platform.OS === 'ios') {
-                    this.seek(Number((value / totalTime).toFixed(17)));
+                    if(value >= totalTime){
+                      this.seek(0.99999999);
+                    }else{
+                      this.seek(Number((value / totalTime).toFixed(17)));
+                    }
                   } else {
-                    this.seek(value);
+                    if(value >= totalTime){
+                       this.seek(value-1);
+                    }else{
+                       this.seek(value);
+                    }
                   }
                 }
                 this.setState({
@@ -1486,21 +1523,28 @@ export default class VlCPlayerViewByMethod extends Component {
 
   _renderLoading = ()=>{
     let { showAd } = this.props;
-    let { pauseByAutoplay, isEndAd } = this.state;
+    let { pauseByAutoplay, isEndAd, totalTime, showLoading } = this.state;
     let realShowLoading = false;
     if(!showAd || (showAd && isEndAd)){
+      //console.log('isEndAd',showLoading);
       if(!this.initSuccess){
         realShowLoading = true;
       }else{
         if(!pauseByAutoplay){
           if(this.firstPlaying){
-
+              if(totalTime > 0){
+                //console.log(showLoading);
+                if(showLoading){
+                  realShowLoading = true;
+                }
+              }
           }else{
             realShowLoading = true;
           }
         }
       }
     }else{
+      //console.log('isNotEndAd',showLoading);
       //console.log('-------!this.initAdSuccess---------')
       if(!this.initAdSuccess){
         realShowLoading = true;
@@ -1627,7 +1671,7 @@ export default class VlCPlayerViewByMethod extends Component {
     if(!isFull && considerStatusBar){
       if(Platform.OS === 'ios'){
         considerStyle = {
-          marginTop: statusBarHeight,
+          marginTop: 0,
         };
       }
     }
