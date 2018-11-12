@@ -24,7 +24,7 @@ VLCPlayer 支持各种格式(mp4,m3u8,flv,mov,rtsp,rtmp,etc.)，具体参看[vlc
      
 （2）编译卡死的情况(目前只能等官方修正这个问题)
 
-   ![]https://forums.developer.apple.com/thread/107570(https://forums.developer.apple.com/thread/107570)
+   [https://forums.developer.apple.com/thread/107570](https://forums.developer.apple.com/thread/107570)
    
    (1)去除DSYM
    
