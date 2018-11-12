@@ -17,6 +17,23 @@ VLCPlayer 支持各种格式(mp4,m3u8,flv,mov,rtsp,rtmp,etc.)，具体参看[vlc
    ![](https://github.com/xuyuanzhou/resource/blob/master/gif/lizi.gif)
 
 
+## Xcode10+ 的一些问题
+
+（1）libstdc++.6.0.9.tbd 找不到
+     在Xcode10中，libstdc++.6.0.9.tbd被移除掉了，我们也移除掉它就OK了
+     
+（2）编译卡死的情况(目前只能等官方修正这个问题)
+   
+   (1)去除DSYM
+   
+   项目  Build Settings  --> Build Options --> Debug Information Format  设置为 DWARF.
+    
+   ![](./images/dsym.png)
+     
+   (2)改为Xcode10以下版本编译
+
+
+
 
 ###  install
 

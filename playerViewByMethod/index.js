@@ -1660,7 +1660,9 @@ export default class VlCPlayerViewByMethod extends Component {
         showVideo = true;
       }
     }
-    currentUrl = currentUrl.replace(/[“”]/g,"");
+    if(currentUrl && currentUrl.replace){
+      currentUrl = currentUrl.replace(/[“”]/g,"");
+    }
     //console.log('currentUrl:'+currentUrl,realShowAd);
 
     /**
