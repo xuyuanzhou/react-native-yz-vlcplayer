@@ -334,7 +334,6 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
      
 ## Simple Example
 
-### 1.1.0+
 ````
    (1)
       1. npm install react-native-orientation --save
@@ -358,9 +357,20 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
            Orientation={Orientation}                          
        />
        
+       注意：
+        《1》插件默认用了如下所示的宽高比
+            fullVideoAspectRatio: deviceHeight + ':' + deviceWidth,
+            videoAspectRatio: deviceWidth + ':' + 211.5,
+            （1）在竖屏情况下画面比例会出现问题，请自行设置宽高比或去除内置宽高比
+            （2）非全屏下修改了默认高度的话，请自行设置宽高比或去除内置宽高比
+                去除内置宽高比：
+                            fullVideoAspectRatio={""}
+                            videoAspectRatio={""}
+        《2》默认不会自动播放，需要自动播放请添加如下参数
+             autoplay={true}
+             
        
-       
-       
+      下面是可用的一些参数：
        
        static propTypes = {
        
@@ -466,16 +476,5 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
         
 ````
 
-### ~1.0.9
-````
-   import { VLCPlayer, VlCPlayerViewByMethod } from 'react-native-yz-vlcplayer';
-   import Orientation from 'react-native-orientation';
-            <VlCPlayerViewByMethod
-               ref={ ref => this.vlCPlayerView = ref}
-               url={"rtmp://live.hkstv.hk.lxdns.com/live/hks"}
-               Orientation={Orientation}                          
-            />
-        
-````
 
 **MIT Licensed**
