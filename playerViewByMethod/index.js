@@ -138,8 +138,8 @@ export default class VlCPlayerViewByMethod extends Component {
     initAdOptions: Platform.OS === 'ios' ? ["--input-repeat=1000","--repeat"] : [],
     initType: 1,
     initOptions: [],
-    fullVideoAspectRatio: deviceHeight + ':' + deviceWidth,
-    videoAspectRatio: deviceWidth + ':' + 211.5,
+    //fullVideoAspectRatio: deviceHeight + ':' + deviceWidth,
+    //videoAspectRatio: deviceWidth + ':' + 211.5,
   };
 
   static propTypes = {
