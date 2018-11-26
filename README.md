@@ -162,11 +162,13 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
    | paused      | bool     |         |            |
    | muted       | bool     |         |            |
    | volume      | bool     | 0---200 |            |
+   | hwDecoderEnabled | number  | 0  or  1 |   (Only android)  need  use with hwDecoderForced |
+   | hwDecoderForced  | number  | 0  or  1 |   (Only android)  need  use with hwDecoderEnabled|
    | initType    | number   |         |            |
    | initOptions | array    |         |            |
    | mediaOptions| object   |         |            |
    | source      | object   | { uri: 'http:...' }| |
-   | autoplay    | bool     |       |  是否自动播放（默认true）        |
+   | autoplay    | bool     |       |  是否自动播放（默认false）        |
    | onLoadStart | func     |       |  vlc视频容器初始化完毕  |
    | onOpen      | func     |       |  视频被打开            |
    | onBuffering | func     |       |  正在缓冲中           |
