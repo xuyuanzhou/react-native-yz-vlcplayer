@@ -322,6 +322,8 @@ class ReactVlcPlayerView extends TextureView implements
             int initType =     srcMap.hasKey("initType") ? srcMap.getInt("initType") : 1;
             ReadableArray mediaOptions =     srcMap.hasKey("mediaOptions") ? srcMap.getArray("mediaOptions") : null;
             ReadableArray initOptions = srcMap.hasKey("initOptions") ? srcMap.getArray("initOptions") : null;
+            Integer hwDecoderEnabled = srcMap.hasKey("hwDecoderEnabled") ? srcMap.getInt("hwDecoderEnabled") : null;
+            Integer hwDecoderForced = srcMap.hasKey("hwDecoderForced") ? srcMap.getInt("hwDecoderForced") : null;
             if(initOptions != null){
                 ArrayList options = initOptions.toArrayList();
                 for(int i=0; i < options.size() - 1 ; i++){
@@ -359,6 +361,19 @@ class ReactVlcPlayerView extends TextureView implements
                 m = new Media(libvlc, uri);
             }else{
                 m = new Media(libvlc, uriString);
+            }
+            if(hwDecoderEnabled != null && hwDecoderForced != null){
+                Log.i("hwDecoderEnabled",hwDecoderEnabled+"");
+                Log.i("hwDecoderForced",hwDecoderForced+"");
+                boolean hmEnabled = false;
+                boolean hmForced  = false;
+                if(hwDecoderEnabled >= 1){
+                    hmEnabled = true;
+                }
+                if(hwDecoderForced >= 1){
+                    hmForced = true;
+                }
+                m.setHWDecoderEnabled(hmEnabled, hmForced);
             }
             //添加media  option
             if(mediaOptions != null){
