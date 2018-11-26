@@ -422,6 +422,7 @@ export default class VlCPlayerViewByMethod extends Component {
         if(this.initSuccess){
             clearInterval(this.checkInitSuccessInterval)
         }else{
+            console.log("checkInitSuccess")
             this.playAll();
         }
     }
@@ -1704,7 +1705,7 @@ export default class VlCPlayerViewByMethod extends Component {
 
         return (
             <View
-                onMoveShouldSetResponder={(evt)=>true}
+                /*onMoveShouldSetResponder={(evt)=>true}
                 onStartShouldSetResponder={(evt)=>true}
                 onResponderGrant={e=>{
                     //console.log(e)
@@ -1717,7 +1718,7 @@ export default class VlCPlayerViewByMethod extends Component {
                 }}
                 onResponderReject={e=>{
                     //console.log(e)
-                }}
+                }}*/
                 onLayout={this._onLayout}
                 style={[styles.container, considerStyle, isFull ? fullStyle : style]}>
                 <View style={{flex:1}}>
