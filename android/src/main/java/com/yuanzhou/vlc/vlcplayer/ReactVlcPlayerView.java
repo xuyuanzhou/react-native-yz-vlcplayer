@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 @SuppressLint("ViewConstructor")
 class ReactVlcPlayerView extends TextureView implements
         LifecycleEventListener,
+        TextureView.SurfaceTextureListener,
         AudioManager.OnAudioFocusChangeListener{
 
     private static final String TAG = "ReactExoplayerView";
@@ -95,6 +97,7 @@ class ReactVlcPlayerView extends TextureView implements
         screenHeight = dm.heightPixels;
         screenWidth = dm.widthPixels;
         surfaceView = this;
+        this.setSurfaceTextureListener(this);
         //surfaceView.setZOrderOnTop(false);
         //surfaceView.setZOrderMediaOverlay(false);
        // this.setZOrderOnTop(true);
@@ -551,6 +554,27 @@ class ReactVlcPlayerView extends TextureView implements
             surfaceView.removeOnLayoutChangeListener(onLayoutChangeListener);
         }
         stopPlayback();
+    }
+
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        Log.i("onSurfaceTexture",surface+"");
+        createPlayer(true,false);
+    }
+
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        return false;
+    }
+
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
     }
 
     /*private void changeSurfaceSize(boolean message) {
