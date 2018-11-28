@@ -375,6 +375,20 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
         《2》默认不会自动播放，需要自动播放请添加如下参数
              autoplay={true}
 
+        《3》 你可以自定义文字用以下参数:
+                endingViewText: {
+                    endingText: '视频播放结束',
+                    reloadBtnText: '重新播放',
+                    nextBtnText: '下一个'
+                },
+                errorViewText: {
+                    errorText: '视频播放出错',
+                    reloadBtnText: '重新播放',
+                },
+                vipEndViewText: {
+                    vipEndText: '试看结束',
+                    boughtBtnText: '请购买后观看立即购买',
+                },
 
       下面是可用的一些参数：
 

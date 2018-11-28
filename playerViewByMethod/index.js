@@ -104,6 +104,20 @@ export default class VlCPlayerViewByMethod extends Component {
     };
 
     static defaultProps = {
+        endingViewText: {
+            endingText: '视频播放结束',
+            reloadBtnText: '重新播放',
+            nextBtnText: '下一个'
+        },
+        errorViewText: {
+            errorText: '视频播放出错',
+            reloadBtnText: '重新播放',
+        },
+        vipEndViewText: {
+            vipEndText: '试看结束',
+            boughtBtnText: '请购买后观看立即购买',
+        },
+        chapterText: '章节',
         autoplay: false,
         showAd: false,
         showTop: false,
@@ -1163,7 +1177,8 @@ export default class VlCPlayerViewByMethod extends Component {
 
 
     getVipEndView = () => {
-        let { onVipPress, showBack } = this.props;
+        let { onVipPress, showBack, vipEndViewText } = this.props;
+        let { vipEndText, boughtBtnText } = vipEndViewText;
         let { isFull } = this.state;
         return (
             <View style={[styles.loading, { backgroundColor: 'rgb(0,0,0)' }]}>
@@ -1176,9 +1191,9 @@ export default class VlCPlayerViewByMethod extends Component {
                 </View>
                 }
                 <View style={styles.centerContainer}>
-                    <Text style={styles.centerContainerText} numberOfLines={1}>试看结束，请购买后观看</Text>
+                    <Text style={styles.centerContainerText} numberOfLines={1}>{vipEndText}</Text>
                     <TouchableOpacity activeOpacity={0.8} onPress={() => {onVipPress && onVipPress()}} style={[styles.centerContainerBtn,{ backgroundColor: 'rgb(230,33,41)'}]}>
-                        <Text style={styles.centerContainerBtnText}>立即购买</Text>
+                        <Text style={styles.centerContainerBtnText}>{boughtBtnText}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -1189,22 +1204,24 @@ export default class VlCPlayerViewByMethod extends Component {
         let {
             autoPlayNext,
             hadNext,
-            showBack
+            showBack,
+            endingViewText
         } = this.props;
         let { height, width, isFull} = this.state;
+        let { endingText, reloadBtnText, nextBtnText } = endingViewText;
         return(
             <View style={[styles.commonView,{ backgroundColor:'rgba(0,0,0,0.5)'}]}>
                 <View style={styles.centerContainer}>
-                    <Text style={styles.centerContainerText}>视频播放结束</Text>
+                    <Text style={styles.centerContainerText}>{endingText}</Text>
                     <View style={styles.centerRowContainer}>
                         <TouchableOpacity style={styles.centerContainerBtn} onPress={this.reload} activeOpacity={1}>
                             <Icon name={'reload'} size={20} color="#fff" />
-                            <Text style={styles.centerContainerBtnText}>重新播放</Text>
+                            <Text style={styles.centerContainerBtnText}>{reloadBtnText}</Text>
                         </TouchableOpacity>
                         {!autoPlayNext &&
                         hadNext && (<TouchableOpacity style={[styles.centerContainerBtn,{marginLeft:15}]} onPress={this._next} activeOpacity={1}>
                             <Icon name={'reload'} size={20} color="#fff" />
-                            <Text style={styles.centerContainerBtnText}>下一个</Text>
+                            <Text style={styles.centerContainerBtnText}>{nextBtnText}</Text>
                         </TouchableOpacity>)
                         }
                     </View>
@@ -1224,7 +1241,8 @@ export default class VlCPlayerViewByMethod extends Component {
     }
 
     getErrorView = ()=> {
-        let { showBack, initWithFull, onLeftPress, errorView } = this.props;
+        let { showBack, initWithFull, onLeftPress, errorView, errorViewText } = this.props;
+        let { errorText, reloadBtnText} = errorViewText;
         let { netInfo, height, width, isFull, isError } = this.state;
         return (
             <View style={[styles.loading, { zIndex:999, backgroundColor: '#000' }]}>
@@ -1239,10 +1257,10 @@ export default class VlCPlayerViewByMethod extends Component {
                     )}
                 </View>
                 <View style={styles.centerContainer}>
-                    <Text style={styles.centerContainerText}>视频播放出错</Text>
+                    <Text style={styles.centerContainerText}>{errorText}</Text>
                     <TouchableOpacity style={styles.centerContainerBtn} onPress={this.reloadError} activeOpacity={0.8}>
                         <Icon name={'reload'} size={20} color="#fff" />
-                        <Text style={styles.centerContainerBtnText}>重新播放</Text>
+                        <Text style={styles.centerContainerBtnText}>{reloadBtnText}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -1386,7 +1404,8 @@ export default class VlCPlayerViewByMethod extends Component {
             isAd,
             type,
             showAd,
-            chapterElements
+            chapterElements,
+            chapterText
         } = this.props;
         let {
             muted,
@@ -1445,7 +1464,7 @@ export default class VlCPlayerViewByMethod extends Component {
                                         }}
                                         onPress={this._showChapter}
                                     >
-                                        <Text style={{ fontSize: 13, color: this.showChapter ? 'red' : '#fff' }}>章节</Text>
+                                        <Text style={{ fontSize: 13, color: this.showChapter ? 'red' : '#fff' }}>{chapterText}</Text>
                                     </TouchableOpacity>
                                 )}
                             </View>
@@ -1885,8 +1904,11 @@ const styles = StyleSheet.create({
     },
     centerContainerBtn: {
         marginTop:20,
-        width:100,
-        height:30,
+        paddingLeft:5,
+        paddingLeft:10,
+        paddingRight: 10,
+        minWidth:100,
+        minHeight:30,
         borderRadius:15,
         flexDirection:'row',
         justifyContent:'center',
