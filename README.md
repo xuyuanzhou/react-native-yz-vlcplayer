@@ -535,8 +535,6 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
                     source={{uri:'rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov'}}
                     initType={2}
                     initOptions={[
-                        "--no-audio",
-                        "--rtsp-tcp",
                         "--network-caching=" + 150,
                         "--rtsp-caching=" + 150,
                         "--no-stats",
