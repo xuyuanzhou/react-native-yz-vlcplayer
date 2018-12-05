@@ -333,6 +333,14 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
 
 ````
 
+## 可用的源
+
+香港财经,rtmp://202.69.69.180:443/webcast/bshdlive-pc
+
+湖南卫视,rtmp://58.200.131.2:1935/livetv/hunantv
+
+rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov
+
 
 ## Simple Example
 
