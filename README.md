@@ -342,6 +342,15 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
 rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov
 
 
+## 版本简单说明
+
+````
+    1.1.1-beta7:
+        (1) 增加  autoAspectRatio  bool  (only  on  Android)
+            占满Android满屏
+````
+
+
 ## Simple Example
 
 ````
