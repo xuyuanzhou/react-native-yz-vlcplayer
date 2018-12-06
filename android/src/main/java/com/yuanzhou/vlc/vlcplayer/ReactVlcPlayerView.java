@@ -346,7 +346,7 @@ class ReactVlcPlayerView extends TextureView implements
             }
             // Create LibVLC
             if(initType == 1){
-                libvlc =  new LibVLC(getContext());//VLCInstance.get(getContext());
+                libvlc =  VLCInstance.get(getContext());
             }else{
                 libvlc =  new LibVLC(getContext(), cOptions);
             }
