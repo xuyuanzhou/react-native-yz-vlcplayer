@@ -84,7 +84,7 @@ class ReactVlcPlayerView extends TextureView implements
     private boolean isPaused = true;
     private boolean isHostPaused = false;
     private int preVolume = 200;
-    private boolean autoAspectRatio = true;
+    private boolean autoAspectRatio = false;
 
     // React
     private final ThemedReactContext themedReactContext;
@@ -561,7 +561,7 @@ class ReactVlcPlayerView extends TextureView implements
      * @param aspectRatio
      */
     public void setAspectRatio(String aspectRatio){
-        if(mMediaPlayer != null){
+        if(!autoAspectRatio && mMediaPlayer != null){
             mMediaPlayer.setAspectRatio(aspectRatio);
         }
     }
