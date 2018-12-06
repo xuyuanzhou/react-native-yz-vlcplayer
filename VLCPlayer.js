@@ -36,6 +36,10 @@ export default class VLCPlayer extends Component {
         this.setNativeProps({ seek: pos });
     }
 
+    autoAspectRatio(isAuto){
+        this.setNativeProps({ autoAspectRatio: isAuto });
+    }
+
     play(paused){
         this.setNativeProps({ paused: paused });
     }
@@ -59,11 +63,9 @@ export default class VLCPlayer extends Component {
     _onVideoStateChange(event){
         //
         let type = event.nativeEvent.type;
-        /* if(__DEV__){
-           if(type === 'onNewVideoLayout'){
-             console.log(type,event.nativeEvent);
-           }
-         }*/
+        if(__DEV__ && this.props.showLog){
+            console.log(type,event.nativeEvent);
+        }
         switch (type){
             case 'Opening':
                 this.props.onOpen && this.props.onOpen(event.nativeEvent);
@@ -91,6 +93,7 @@ export default class VLCPlayer extends Component {
                 break;
             case 'TimeChanged':
                 this.props.onProgress && this.props.onProgress(event.nativeEvent);
+                break;
             default:
                 this.props.onVideoStateChange && this.props.onVideoStateChange(event);
                 break;
@@ -185,6 +188,7 @@ VLCPlayer.propTypes = {
     position: PropTypes.number,
     snapshotPath: PropTypes.string,
     paused: PropTypes.bool,
+    autoAspectRatio: PropTypes.bool,
     videoAspectRatio: PropTypes.string,
     /**
      * 0 --- 200

@@ -320,6 +320,8 @@ export default class VLCPlayerView extends Component {
                     <VLCPlayer
                         hwDecoderEnabled={this.props.hwDecoderEnabled}
                         hwDecoderForced={this.props.hwDecoderForced}
+                        autoAspectRatio={this.props.autoAspectRatio}
+                        showLog={this.props.showLog}
                         ref={ref => (this.vlcPlayer = ref)}
                         style={styles.video}
                         autoplay={autoplay}

@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
@@ -27,6 +28,7 @@ import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
 import org.videolan.libvlc.MediaPlayer;
 import org.videolan.vlc.RecordEvent;
+import org.videolan.vlc.util.LogUtils;
 import org.videolan.vlc.util.VLCInstance;
 import org.videolan.vlc.util.VLCOptions;
 import java.util.ArrayList;
@@ -37,13 +39,16 @@ class ReactVlcPlayerView extends TextureView implements
         TextureView.SurfaceTextureListener,
         AudioManager.OnAudioFocusChangeListener{
 
-    private static final String TAG = "ReactExoplayerView";
+    private static final String TAG = "ReactVlcPlayerView";
+    private final String tag = "ReactVlcPlayerView";
 
     private final VideoEventEmitter eventEmitter;
     private LibVLC libvlc;
     private MediaPlayer mMediaPlayer = null;
-    TextureView surfaceView;
+    private TextureView surfaceView;
+    private Surface surfaceVideo;//视频画布
     private boolean isSurfaceViewDestory;
+    private int surfaceW, surfaceH;
     //资源路径
     private String src;
     //是否网络资源
@@ -79,6 +84,7 @@ class ReactVlcPlayerView extends TextureView implements
     private boolean isPaused = true;
     private boolean isHostPaused = false;
     private int preVolume = 200;
+    private boolean autoAspectRatio = true;
 
     // React
     private final ThemedReactContext themedReactContext;
@@ -92,12 +98,12 @@ class ReactVlcPlayerView extends TextureView implements
         this.eventEmitter = new VideoEventEmitter(context);
         this.themedReactContext = context;
         audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        themedReactContext.addLifecycleEventListener(this);
+        //themedReactContext.addLifecycleEventListener(this);
         DisplayMetrics dm = getResources().getDisplayMetrics();
         screenHeight = dm.heightPixels;
         screenWidth = dm.widthPixels;
-        surfaceView = this;
         this.setSurfaceTextureListener(this);
+        //surfaceView = this;
         //surfaceView.setZOrderOnTop(false);
         //surfaceView.setZOrderMediaOverlay(false);
        // this.setZOrderOnTop(true);
@@ -184,12 +190,16 @@ class ReactVlcPlayerView extends TextureView implements
 
         @Override
         public void onLayoutChange(View view, int i, int i1, int i2, int i3, int i4, int i5, int i6, int i7) {
-            mVideoWidth = view.getWidth(); // 获取宽度
-            mVideoHeight = view.getHeight(); // 获取高度
-            if(mMediaPlayer != null) {
-                IVLCVout vlcOut = mMediaPlayer.getVLCVout();
-                vlcOut.setWindowSize(mVideoWidth, mVideoHeight);
-                //mMediaPlayer.setAspectRatio(mVideoWidth + ":" + mVideoHeight);
+            if(view.getWidth() > 0 && view.getHeight() > 0 ){
+                mVideoWidth = view.getWidth(); // 获取宽度
+                mVideoHeight = view.getHeight(); // 获取高度
+                if(mMediaPlayer != null) {
+                    IVLCVout vlcOut = mMediaPlayer.getVLCVout();
+                    vlcOut.setWindowSize(mVideoWidth, mVideoHeight);
+                    if(autoAspectRatio){
+                        mMediaPlayer.setAspectRatio(mVideoWidth + ":" + mVideoHeight);
+                    }
+                }
             }
         }
     };
@@ -336,7 +346,7 @@ class ReactVlcPlayerView extends TextureView implements
             }
             // Create LibVLC
             if(initType == 1){
-                libvlc =  VLCInstance.get(getContext());
+                libvlc =  new LibVLC(getContext());//VLCInstance.get(getContext());
             }else{
                 libvlc =  new LibVLC(getContext(), cOptions);
             }
@@ -348,14 +358,10 @@ class ReactVlcPlayerView extends TextureView implements
             IVLCVout vlcOut =  mMediaPlayer.getVLCVout();
             if(mVideoWidth > 0 && mVideoHeight > 0){
                 vlcOut.setWindowSize(mVideoWidth,mVideoHeight);
+                if(autoAspectRatio){
+                    mMediaPlayer.setAspectRatio(mVideoWidth + ":" + mVideoHeight);
+                }
                 //mMediaPlayer.setAspectRatio(mVideoWidth+":"+mVideoHeight);
-            }
-            if (!vlcOut.areViewsAttached()) {
-                vlcOut.addCallback(callback);
-                vlcOut.setVideoView(this);
-                vlcOut.setVideoSurface(this.getSurfaceTexture());
-                //vlcOut.setVideoSurface(this.getHolder().getSurface(), this.getHolder());
-                vlcOut.attachViews(onNewVideoLayoutListener);
             }
             DisplayMetrics dm = getResources().getDisplayMetrics();
             Media m = null;
@@ -365,9 +371,8 @@ class ReactVlcPlayerView extends TextureView implements
             }else{
                 m = new Media(libvlc, uriString);
             }
+            m.setEventListener(mMediaListener);
             if(hwDecoderEnabled != null && hwDecoderForced != null){
-                Log.i("hwDecoderEnabled",hwDecoderEnabled+"");
-                Log.i("hwDecoderForced",hwDecoderForced+"");
                 boolean hmEnabled = false;
                 boolean hmForced  = false;
                 if(hwDecoderEnabled >= 1){
@@ -388,6 +393,18 @@ class ReactVlcPlayerView extends TextureView implements
             }
             mMediaPlayer.setMedia(m);
             mMediaPlayer.setScale(0);
+
+            if (!vlcOut.areViewsAttached()) {
+                vlcOut.addCallback(callback);
+               // vlcOut.setVideoSurface(this.getSurfaceTexture());
+                //vlcOut.setVideoSurface(this.getHolder().getSurface(), this.getHolder());
+                //vlcOut.attachViews(onNewVideoLayoutListener);
+                vlcOut.setVideoSurface(this.getSurfaceTexture());
+                vlcOut.attachViews(onNewVideoLayoutListener);
+               // vlcOut.attachSurfaceSlave(surfaceVideo,null,onNewVideoLayoutListener);
+                //vlcOut.setVideoView(this);
+                //vlcOut.attachViews(onNewVideoLayoutListener);
+            }
             if(isResume){
                 if(autoplayResume){
                     mMediaPlayer.play();
@@ -549,6 +566,11 @@ class ReactVlcPlayerView extends TextureView implements
         }
     }
 
+    public void setAutoAspectRatio(boolean auto){
+        autoAspectRatio = auto;
+    }
+
+
     public void cleanUpResources() {
         if(surfaceView != null){
             surfaceView.removeOnLayoutChangeListener(onLayoutChangeListener);
@@ -558,7 +580,9 @@ class ReactVlcPlayerView extends TextureView implements
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        Log.i("onSurfaceTexture",surface+"");
+        mVideoWidth = width;
+        mVideoHeight = height;
+        surfaceVideo = new Surface(surface);
         createPlayer(true,false);
     }
 
@@ -569,13 +593,34 @@ class ReactVlcPlayerView extends TextureView implements
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        return false;
+        return true;
     }
 
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
+        Log.i("onSurfaceTextureUpdated","onSurfaceTextureUpdated");
     }
+
+    private final Media.EventListener mMediaListener = new Media.EventListener() {
+        @Override
+        public void onEvent(Media.Event event) {
+            switch (event.type) {
+                case Media.Event.MetaChanged:
+                    Log.i(tag, "Media.Event.MetaChanged:  =" + event.getMetaId());
+                    break;
+                case Media.Event.ParsedChanged:
+                    Log.i(tag, "Media.Event.ParsedChanged  =" + event.getMetaId());
+                    break;
+                case Media.Event.StateChanged:
+                    Log.i(tag, "StateChanged   =" + event.getMetaId());
+                    break;
+                default:
+                    Log.i(tag, "Media.Event.type=" + event.type + "   eventgetParsedStatus=" + event.getParsedStatus());
+                    break;
+
+            }
+        }
+    };
 
     /*private void changeSurfaceSize(boolean message) {
 

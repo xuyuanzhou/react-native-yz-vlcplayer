@@ -32,6 +32,8 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
     private static final String PROP_VIDEO_ASPECT_RATIO = "videoAspectRatio";
     private static final String PROP_SRC_IS_NETWORK = "isNetwork";
     private static final String PROP_SNAPSHOT_PATH = "snapshotPath";
+    private static final String PROP_AUTO_ASPECT_RATIO = "autoAspectRatio";
+
 
     @Override
     public String getName() {
@@ -98,10 +100,16 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
         //videoView.seekTo(seek);
     }
 
-    @ReactProp(name = PROP_RESUME, defaultBoolean = false)
+    @ReactProp(name = PROP_AUTO_ASPECT_RATIO, defaultBoolean = false)
+    public void setAutoAspectRatio(final ReactVlcPlayerView videoView, final boolean autoPlay) {
+        videoView.setAutoAspectRatio(autoPlay);
+    }
+
+    @ReactProp(name = PROP_RESUME, defaultBoolean = true)
     public void setResume(final ReactVlcPlayerView videoView, final boolean autoPlay) {
         videoView.doResume(autoPlay);
     }
+
 
     @ReactProp(name = PROP_RATE)
     public void setRate(final ReactVlcPlayerView videoView, final float rate) {
