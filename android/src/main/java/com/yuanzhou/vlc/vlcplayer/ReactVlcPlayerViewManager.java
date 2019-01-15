@@ -33,6 +33,8 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
     private static final String PROP_SRC_IS_NETWORK = "isNetwork";
     private static final String PROP_SNAPSHOT_PATH = "snapshotPath";
     private static final String PROP_AUTO_ASPECT_RATIO = "autoAspectRatio";
+    private static final String PROP_CLEAR = "clear";
+
 
 
     @Override
@@ -58,6 +60,12 @@ public class ReactVlcPlayerViewManager extends SimpleViewManager<ReactVlcPlayerV
         }
         return builder.build();
     }
+
+    @ReactProp(name = PROP_CLEAR)
+    public void setClear(final ReactVlcPlayerView videoView, final boolean clear) {
+        videoView.cleanUpResources();
+    }
+
 
     @ReactProp(name = PROP_SRC)
     public void setSrc(final ReactVlcPlayerView videoView, @Nullable ReadableMap src) {

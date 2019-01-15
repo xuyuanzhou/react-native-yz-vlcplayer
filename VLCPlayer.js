@@ -32,6 +32,10 @@ export default class VLCPlayer extends Component {
         this._root.setNativeProps(nativeProps);
     }
 
+    clear(){
+        this.setNativeProps({ clear: true });
+    }
+
     seek(pos) {
         this.setNativeProps({ seek: pos });
     }
@@ -207,6 +211,9 @@ VLCPlayer.propTypes = {
     onVideoProgress: PropTypes.func,
     onSnapshot: PropTypes.func,
     onIsPlaying: PropTypes.func,
+    onOpen: PropTypes.func,
+    onLoadStart:PropTypes.func,
+
 
     /* Wrapper component */
     source: PropTypes.oneOfType([PropTypes.object,PropTypes.number]),

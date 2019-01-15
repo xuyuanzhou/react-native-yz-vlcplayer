@@ -55,6 +55,10 @@ export default class VLCPlayerView extends Component {
     };
 
 
+    componentWillUnmount(){
+        this.clear();
+    }
+
     /*****************************
      *                            *
      *    VLCPlayer  callback     *
@@ -224,6 +228,10 @@ export default class VLCPlayerView extends Component {
         this.setState({
             muted: value
         });
+    }
+
+    clear = ()=> {
+        this.vlcPlayer && this.vlcPlayer.clear && this.vlcPlayer.clear();
     }
 
 
