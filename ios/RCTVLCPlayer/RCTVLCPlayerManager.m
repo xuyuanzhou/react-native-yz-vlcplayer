@@ -28,6 +28,8 @@ RCT_EXPORT_VIEW_PROPERTY(volume, int);
 RCT_EXPORT_VIEW_PROPERTY(volumeUp, int);
 RCT_EXPORT_VIEW_PROPERTY(volumeDown, int);
 RCT_EXPORT_VIEW_PROPERTY(resume, BOOL);
+RCT_EXPORT_VIEW_PROPERTY(clear, BOOL);
+RCT_EXPORT_VIEW_PROPERTY(seekTime, int);
 RCT_EXPORT_VIEW_PROPERTY(videoAspectRatio, NSString);
 RCT_EXPORT_VIEW_PROPERTY(snapshotPath, NSString);
 /* Should support: onLoadStart, onLoad, and onError to stay consistent with Image */

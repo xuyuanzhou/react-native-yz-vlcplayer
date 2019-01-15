@@ -441,10 +441,17 @@ static NSString *const playbackRate = @"rate";
 
 -(void)setSeek:(float)pos
 {
-    if([_player isSeekable]){
+    if(_player != nil && [_player isSeekable]){
         if(pos>=0 && pos <= 1){
             [_player setPosition:pos];
         }
+    }
+}
+
+-(void)setSeekTime:(int)time{
+    if(_player){
+         VLCTime *time = [VLCTime timeWithInt:(time)];
+        [_player setTime:time];
     }
 }
 
@@ -457,6 +464,11 @@ static NSString *const playbackRate = @"rate";
 -(void)setRate:(float)rate
 {
     [_player setRate:rate];
+}
+
+-(void)setClear:(float)clear
+{
+    [self _release];
 }
 
 

@@ -21,6 +21,7 @@ export default class VLCPlayer extends Component {
         this._onSnapshot = this._onSnapshot.bind(this);
         this._onIsPlaying = this._onIsPlaying.bind(this);
         this._onVideoStateChange = this._onVideoStateChange.bind(this);
+        this.clear = this.clear.bind(this);
 
     }
 
