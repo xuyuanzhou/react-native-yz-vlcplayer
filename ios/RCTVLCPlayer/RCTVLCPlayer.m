@@ -127,9 +127,9 @@ static NSString *const playbackRate = @"rate";
             if(mediaOptions){
                 [media addOptions:mediaOptions];
             }
-            if(videoRatio){
+            /*if(videoRatio){
                 _player.videoAspectRatio = videoRatio;
-            }
+            }*/
             [media parseWithOptions:VLCMediaParseLocal|VLCMediaFetchLocal|VLCMediaParseNetwork|VLCMediaFetchNetwork];
             _player.media = media;
             if(autoplay)
@@ -245,142 +245,183 @@ static NSString *const playbackRate = @"rate";
 
 - (void)mediaPlayerStateChanged:(NSNotification *)aNotification
 {
-    if(_player){
-        
-        BOOL isPlaying = _player.isPlaying;
-        BOOL hasVideoOut = _player.hasVideoOut;
-        NSInteger numberOfReadBytesOnInput = _player.media.numberOfReadBytesOnInput;
-        NSInteger numberOfPlayedAudioBuffers =  _player.media.numberOfPlayedAudioBuffers;
-        NSInteger numberOfSentBytes = _player.media.numberOfSentBytes;
-        NSInteger numberOfReadBytesOnDemux =  _player.media.numberOfReadBytesOnDemux;
-        NSInteger numberOfSentPackets =  _player.media.numberOfSentPackets;
-        NSInteger numberOfCorruptedDataPackets =  _player.media.numberOfCorruptedDataPackets;
-        NSInteger numberOfDisplayedPictures =  _player.media.numberOfDisplayedPictures;
-        NSInteger numberOfDecodedVideoBlocks =  _player.media.numberOfDecodedVideoBlocks;
-      
-        self.onIsPlaying(@{
-                           @"target": self.reactTag,
-                           @"isPlaying": [NSNumber numberWithBool: isPlaying],
-                           @"numberOfReadBytesOnInput":[NSNumber numberWithInteger:numberOfReadBytesOnInput],
-                           @"numberOfPlayedAudioBuffers":[NSNumber numberWithInteger:numberOfPlayedAudioBuffers],
-                           @"numberOfSentBytes":[NSNumber numberWithInteger:numberOfSentBytes],
-                           @"numberOfReadBytesOnDemux":[NSNumber numberWithInteger:numberOfReadBytesOnDemux],
-                           @"numberOfSentPackets":[NSNumber numberWithInteger:numberOfSentPackets],
-                           @"numberOfCorruptedDataPackets":[NSNumber numberWithInteger:numberOfCorruptedDataPackets],
-                           @"numberOfDisplayedPictures":[NSNumber numberWithInteger:numberOfDisplayedPictures],
-                           @"numberOfDecodedVideoBlocks":[NSNumber numberWithInteger:numberOfDecodedVideoBlocks],
-                           });
-        VLCMediaPlayerState state = _player.state;
-        switch (state) {
-            case VLCMediaPlayerStateOpening:
-                self.onVideoStateChange(@{
-                                          @"target": self.reactTag,
-                                          @"isPlaying": [NSNumber numberWithBool: isPlaying],
-                                          @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
-                                          @"type": @"Opening",
-                                          });
-                break;
-            case VLCMediaPlayerStatePaused:
-                _paused = YES;
-                self.onVideoStateChange(@{
-                                          @"target": self.reactTag,
-                                          @"isPlaying": [NSNumber numberWithBool: isPlaying],
-                                          @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
-                                          @"type": @"Paused",
-                                          });
-                break;
-            case VLCMediaPlayerStateStopped:
-                self.onVideoStateChange(@{
-                                          @"target": self.reactTag,
-                                          @"isPlaying": [NSNumber numberWithBool: isPlaying],
-                                          @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
-                                          @"type": @"Stoped",
-                                          });
-                break;
-            case VLCMediaPlayerStateBuffering:
-                self.onVideoStateChange(@{
-                                          @"target": self.reactTag,
-                                          @"isPlaying": [NSNumber numberWithBool: isPlaying],
-                                          @"duration":[NSNumber numberWithInt:[_player.media.length intValue]],
-                                          @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
-                                          @"type": @"Buffering",
-                                          });
-                break;
-            case VLCMediaPlayerStatePlaying:
-                _paused = NO;
-                self.onVideoStateChange(@{
-                                          @"target": self.reactTag,
-                                          @"duration":[NSNumber numberWithInt:[_player.media.length intValue]],
-                                          @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
-                                          @"isPlaying": [NSNumber numberWithBool: isPlaying],
-                                          @"type": @"Playing",
-                                          });
-                break;
-            case VLCMediaPlayerStateESAdded:
-                self.onVideoStateChange(@{
-                                          @"target": self.reactTag,
-                                          @"duration":[NSNumber numberWithInt:[_player.media.length intValue]],
-                                          @"isPlaying": [NSNumber numberWithBool: isPlaying],
-                                          @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
-                                          @"type": @"ESAdded",
-                                          });
-                break;
-            case VLCMediaPlayerStateEnded:
-                NSLog(@"VLCMediaPlayerStateEnded %i",1);
-                int currentTime   = [[_player time] intValue];
-                int remainingTime = [[_player remainingTime] intValue];
-                int duration      = [_player.media.length intValue];
-                self.onVideoStateChange(@{
-                                          @"target": self.reactTag,
-                                          @"type": @"Ended",
-                                          @"currentTime": [NSNumber numberWithInt:currentTime],
-                                          @"remainingTime": [NSNumber numberWithInt:remainingTime],
-                                          @"duration":[NSNumber numberWithInt:duration],
-                                          @"position":[NSNumber numberWithFloat:_player.position],
-                                          @"isPlaying": [NSNumber numberWithBool: isPlaying],
-                                          @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
-                                          });
-                break;
-            case VLCMediaPlayerStateError:
-                self.onVideoStateChange(@{
-                                          @"target": self.reactTag,
-                                          @"duration":[NSNumber numberWithInt:[_player.media.length intValue]],
-                                          @"isPlaying": [NSNumber numberWithBool: isPlaying],
-                                          @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
-                                          @"type": @"Error",
-                                          });
-                [self _release];
-                break;
-            default:
-                self.onVideoStateChange(@{
-                                          @"target": self.reactTag,
-                                          @"duration":[NSNumber numberWithInt:[_player.media.length intValue]],
-                                          @"isPlaying": [NSNumber numberWithBool: isPlaying],
-                                          @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
-                                          @"type": @"unknow",
-                                          });
-                break;
+    @try{
+        if(_player){
+
+            BOOL isPlaying = _player.isPlaying;
+            BOOL hasVideoOut = _player.hasVideoOut;
+            /*NSInteger numberOfReadBytesOnInput = _player.media.numberOfReadBytesOnInput;
+            NSInteger numberOfPlayedAudioBuffers =  _player.media.numberOfPlayedAudioBuffers;
+            NSInteger numberOfSentBytes = _player.media.numberOfSentBytes;
+            NSInteger numberOfReadBytesOnDemux =  _player.media.numberOfReadBytesOnDemux;
+            NSInteger numberOfSentPackets =  _player.media.numberOfSentPackets;
+            NSInteger numberOfCorruptedDataPackets =  _player.media.numberOfCorruptedDataPackets;
+            NSInteger numberOfDisplayedPictures =  _player.media.numberOfDisplayedPictures;
+            NSInteger numberOfDecodedVideoBlocks =  _player.media.numberOfDecodedVideoBlocks;
+          */
+            /*self.onIsPlaying(@{
+                               @"target": self.reactTag,
+                               @"isPlaying": [NSNumber numberWithBool: isPlaying],
+                               @"numberOfReadBytesOnInput":[NSNumber numberWithInteger:numberOfReadBytesOnInput],
+                               @"numberOfPlayedAudioBuffers":[NSNumber numberWithInteger:numberOfPlayedAudioBuffers],
+                               @"numberOfSentBytes":[NSNumber numberWithInteger:numberOfSentBytes],
+                               @"numberOfReadBytesOnDemux":[NSNumber numberWithInteger:numberOfReadBytesOnDemux],
+                               @"numberOfSentPackets":[NSNumber numberWithInteger:numberOfSentPackets],
+                               @"numberOfCorruptedDataPackets":[NSNumber numberWithInteger:numberOfCorruptedDataPackets],
+                               @"numberOfDisplayedPictures":[NSNumber numberWithInteger:numberOfDisplayedPictures],
+                               @"numberOfDecodedVideoBlocks":[NSNumber numberWithInteger:numberOfDecodedVideoBlocks],
+                               });
+             */
+            VLCMediaPlayerState state = _player.state;
+            CGSize videoSize =  _player.videoSize;
+            int height = videoSize.height;
+            int width = videoSize.width;
+            BOOL willPlay = _player.willPlay;
+            switch (state) {
+                case VLCMediaPlayerStateOpening:
+                    self.onVideoStateChange(@{
+                                              @"target": self.reactTag,
+                                              @"isPlaying": [NSNumber numberWithBool: isPlaying],
+                                              @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
+                                              @"type": @"Opening",
+                                              @"videoWidth":[NSNumber numberWithInt:width],
+                                              @"videoHeight":[NSNumber numberWithInt:height],
+                                              @"willPlay":[NSNumber numberWithBool:willPlay],
+                                              });
+                    break;
+                case VLCMediaPlayerStatePaused:
+                    _paused = YES;
+                    self.onVideoStateChange(@{
+                                              @"target": self.reactTag,
+                                              @"isPlaying": [NSNumber numberWithBool: isPlaying],
+                                              @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
+                                              @"type": @"Paused",
+                                              @"videoWidth":[NSNumber numberWithInt:width],
+                                              @"videoHeight":[NSNumber numberWithInt:height],
+                                              @"willPlay":[NSNumber numberWithBool:willPlay],
+                                              });
+                    break;
+                case VLCMediaPlayerStateStopped:
+                    self.onVideoStateChange(@{
+                                              @"target": self.reactTag,
+                                              @"isPlaying": [NSNumber numberWithBool: isPlaying],
+                                              @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
+                                              @"type": @"Stoped",
+                                              @"videoWidth":[NSNumber numberWithInt:width],
+                                              @"videoHeight":[NSNumber numberWithInt:height],
+                                              @"willPlay":[NSNumber numberWithBool:willPlay],
+                                              });
+                    break;
+                case VLCMediaPlayerStateBuffering:
+                    self.onVideoStateChange(@{
+                                              @"target": self.reactTag,
+                                              @"isPlaying": [NSNumber numberWithBool: isPlaying],
+                                              @"duration":[NSNumber numberWithInt:[_player.media.length intValue]],
+                                              @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
+                                              @"type": @"Buffering",
+                                              @"videoWidth":[NSNumber numberWithInt:width],
+                                              @"videoHeight":[NSNumber numberWithInt:height],
+                                              @"willPlay":[NSNumber numberWithBool:willPlay],
+                                              });
+                    break;
+                case VLCMediaPlayerStatePlaying:
+                    _paused = NO;
+                    self.onVideoStateChange(@{
+                                              @"target": self.reactTag,
+                                              @"isPlaying": [NSNumber numberWithBool: isPlaying],
+                                              @"duration":[NSNumber numberWithInt:[_player.media.length intValue]],
+                                              @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
+                                              @"isPlaying": [NSNumber numberWithBool: isPlaying],
+                                              @"type": @"Playing",
+                                              @"videoWidth":[NSNumber numberWithInt:width],
+                                              @"videoHeight":[NSNumber numberWithInt:height],
+                                              @"willPlay":[NSNumber numberWithBool:willPlay],
+                                              });
+                    break;
+                case VLCMediaPlayerStateESAdded:
+                    self.onVideoStateChange(@{
+                                              @"target": self.reactTag,
+                                              @"duration":[NSNumber numberWithInt:[_player.media.length intValue]],
+                                              @"isPlaying": [NSNumber numberWithBool: isPlaying],
+                                              @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
+                                              @"type": @"ESAdded",
+                                              @"videoWidth":[NSNumber numberWithInt:width],
+                                              @"videoHeight":[NSNumber numberWithInt:height],
+                                              @"willPlay":[NSNumber numberWithBool:willPlay],
+                                              });
+                    break;
+                case VLCMediaPlayerStateEnded:
+                    NSLog(@"VLCMediaPlayerStateEnded %i",1);
+                    int currentTime   = [[_player time] intValue];
+                    int remainingTime = [[_player remainingTime] intValue];
+                    int duration      = [_player.media.length intValue];
+                    self.onVideoStateChange(@{
+                                              @"target": self.reactTag,
+                                              @"type": @"Ended",
+                                              @"currentTime": [NSNumber numberWithInt:currentTime],
+                                              @"remainingTime": [NSNumber numberWithInt:remainingTime],
+                                              @"duration":[NSNumber numberWithInt:duration],
+                                              @"position":[NSNumber numberWithFloat:_player.position],
+                                              @"isPlaying": [NSNumber numberWithBool: isPlaying],
+                                              @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
+                                              @"videoWidth":[NSNumber numberWithInt:width],
+                                              @"videoHeight":[NSNumber numberWithInt:height],
+                                              @"willPlay":[NSNumber numberWithBool:willPlay],
+                                              });
+                    break;
+                case VLCMediaPlayerStateError:
+                    self.onVideoStateChange(@{
+                                              @"target": self.reactTag,
+                                              @"duration":[NSNumber numberWithInt:[_player.media.length intValue]],
+                                              @"isPlaying": [NSNumber numberWithBool: isPlaying],
+                                              @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
+                                              @"type": @"Error",
+                                              @"videoWidth":[NSNumber numberWithInt:width],
+                                              @"videoHeight":[NSNumber numberWithInt:height],
+                                              @"willPlay":[NSNumber numberWithBool:willPlay],
+                                              });
+                    [self _release];
+                    break;
+                default:
+                    self.onVideoStateChange(@{
+                                              @"target": self.reactTag,
+                                              @"duration":[NSNumber numberWithInt:[_player.media.length intValue]],
+                                              @"isPlaying": [NSNumber numberWithBool: isPlaying],
+                                              @"hasVideoOut": [NSNumber numberWithBool: hasVideoOut],
+                                              @"type": [NSString stringWithCString:state encoding:(NSASCIIStringEncoding)],
+                                              @"videoWidth":[NSNumber numberWithInt:width],
+                                              @"videoHeight":[NSNumber numberWithInt:height],
+                                              @"willPlay":[NSNumber numberWithBool:willPlay],
+                                              });
+                    break;
+            }
         }
+    }@catch(NSException *exception){
+        NSLog(@"%@", exception);
     }
 }
 
 -(void)updateVideoProgress
-{
-    if(_player){
-        int currentTime   = [[_player time] intValue];
-        int remainingTime = [[_player remainingTime] intValue];
-        int duration      = [_player.media.length intValue];
-        
-        if( currentTime >= 0 && currentTime < duration) {
-            self.onVideoProgress(@{
-                                   @"target": self.reactTag,
-                                   @"currentTime": [NSNumber numberWithInt:currentTime],
-                                   @"remainingTime": [NSNumber numberWithInt:remainingTime],
-                                   @"duration":[NSNumber numberWithInt:duration],
-                                   @"position":[NSNumber numberWithFloat:_player.position],
-                                   @"isPlaying": [NSNumber numberWithBool: _player.isPlaying],
-                                   });
+{   @try{
+        if(_player){
+            int currentTime   = [[_player time] intValue];
+            int remainingTime = [[_player remainingTime] intValue];
+            int duration      = [_player.media.length intValue];
+
+            if( currentTime >= 0 && currentTime < duration) {
+                self.onVideoProgress(@{
+                                       @"target": self.reactTag,
+                                       @"currentTime": [NSNumber numberWithInt:currentTime],
+                                       @"remainingTime": [NSNumber numberWithInt:remainingTime],
+                                       @"duration":[NSNumber numberWithInt:duration],
+                                       @"position":[NSNumber numberWithFloat:_player.position],
+                                       @"isPlaying": [NSNumber numberWithBool: _player.isPlaying],
+                                       });
+            }
         }
+    }
+    @catch(NSException *exception){
+        NSLog(@"%@", exception);
     }
 }
 
@@ -420,7 +461,7 @@ static NSString *const playbackRate = @"rate";
 -(void)setVolumeDown:(int)volume
 {
     if(_player){
-        
+
         VLCAudio *audio = _player.audio;
         [audio volumeDown];
     }
@@ -473,8 +514,10 @@ static NSString *const playbackRate = @"rate";
 
 
 -(void)setVideoAspectRatio:(NSString *)ratio{
-    char *char_content = [ratio cStringUsingEncoding:NSASCIIStringEncoding];
-    [_player setVideoAspectRatio:char_content];
+    if(ratio != nil && ratio.length > 0){
+        char *char_content = [ratio cStringUsingEncoding:NSASCIIStringEncoding];
+        [_player setVideoAspectRatio:char_content];
+    }
 }
 
 - (void)_release

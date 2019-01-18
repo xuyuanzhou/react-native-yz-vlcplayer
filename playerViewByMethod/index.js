@@ -75,6 +75,7 @@ export default class VlCPlayerViewByMethod extends Component {
     this.firstPlaying = false;
     this.initAdLoadStart = false;
     this.isReloadingError = false;
+    this.needReloadCurrent = false;
     this.autoplaySize = 0;
     this.autoplayAdSize = 0;
     this.autoReloadLiveSize = 0;
@@ -312,7 +313,7 @@ export default class VlCPlayerViewByMethod extends Component {
   }
 
   componentDidMount() {
-    let { style, isAd, initWithFull, useNetInfo } = this.props;
+    let { style, isAd, initWithFull, useNetInfo,  } = this.props;
     let { autoplay, showAd } = this.props;
     //当显示广告并且自动播放为false时,不显示广告
     if(showAd && !autoplay){
@@ -474,6 +475,11 @@ export default class VlCPlayerViewByMethod extends Component {
     this.vlcPlayerViewRef && this.vlcPlayerViewRef.reload(true);
   }
 
+  changeVideoAspectRatio = (ratio)=>{
+    this.vlcPlayerViewRef && this.vlcPlayerViewRef.changeVideoAspectRatio(ratio);
+    this.vlcPlayerViewAdRef && this.vlcPlayerViewAdRef.changeVideoAspectRatio(ratio);
+  }
+
 
   seek = (value) => {
     this.vlcPlayerViewRef && this.vlcPlayerViewRef.seek(value);
@@ -572,6 +578,7 @@ export default class VlCPlayerViewByMethod extends Component {
     /*if(__DEV__){
      console.log('_onBuffering:'+this.props.url,event);
      }*/
+    let { fullVideoAspectRatio, videoAspectRatio } = this.props;
     this.isProgressChange = false;
     if (this.isReloadingError) {
       this.handleError();
@@ -636,10 +643,21 @@ export default class VlCPlayerViewByMethod extends Component {
    * handle the first time video play
    */
   handleInitSuccess = ()=> {
-    let { isError, isEndAd } = this.state;
+    let { isError, isEndAd, isFull } = this.state;
     this.initSuccess = true;
-    let { lookTime, totalTime, showAd, autoplay } = this.props;
-    console.log(lookTime + ':' + totalTime)
+    let { lookTime, totalTime, showAd, autoplay, fullVideoAspectRatio, videoAspectRatio } = this.props;
+
+    if(this.props.useVideoAspectRatioByMethod){
+      if(isFull){
+        if(fullVideoAspectRatio){
+          this.changeVideoAspectRatio(fullVideoAspectRatio);
+        }
+      }else{
+        if(videoAspectRatio){
+          this.changeVideoAspectRatio(videoAspectRatio);
+        }
+      }
+    }
     if(lookTime && totalTime){
       if (Platform.OS === 'ios') {
         if(lookTime < totalTime){
@@ -674,17 +692,45 @@ export default class VlCPlayerViewByMethod extends Component {
   }
 
 
+  /**
+   * 处理异常是需要重新定位到当前所在位置
+   */
   handleError = () => {
-    let { currentTime, totalTime } = this.state;
-    if (Platform.OS === 'ios') {
-      this.seek(Number((currentTime / totalTime).toFixed(17)));
-    } else {
-      this.seek(currentTime);
+    try {
+      let {currentTime, totalTime} = this.state;
+      if (currentTime && totalTime && currentTime > 0 && totalTime > 0 && currentTime < totalTime) {
+        if (Platform.OS === 'ios') {
+          this.seek(Number((currentTime / totalTime).toFixed(17)));
+        } else {
+          this.seek(currentTime);
+        }
+        this.isReloadingError = false;
+        this.setState({
+          isError: false,
+        });
+      }
+    }catch (e){
+
     }
-    this.isReloadingError = false;
-    this.setState({
-      isError: false,
-    });
+  }
+
+  /**
+   * 处理刷新时需要重新定位到当前所在位置
+   */
+  handleReloadCurrent = () => {
+    try{
+      this.needReloadCurrent = false;
+      let { currentTime, totalTime } = this.state;
+      if(currentTime && totalTime && currentTime > 0 && totalTime > 0 && currentTime < totalTime){
+        if (Platform.OS === 'ios') {
+          this.seek(Number((currentTime / totalTime).toFixed(17)));
+        } else {
+          this.seek(currentTime);
+        }
+      }
+    }catch (e){
+
+    }
   }
 
   /**
@@ -794,13 +840,27 @@ export default class VlCPlayerViewByMethod extends Component {
    * @private
    */
   _onLoadStart = e => {
-    let { url , autoplay} = this.props;
-    let { isError }  = this.state;
+    let { url , autoplay, fullVideoAspectRatio, videoAspectRatio} = this.props;
+    let { isError, isFull }  = this.state;
     /* if(__DEV__){
      console.log('_onLoadStart:'+url+' --> _onLoadStart',e);
      }*/
+    if(this.props.useVideoAspectRatioByMethod){
+      if(isFull){
+        if(fullVideoAspectRatio){
+          this.changeVideoAspectRatio(fullVideoAspectRatio);
+        }
+      }else{
+        if(videoAspectRatio){
+          this.changeVideoAspectRatio(videoAspectRatio);
+        }
+      }
+    }
     if (isError) {
       this.handleError();
+    }
+    if(this.needReloadCurrent && !isError){
+      this.handleReloadCurrent();
     }
     if(!this.initSuccess){
       this.handleInitSuccess();
@@ -945,6 +1005,7 @@ export default class VlCPlayerViewByMethod extends Component {
     this.startReload();
   };
 
+
   reloadCurrent = () => {
     this.startReload(true);
   };
@@ -952,15 +1013,15 @@ export default class VlCPlayerViewByMethod extends Component {
   reloadError = () => {
     this.firstPlaying = false;
     this.isReloadingError = true;
-    this.startReload(false);
+    this.startReload(true);
   }
 
   startReload = (isCurrent = false)=>{
     this.firstPlaying = false;
+    this.needReloadCurrent = isCurrent;
     this.hadEnd = false;
     let { storeUrl, adUrl, currentTime } = this.state;
     let { reloadWithAd, isLive } = this.props;
-    console.log(currentTime)
     let isEndAd = true;
     if(reloadWithAd){
       isEndAd = false;
@@ -1013,19 +1074,29 @@ export default class VlCPlayerViewByMethod extends Component {
    * @private
    */
   _onCloseFullScreen = () => {
-    let { onCloseFullScreen, BackHandle, Orientation, initWithFull, onLeftPress } = this.props;
+    let { onCloseFullScreen, BackHandle, Orientation, initWithFull, onLeftPress, videoAspectRatio } = this.props;
     if(initWithFull){
       onLeftPress && onLeftPress();
     }else{
+      StatusBar.setHidden(false);
+      onCloseFullScreen && onCloseFullScreen();
+      //StatusBar.setTranslucent(false);
+      if(this.props.useVideoAspectRatioByMethod){
+        if(videoAspectRatio){
+          this.changeVideoAspectRatio('NULL');
+        }
+        setTimeout(()=>{
+          if(videoAspectRatio){
+            this.changeVideoAspectRatio(videoAspectRatio);
+          }
+        },250);
+      }
+      Orientation && Orientation.lockToPortrait();
+      BackHandle && BackHandle.removeBackFunction(_fullKey);
       this.setState({
         isFull: false,
         showControls: false,
       });
-      BackHandle && BackHandle.removeBackFunction(_fullKey);
-      Orientation && Orientation.lockToPortrait();
-      StatusBar.setHidden(false);
-      //StatusBar.setTranslucent(false);
-      onCloseFullScreen && onCloseFullScreen();
     }
 
   };
@@ -1035,16 +1106,26 @@ export default class VlCPlayerViewByMethod extends Component {
    * @private
    */
   _toFullScreen = () => {
-    let { onStartFullScreen, BackHandle, Orientation } = this.props;
+    let { onStartFullScreen, BackHandle, Orientation, fullVideoAspectRatio } = this.props;
     //StatusBar.setTranslucent(true);
+    onStartFullScreen && onStartFullScreen();
+    StatusBar.setHidden(true);
+    BackHandle && BackHandle.addBackFunction(_fullKey, this._onCloseFullScreen);
+    Orientation && Orientation.lockToLandscape && Orientation.lockToLandscape();
     this.setState({
       isFull: true,
       showControls: false,
     });
-    StatusBar.setHidden(true);
-    BackHandle && BackHandle.addBackFunction(_fullKey, this._onCloseFullScreen);
-    onStartFullScreen && onStartFullScreen();
-    Orientation && Orientation.lockToLandscape && Orientation.lockToLandscape();
+    if(this.props.useVideoAspectRatioByMethod){
+      if(fullVideoAspectRatio){
+        this.changeVideoAspectRatio("NULL");
+      }
+      setTimeout(()=>{
+        if(fullVideoAspectRatio){
+          this.changeVideoAspectRatio(fullVideoAspectRatio);
+        }
+      },250);
+    }
   };
 
   /**
@@ -1514,11 +1595,13 @@ export default class VlCPlayerViewByMethod extends Component {
               }else{
                 if (Platform.OS === 'ios') {
                   if(value >= totalTime){
+                    console.log(666666);
                     this.pause();
                     this._onEnd({
                       currentTime: totalTime,
                       duration: totalTime
                     })
+
                     //this.seek(0.99999999);
                   }else{
                     this.seek(Number((value / totalTime).toFixed(17)));
@@ -1681,13 +1764,15 @@ export default class VlCPlayerViewByMethod extends Component {
      * @type {string}
      */
     let currentVideoAspectRatio = '';//this.state.width + ':' + this.state.height;
-    if (isFull) {
-      if(fullVideoAspectRatio){
-        currentVideoAspectRatio = fullVideoAspectRatio;
-      }
-    } else {
-      if(videoAspectRatio){
-        currentVideoAspectRatio = videoAspectRatio;
+    if(!this.props.useVideoAspectRatioByMethod){
+      if (isFull) {
+        if(fullVideoAspectRatio){
+          currentVideoAspectRatio = fullVideoAspectRatio;
+        }
+      } else {
+        if(videoAspectRatio){
+          currentVideoAspectRatio = videoAspectRatio;
+        }
       }
     }
     /**
@@ -1798,8 +1883,8 @@ export default class VlCPlayerViewByMethod extends Component {
                 initType={initType}
                 mediaOptions={
                   {
-                    ':network-caching': 1500,
-                    ':live-caching': 1500,
+                    ':network-caching': 250,
+                    ':live-caching': 250,
                   }
                 }
               />
