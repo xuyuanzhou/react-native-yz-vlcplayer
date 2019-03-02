@@ -144,7 +144,7 @@ export default class VLCPlayer extends Component {
     }
 
     render() {
-        const source = resolveAssetSource(this.props.source) || {};
+        const source = resolveAssetSource({ ...this.props.source }) || {};
         let uri = source.uri || '';
         let isNetwork = !!(uri && uri.match(/^https?:/));
         const isAsset = !!(uri && uri.match(/^(assets-library|file|content|ms-appx|ms-appdata):/));
