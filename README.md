@@ -1,11 +1,11 @@
 # react-native-yz-vlcplayer
 
 A `<VLCPlayer>` component for react-native
-此项目 参考[react-native-video](https://github.com/react-native-community/react-native-video)，
+This project refers to [react-native-video](https://github.com/react-native-community/react-native-video)，
 [react-native-vlcplayer](https://github.com/xiongchuan86/react-native-vlcplayer),
 [react-native-vlc-player](https://github.com/ghondar/react-native-vlc-player)
 
-VLCPlayer 支持各种格式(mp4,m3u8,flv,mov,rtsp,rtmp,etc.)，具体参看[vlc wiki](https://wiki.videolan.org/Documentation:Documentation/)
+VLCPlayer supports various formats (mp4,m3u8,flv,mov,rtsp,rtmp,etc.)，see [vlc wiki](https://wiki.videolan.org/Documentation:Documentation/)
 
 [https://code.videolan.org/videolan/VLCKit](https://code.videolan.org/videolan/VLCKit)
 
@@ -17,22 +17,22 @@ VLCPlayer 支持各种格式(mp4,m3u8,flv,mov,rtsp,rtmp,etc.)，具体参看[vlc
    ![](https://github.com/xuyuanzhou/resource/blob/master/gif/lizi.gif)
 
 
-## Xcode10+ 的一些问题
+## Xcode10+ Known Issues
 
-（1）libstdc++.6.0.9.tbd 找不到
-     在Xcode10中，libstdc++.6.0.9.tbd被移除掉了，我们也移除掉它就OK了
+（1）libstdc++.6.0.9.tbd could not be found
+     In Xcode10, libstdc++.6.0.9.tbd has been removed, and we have removed it and it is OK.
 
-（2）编译卡死的情况(目前只能等官方修正这个问题)
+（2）XCode Build-Process (currently only wait for the official to fix this problem)
 
    [https://forums.developer.apple.com/thread/107570](https://forums.developer.apple.com/thread/107570)
 
-   (1)去除DSYM
+   (1) Remove DSYM
 
-   项目  Build Settings  --> Build Options --> Debug Information Format  设置为 DWARF.
+   Project Build Settings --> Build Options --> Debug Information Format is set to DWARF.
 
    ![](./images/dsym.png)
 
-   (2)改为Xcode10以下版本编译
+   (2) Compile to the following version of Xcode10
 
 
 
@@ -138,18 +138,17 @@ step 8:
 
 ```
 android:
-    this.vlcplayer.seek(100); //  unit(单位)  ms
+    this.vlcplayer.seek(100); //  unit(unit)  ms
 ios:
-    this.vlcplayer.seek(0.1); //  0 --- 1 视频位置进度
+    this.vlcplayer.seek(0.1); //  0 --- 1  video location progress
 
 
-this.vlcPlayer.resume(autoplay) //重新加载视频进行播放,autopaly: true 表示播放 false表示暂停
+this.vlcPlayer.resume(autoplay) //Reload the video for playback, autopaly: true means that playing false means pause
 
 this.vlcPlayer.play(bool)       // true: play the video   false: paused the video
 
 
-this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
-
+this.vlcPlayer.snapshot(path)  // path: string The path to the stored file.
 
 ```
 
@@ -168,17 +167,17 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
    | initOptions | array    |         |            |
    | mediaOptions| object   |         |            |
    | source      | object   | { uri: 'http:...' }| |
-   | autoplay    | bool     |       |  是否自动播放（默认false）        |
-   | onLoadStart | func     |       |  vlc视频容器初始化完毕  |
-   | onOpen      | func     |       |  视频被打开            |
-   | onBuffering | func     |       |  正在缓冲中           |
-   | onProgress  | func     | { currentTime:1000,duration:1000 }  unit：ms    |  视频进度发生改变     |
-   | onEnd       | func     |       |  视频播放结束        |
-   | onPlaying   | func     |       |  视频正在播放        |
-   | onPaused    | func     |       |  视频暂停           |
-   | onError     | func     |       |  播放视频出错       |
-   | onStopped   | func     |       |  视频停止播放(直播视频请根据这个判断) |
-   | onIsPlaying | func     | {isPlaying:true}   |  视频是否正在播放       |
+   | autoplay    | bool     |       |  Whether to play automatically (default false)        |
+   | onLoadStart | func     |       |  vlc video container initialization completed  |
+   | onOpen      | func     |       |  Video is opened            |
+   | onBuffering | func     |       |  Being buffered           |
+   | onProgress  | func     | { currentTime:1000,duration:1000 }  unit：ms    |  Video progress changes     |
+   | onEnd       | func     |       |  End of video playback        |
+   | onPlaying   | func     |       |  Video Now Playing        |
+   | onPaused    | func     |       |  Video pause           |
+   | onError     | func     |       |  Play video error       |
+   | onStopped   | func     |       |  Video stop playing (live video please judge according to this) |
+   | onIsPlaying | func     | {isPlaying:true}   |  Is the video playing?       |
 
 
    ```
@@ -230,19 +229,19 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
    ```
 
 
-## 回调函数简单说明（目前碰到的）
+## Callback function simple description (currently encountered)
  ```
-                                                             支持平台
-           onEnd            视频播放结束                  ios       android
-           onBuffering      正在缓冲中                    ios       android
-           onError          播放视频出错
-           onPlaying        视频播放                      ios       android
-           onPaused         视频暂停                      ios       android
-           onOpen           视频被打开                              android
-           onLoadStart      vlc视频容器初始化完毕          ios       android
-           onProgress       视频进度发生改变               ios       android          swf格式不支持
+                                                             supported platform
+           onEnd            video playback ends                  ios       android
+           onBuffering      is buffering                    ios       android
+           onError          video error
+           onPlaying        playback                      ios       android
+           onPaused         paused                     ios       android
+           onOpen           video is opend                              android
+           onLoadStart      vlc video container initialization completed          ios       android
+           onProgress       video progress changes               ios       android          swf format is not supported
 
-           回调函数出现顺序:  onLoadStart  ---> onOpen
+           The callback function appears in the order: onLoadStart  ---> onOpen
 
  ```
 
@@ -254,72 +253,71 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
 
    (1)
        android:
-           this.vlcplayer.seek(100); // 单位是 ms
+           this.vlcplayer.seek(100); // The unit in ms
        ios:
-           this.vlcplayer.seek(0.1); // 0 --- 1 视频位置进度
+           this.vlcplayer.seek(0.1); // 0 --- 1 video location progress
   （2）
        <VLCPlayer
            ref={ref => (this.vlcPlayer = ref)}
            style={[styles.video]}
            /**
-            *  增加视频宽高比，视频将按照这个比率拉伸
-            *  不设置按照默认比例
-            */
+            * increase the video aspect ratio, the video will stretch according to this ratio
+            * Do not set according to the default ratio
+            */
            videoAspectRatio="16:9"
            /**
-            *  是否暂停播放
+            * Whether to pause playback
             */
            paused={this.state.paused}
            /**
-            *  资源路径
-            *  暂不支持本地资源
+            * Resource path
+            * Local resources are not supported at this time
             */
            source={{ uri: this.props.uri}}
            /**
-            *  进度
-            *  返回 {currentTime:1000,duration:1000}
-            *  单位是 ms
-            *  currentTime: 当前时间
-            *  duration:    总时间
+            * Progress
+            * Returns {currentTime:1000, duration:1000}
+            * Unit is ms
+            * currentTime: current time
+            * duration: total time
             */
            onProgress={this.onProgress.bind(this)}
            /**
-            *  视频播放结束
+            * End of video playback
             */
            onEnd={this.onEnded.bind(this)}
            /**
-            * 正在缓存中
+            * Being cached
             */
            onBuffering={this.onBuffering.bind(this)}
            /**
-            * 播放视频出错
+            * Error playing video
             */
            onError={this._onError}
            /**
-            * 视频停止
+            * Error playing video
             */
            onStopped={this.onStopped.bind(this)}
            /**
-            * 视频播放
+            * Video stops
             */
            onPlaying={this.onPlaying.bind(this)}
            /**
-            * 视频暂停
+            * Video playback
             */
            onPaused={this.onPaused.bind(this)}
            /**
-            * 视频被打开
+            * Video pause
             /
            onOpen={this._onOpen}
            /**
-            * vlc视频容器初始化完毕
-            * 在这里进行设置播放的进度，是否开始播放
+            * vlc video container is initialized
+            * Set the progress of playback here, whether to start playing
             */
            onLoadStart={()=>{
                    if(Platform.OS === 'ios'){
-                       this.vlcPlayer.seek(0); //设置播放进度
-                   }else{
-                       this.vlcPlayer.seek(0); //设置播放的时间
+                       this.vlcPlayer.seek(0); //Set the playback progress
+                       this.vlcPlayer.seek(0); //Set the time of playback
                    }
                    this.setState({
                      paused: true,
@@ -333,21 +331,21 @@ this.vlcPlayer.snapshot(path)  // path: string  存储的文件的路径。
 
 ````
 
-## 可用的源
+## Available Sources
 
-香港财经,rtmp://202.69.69.180:443/webcast/bshdlive-pc
+Hong Kong Finance, rtmp://202.69.69.180:443/webcast/bshdlive-pc
 
-湖南卫视,rtmp://58.200.131.2:1935/livetv/hunantv
+Hunan Satellite TV,,rtmp://58.200.131.2:1935/livetv/hunantv
 
 rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov
 
 
-## 版本简单说明
+## Version Simple Description
 
 ````
     1.1.1-beta7:
-        (1) 增加  autoAspectRatio  bool  (only  on  Android)
-            占满Android满屏
+        (1) increase autoAspectRatio bool (only on Android)
+            Full Android full screen
 ````
 
 
@@ -380,133 +378,131 @@ rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov
            Orientation={Orientation}
        />
 
-       注意：
-        《1》插件默认用了如下所示的宽高比(1.1.1-beta1及以下)
-            fullVideoAspectRatio: deviceHeight + ':' + deviceWidth,
-            videoAspectRatio: deviceWidth + ':' + 211.5,
-            （1）在竖屏情况下画面比例会出现问题，请自行设置宽高比或去除内置宽高比
-            （2）非全屏下修改了默认高度的话，请自行设置宽高比或去除内置宽高比
-                去除内置宽高比：
-                            fullVideoAspectRatio={""}
-                            videoAspectRatio={""}
-        《2》默认不会自动播放，需要自动播放请添加如下参数
+       note:
+        The《1》 plugin uses the aspect ratio (1.1.1-beta1 and below) as shown below by default.
+            fullVideoAspectRatio: deviceHeight + ':' + deviceWidth,
+            videoAspectRatio: deviceWidth + ':' + 211.5,
+            (1) In the case of vertical screen, there will be problems with the aspect ratio. Please set the aspect ratio or remove the built-in aspect ratio.
+            (2) If the default height is modified in a non-full screen, please set the aspect ratio or remove the built-in aspect ratio.
+                Remove the built-in aspect ratio:
+                            fullVideoAspectRatio={""}
+        《2》is not automatically played by default, you need to automatically play, please add the following parameters
              autoplay={true}
 
-        《3》 你可以自定义文字用以下参数:
+        《3》 You can customize the text with the following parameters:
                 endingViewText: {
-                    endingText: '视频播放结束',
-                    reloadBtnText: '重新播放',
-                    nextBtnText: '下一个'
+                    endingText: 'End of video playback',
+                    reloadBtnText: 'Replay',
+                    nextBtnText: 'next'
                 },
                 errorViewText: {
-                    errorText: '视频播放出错',
-                    reloadBtnText: '重新播放',
+                    errorText: 'Video playback error',
+                    reloadBtnText: 'Replay',
                 },
                 vipEndViewText: {
-                    vipEndText: '试看结束',
-                    boughtBtnText: '请购买后观看立即购买',
+                    vipEndText: 'Try to end',
+                    boughtBtnText: 'Please buy and buy now',
                 },
 
-      下面是可用的一些参数：
+       Here are some of the parameters available：
 
        static propTypes = {
 
         /**
-            * vlc 播放类型相关
+            * vlc play type related
             */
-               //广告初始化类型
+               // Ad initialization type
                initAdType: PropTypes.oneOf([1,2]),
-               //广告初始化参数
+               // Advertising initialization parameters
                initAdOptions: PropTypes.array,
 
-               //视频初始化类型
+               // Video initialization type
                initType: PropTypes.oneOf([1,2]),
-               //视频初始化参数
+               // Video initialization parameters
                initOptions: PropTypes.array,
 
            /**
-            * 直播相关
+            * Live broadcast related
             */
-                //是否直播
                 isLive: PropTypes.bool,
-                //是否自动reload  live
+                //Whether it automatically reload live
                 autoReloadLive: PropTypes.bool,
 
            /**
-            * 广告相关
+            * Advertising related
             */
-               //是否显示广告
+               //Whether to display ads
                showAd:  PropTypes.bool,
-               //广告url
+               //Ad-url
                adUrl: PropTypes.oneOfType([PropTypes.string,PropTypes.number]).isRequired,
-               //重新加载包括广告
+               //Reload including ads
                reloadWithAd: PropTypes.bool,
-               //广告头播放结束
+               //End of the ad title
                onAdEnd: PropTypes.func,
-               //广告是否在播放
+               //Is the ad playing?
                onIsAdPlaying: PropTypes.func,
 
 
            /**
-            * 屏幕相关
+            * Screen related
             */
-           // 以全屏初始化
+           // initialized in full screen
            initWithFull: PropTypes.bool,
-           //开启全屏回调函数
+           // Turn on the full screen callback function
            onStartFullScreen: PropTypes.func,
-           //关闭全屏回调函数
+           // Turn off the full screen callback function
            onCloseFullScreen: PropTypes.func,
 
            /**
-            * 视频相关
+            * Video related
             */
 
-               //视频路径：
-                    //string:  本地或者网络资源路径
-                    //number:  require('./resource/1.mp4')
+               //Video path:
+                    //string: local or network resource path
+                    //number: require('./resource/1.mp4')
                url: PropTypes.oneOfType([PropTypes.string,PropTypes.number]).isRequired,
-               //视频播放结束
+               // Video playback ends
                onEnd: PropTypes.func,
-               //是否在播放
+               // Is it playing?
                onIsPlaying: PropTypes.func,
-               //已经观看时间
+               // Already watched the time
                lookTime: PropTypes.number,
-               //总时间
+               // total time
                totalTime: PropTypes.number,
-               //是否有下一视频源
+               // Is there a next video source?
                hadNext: PropTypes.bool,
-               //自动播放下一个视频
+               // Automatically play the next video
                autoPlayNext: PropTypes.bool,
-               //自动重复播放
+               // Automatic repeat play
                autoRePlay: PropTypes.bool,
 
 
            /**
-            * 样式相关
+            * Style related
             */
-               //视频样式
+               // Video style
                style: PropTypes.object,
-               //全屏视频样式
+               // full screen video style
                fullStyle: PropTypes.object,
-               //是否需要考虑statusBar   only for ios
+               // Do you need to consider statusBar only for ios
                considerStatusBar: PropTypes.bool,
-               //是否显示顶部
+               // Do you show the top?
                showTop: PropTypes.bool,
-               //标题
+               // title
                title: PropTypes.string,
-               //是否显示标题
+               // Whether to display the title
                showTitle: PropTypes.bool,
-               //是否显示返回按钮
+               // Whether to display the return button
                showBack: PropTypes.bool,
-               //返回按钮点击事件
+               // Back button click event
                onLeftPress: PropTypes.func,
 
            /**
-            * vip相关
+            * vip related
             */
-               //是否使用vip
+               // Whether to use vip
                useVip: PropTypes.bool,
-               //非vip观看长度
+               // Non-vip viewing length
                vipPlayLength: PropTypes.number,
 
          };
