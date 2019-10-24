@@ -20,5 +20,8 @@
     "type": "git",
     "url": "git+https://github.com/xuyuanzhou/react-native-yz-vlcplayer.git"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@react-native-community/netinfo": "4.4.0"
+  }
 }
