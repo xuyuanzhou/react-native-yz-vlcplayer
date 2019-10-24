@@ -14,10 +14,10 @@ import {
   BackHandler,
   ActivityIndicator,
   Animated,
-  NetInfo,
   Image,
   ScrollView
 } from 'react-native';
+import NetInfo from "@react-native-community/netinfo";
 
 import VLCPlayerView from './VLCPlayerView';
 import PropTypes from 'prop-types';
