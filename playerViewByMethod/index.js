@@ -350,9 +350,7 @@ export default class VlCPlayerViewByMethod extends Component {
   componentWillUnmount() {
     try{
       let { isFull, Orientation, useNetInfo } = this.props;
-      this.setState({
-        canShowVideo: false
-      });
+      
       if (isFull) {
         this._onCloseFullScreen();
       }
